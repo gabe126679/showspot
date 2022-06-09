@@ -1,0 +1,184 @@
+$primary: #F73D93;
+$secondary: #7F8487;
+$success: #C4DDFF;
+$warning: #16003B;
+$info: #FEE2C5;
+
+
+body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+        "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+        sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-size: 18px;
+}
+
+code {
+    font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+        monospace;
+}
+
+.testBtn {
+    position: absolute;
+}
+.home-search {
+    position: absolute;
+    top: 5.65rem;
+    width: 100%;
+    z-index: 8;
+}
+.map-search {
+    position: relative;
+    width: 100%;
+    z-index: 8;
+}
+
+.map-search input {
+    padding: 0.5rem;
+    font-size: 1rem;
+    width: 100%;
+    max-height: 40px;
+    text-align: center;
+    background-color: white;
+    border-radius: 3px;
+    border: 1px solid rgb(193, 186, 186);
+    text-align: left;
+}
+
+.locate {
+    position: absolute;
+    top: 8.6rem;
+    right: 1rem;
+    background: none;
+    border: none;
+    z-index: 7;
+}
+.locate img {
+    width: 35px;
+    cursor: pointer;
+}
+.button-container {
+    width: 100%;
+    display: flex;
+    position: relative;
+
+}
+.button-container-elements {
+    width: 100%;
+    height: 35px;
+    z-index: 9;
+}
+// navbar
+.navbar-collapse-overlap {
+    z-index: 10;
+    overflow: hidden;
+}
+.navbar-toggler {
+    position: relative;
+    right: 20px;
+}
+.navbar-brand {
+    border-radius: 10px;
+    position: relative;
+    left: 20px;
+    padding: 12px;
+}
+// show display
+.show-container {
+    overflow-y: auto;
+    height: 100%;
+}
+.show-row {
+    display: flex;       
+}
+.show-column {
+
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    align-items: center;
+
+}
+.show-options {
+    margin: 12px;
+    display: flex;
+
+    margin-left: auto;
+    margin-right: auto;
+}
+.show-span {
+    display: flex;
+    align-items: center;
+}
+#dropdown-basic-button {
+    margin: 2px;
+}
+// footer
+.footer {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    background-color: $warning;
+    color: black;
+    text-align: center;
+}
+.footer-content {
+    text-align: center;
+}
+.promote-button {
+    position: relative;
+    bottom: 25px;
+    font-size: 14px;
+    font-weight: bold;
+    border-radius: 35%;
+    background: linear-gradient(to left, $info 25%, $primary 75%);
+    line-height: 40px;
+}
+.promote-link {
+    text-decoration: none;
+}
+#map {
+    overflow: hidden;
+    height: 100vh;
+}
+.profile-border {
+
+    margin: 80px;
+    border: 1px solid rgb(80, 72, 72);
+    padding: 12px;
+    border-radius: 10px;
+}
+.dropdown-basic {
+    max-width: 100px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.test {
+    display: flex;
+    align-items: end;
+    flex-direction: row;
+}
+
+
+@media (max-width: 768px) {
+
+    .show-options {
+        margin: auto;
+    }
+    .show-span {
+        flex-direction: column;
+    }
+}
+@media (max-width: 540px) {
+    // #map {
+    //     min-height: 940px;
+    //     overflow: hidden;
+    // }
+}
+
+/* import bootstrap to set changes */
+@import "~bootstrap/scss/bootstrap";
