@@ -46,7 +46,7 @@ const initState = {
           ...state,
           authError: 'cart add failed'
         }
-      case 'VENUE_CREAT_SUCCESS':
+      case 'VENUE_CREATE_SUCCESS':
         console.log('venue create success');
         return {
           ...state,
@@ -54,6 +54,18 @@ const initState = {
         }
       case 'VENUE_CREATE_ERROR':
         console.log('venue create error');
+        return {
+          ...state,
+          authError: 'cart add failed'
+        }
+      case 'ADD_SONG_SUCCESS':
+        console.log('add song success');
+        return {
+          ...state,
+          authError: null
+        }
+      case 'ADD_SONG_ERROR':
+        console.log('add song error');
         return {
           ...state,
           authError: 'cart add failed'

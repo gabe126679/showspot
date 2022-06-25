@@ -1,18 +1,39 @@
-import React, { useEffect } from 'react'
-import { Table, Dropdown } from 'react-bootstrap';
+import React, { useEffect, useState } from 'react'
+import { Table, Dropdown, Col } from 'react-bootstrap';
 import { firestoreConnect } from 'react-redux-firebase';
 import { useNavigate, Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
-import moment from 'moment';
+import { updateBackline } from '../store/actions/showActions';
 
 function Spotters(props) {
-  const { auth, shows } = props;
+  const { auth, shows, users } = props;
+
+  const [buttonStyle, setButtonStyle] = useState("")
 
   const navigate = useNavigate();
 
-  const handleClick = () => {
-    console.log(shows);
+  const handleClick = (e) => {
+    shows.map((show) => {
+      if (show.id === e.target.id && !show.backlines.includes(auth.uid)) {
+        users.map((user) => {
+          if (user.id === auth.uid) {
+            const backlineObject = {
+              title: show.id,
+              artist: auth.uid,
+              firstName: user.firstName,
+              lastName: user.lastName
+            }
+            props.updateBackline(backlineObject);
+          }
+        })
+      }
+    })
+  }
+  
+  const handleView = (e) => {
+    e.preventDefault();
+    navigate('/tickets/' + e.target.id);
   }
 
   useEffect(() => {
@@ -20,6 +41,16 @@ function Spotters(props) {
         navigate("/spotterLogin");
     }
   }, []);
+
+  useEffect(() => {
+    if (users) {
+      users.map((user) => {
+        if (user.id === auth.uid && user.isArtist !== true) {
+          setButtonStyle(" d-none");
+        }
+      })
+    }
+  })
 
   if (shows) {
     return (
@@ -34,16 +65,19 @@ function Spotters(props) {
                 <Table bordered hover>
                   <thead>
                     <tr>
+                      <th>Tickets</th>
                       <th>Artists</th>
                       <th>Venue</th>
                       <th>Promoter</th>
-                      <th>Date</th>
+                      <th>Backlines</th>
                     </tr>
                   </thead>
                 {shows && shows.map((show) => {
                   return (
                     <tbody >
+
                       <tr>
+                        <td><button className="btn btn-primary" id={show.id} onClick={handleView}>view</button></td>
                         <td>
                           <Dropdown >
                             <Dropdown.Toggle className="dropdown-basic" variant="warning" id="dropdown-basic"
@@ -52,7 +86,8 @@ function Spotters(props) {
                             </Dropdown.Toggle>
 
                             <Dropdown.Menu>
-                              <Dropdown.Item href="#/action-1">                             <Link to={"/artist/" + show.headlinerId}>
+                              <Dropdown.Item href="#/action-1">                             
+                                  <Link to={"/artist/" + show.headlinerId}>
                                     {show.headliner}
                                   </Link>
                               </Dropdown.Item>
@@ -68,7 +103,33 @@ function Spotters(props) {
                         </td>
                         <td>{show.venue}</td>
                         <td>{show.promoterUserName}</td>
-                        <td>{moment(show.createdAt.toDate()).calendar()}</td>
+                        <td className="backlines">
+
+                              <div>
+
+                              <Dropdown >
+                                <Dropdown.Toggle className="dropdown-basic" variant="warning" id="dropdown-basic"
+                                >
+                                {/* {show.backlines[0].firstName + " " + show.backlines[0].lastName} */}
+                                view
+                                </Dropdown.Toggle>
+                                <Dropdown.Menu>
+                                {show.backlines && show.backlines.map((backline) => {
+                                  return (
+                                      <Dropdown.Item href="#/action-1">  
+                                        <Link to={"/artist/" + backline.artist}>
+                                          {backline.firstName + " " + backline.lastName}
+                                        </Link>
+                                      </Dropdown.Item>
+                                  )
+                                })}
+                                  </Dropdown.Menu>
+                              </Dropdown>
+  
+                              </div>
+
+                            <button className={"btn btn-primary" + buttonStyle} id={show.id} onClick={handleClick}>+</button> 
+                        </td>
                       </tr>
                     </tbody>
                   ) 
@@ -84,19 +145,20 @@ const mapStateToProps = (state) => {
   return {
     auth: state.firebase.auth,
     shows: state.firestore.ordered.shows,
+    users: state.firestore.ordered.users
   }
 }
 
-// const mapDispatchToProps = (state) => {
-//   console.log(state.firestore)
-//   return {
-//     auth: state.firebase.auth
-//   }
-// }
+const mapDispatchToProps = dispatch => {
+  return {
+    updateBackline: (backline) => dispatch(updateBackline(backline))
+  }
+}
 
 export default compose(
-  connect(mapStateToProps),
-  firestoreConnect([{
-    collection: 'shows'
-  }])
+  connect(mapStateToProps, mapDispatchToProps),
+  firestoreConnect([
+    {collection: 'shows'},
+    {collection: 'users'}
+  ])
 )(Spotters);

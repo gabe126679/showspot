@@ -16,6 +16,13 @@ function VenueProfile(props) {
         console.log(user);
     }
   
+    const pushShows = () => {
+      navigate('/spotters');
+    }
+  
+    const pushInvites = () => {
+      navigate('/venueInvites');
+    }
 
     if (!auth.uid) return navigate('/venueSignup');
 
@@ -30,19 +37,28 @@ function VenueProfile(props) {
               if (user.id === auth.uid) {
                 return (
                   <div className="profile-border">
+                    <br/>
+                    <div>
+                        <button className="btn btn-primary" onClick={pushShows}>
+                            Shows
+                        </button>
+                        <button className="btn btn-warning float-end" onClick={pushInvites}>
+                            Invites
+                        </button>
+                    </div>
                     <Table  hover>
                       <thead >
                         <tr>
                           <th>First Name</th>
                           <th>Last Name</th>
-                          <th>Main Instrument</th>
+                          <th>Venue Name</th>
                         </tr>
                       </thead>
                       <tbody>
                         <tr>
                           <td>{user.firstName}</td>
                           <td>{user.lastName}</td>
-                          <td>{user.mainInstrument}</td>
+                          <td>{user.venueName}</td>
                         </tr>
                       </tbody>
                     </Table>

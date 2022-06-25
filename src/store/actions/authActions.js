@@ -84,21 +84,35 @@ export const venueSignUp = (newVenue) => {
   }
 }
 
-export const addToCart = (item, price) => {
+export const addToCart = (item) => {
   return async (dispatch, getState, { getFirestore }) => {
       const firestore = getFirestore();
       const viewerId = getState().firebase.auth.uid;
       
       firestore.collection('users').doc(viewerId).update({
-          cartItems: firestore.FieldValue.arrayUnion({
-            id: item,
-            price: price
-          })
+          cartItems: firestore.FieldValue.arrayUnion(item)
       })
       .then(() => {
           dispatch({ type: 'UPDATE_CART_SUCCESS' });
       }).catch((err) => {
           dispatch({ type: 'UPDATE_CART_ERROR', err });
+      });
+
+  }
+}
+
+export const addSong = (song) => {
+  return async (dispatch, getState, { getFirestore }) => {
+      const firestore = getFirestore();
+      const viewerId = getState().firebase.auth.uid;
+      
+      firestore.collection('users').doc(viewerId).update({
+          songs: firestore.FieldValue.arrayUnion(song)
+      })
+      .then(() => {
+          dispatch({ type: 'ADD_SONG_SUCCESS' });
+      }).catch((err) => {
+          dispatch({ type: 'ADD_SONG_ERROR', err });
       });
 
   }

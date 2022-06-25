@@ -19,6 +19,7 @@ export const createShow = (show) => {
         venueId: show.venueId,
         promoterUserName: profile.userName,
         promoterId: promoterId,
+        backlines: [],
         createdAt: new Date()
       }).then(() => {
         dispatch({ type: 'CREATE_SHOW_SUCCESS' });
@@ -27,6 +28,22 @@ export const createShow = (show) => {
       });
     }
   };
+
+
+export const updateTicket = (ticket) => {
+  return async (dispatch, getState, { getFirestore }) => {
+      const firestore = getFirestore();
+
+      firestore.collection('shows').doc(ticket.title).update({
+          ticketPrice: ticket.price,
+      }).then(() => {
+          dispatch({ type: 'UPDATE_TICKET_SUCCESS' });
+      }).catch((err) => {
+          dispatch({ type: 'UPDATE_TICKET_ERROR', err });
+      });
+
+  }
+}
 
 export const updateHeadliner = (headliner) => {
   return async (dispatch, getState, { getFirestore }) => {
@@ -118,31 +135,50 @@ export const updateVenue = (venue) => {
   }
 }
 
-  export const createBand = (band) => {
-    return (dispatch, getState, { getFirestore }) => {
+export const updateBackline = (backline) => {
+  return async (dispatch, getState, { getFirestore }) => {
       const firestore = getFirestore();
-      const profile = getState().firebase.profile;
-      const creatorId = getState().firebase.auth.uid;
-  
-      firestore.collection('bands').add({
-        first: band.first,
-        second: band.second,
-        third: band.third,
-        fourth: band.fourth,
-        fifth: band.fifth,
-        firstId: band.firstId,
-        secondId: band.secondId,
-        thirdId: band.thirdId,
-        fourthId: band.fourthId,
-        fifthId: band.fifthId,
-        bandName: band.bandName,
-        creatorUserName: profile.userName,
-        creatorId: creatorId,
-        createdAt: new Date()
+
+      firestore.collection('shows').doc(backline.title).update({
+          backlines: firestore.FieldValue.arrayUnion({
+            artist: backline.artist,
+            firstName: backline.firstName,
+            lastName: backline.lastName
+          })
       }).then(() => {
-        dispatch({ type: 'CREATE_BAND_SUCCESS' });
+          dispatch({ type: 'UPDATE_BACKLINE_SUCCESS' });
       }).catch((err) => {
-        dispatch({ type: 'CREATE_BAND_ERROR', err });
+          dispatch({ type: 'UPDATE_BACKLINE_ERROR', err });
       });
-    }
-  };
+
+  }
+}
+
+export const createBand = (band) => {
+  return (dispatch, getState, { getFirestore }) => {
+    const firestore = getFirestore();
+    const profile = getState().firebase.profile;
+    const creatorId = getState().firebase.auth.uid;
+
+    firestore.collection('bands').add({
+      first: band.first,
+      second: band.second,
+      third: band.third,
+      fourth: band.fourth,
+      fifth: band.fifth,
+      firstId: band.firstId,
+      secondId: band.secondId,
+      thirdId: band.thirdId,
+      fourthId: band.fourthId,
+      fifthId: band.fifthId,
+      bandName: band.bandName,
+      creatorUserName: profile.userName,
+      creatorId: creatorId,
+      createdAt: new Date()
+    }).then(() => {
+      dispatch({ type: 'CREATE_BAND_SUCCESS' });
+    }).catch((err) => {
+      dispatch({ type: 'CREATE_BAND_ERROR', err });
+    });
+  }
+};

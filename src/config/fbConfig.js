@@ -1,4 +1,5 @@
 import firebase from "firebase/compat/app";
+import { getStorage } from "firebase/storage";
 import 'firebase/compat/firestore';
 import 'firebase/compat/auth';
 
@@ -15,9 +16,10 @@ firebase.initializeApp(firebaseConfig);
 
 firebase.firestore().settings({ timestampsInSnapshots: true, merge: true });
 
-
 const projectFirestore = firebase.firestore();
 const timestamp = firebase.firestore.FieldValue.serverTimestamp;
+
+export const storage = getStorage()
 
 export { projectFirestore, timestamp };
 

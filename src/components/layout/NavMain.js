@@ -23,6 +23,7 @@ function NavMain(props) {
                     <Navbar.Offcanvas className="test" >
                       
                         <Nav.Link href="/profile">Profile</Nav.Link>
+                        <Nav.Link href="/cart">Cart</Nav.Link>
                         <Nav.Link href="/" onClick={props.signOut}>Logout</Nav.Link>
                         {/* <NavDropdown title="Dropdown" id="basic-nav-dropdown">
                         <NavDropdown.Item href="#action/3.1">Action</NavDropdown.Item>
