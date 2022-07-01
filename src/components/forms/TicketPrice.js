@@ -37,7 +37,7 @@ function Tickets(props) {
                 price: price
             }
             if (e.target.id === show.id && auth.uid === show.venueId) {
-                props.updateVenue(decisionObject)
+                props.updateVenue(show, true)
                 props.updateTicket(decisionObject)
             }
         })
@@ -73,24 +73,11 @@ function Tickets(props) {
                             <Form onSubmit={handleSubmit} id={show.id}>
                                 <h1 className="text-center">Ticket Price</h1>
                                 <br/>
-                                <Form.Group className="mb-3" controlId="headliner" onChange={handleChange} >
-                                    <Form.Label>headliner: {show.headliner}</Form.Label>
-                                </Form.Group>
-                                <Form.Group className="mb-3" controlId="fourth" onChange={handleChange} >
-                                    <Form.Label>fourth: {show.fourth}</Form.Label>
-                                </Form.Group>
-                                <Form.Group className="mb-3" controlId="third" onChange={handleChange} >
-                                    <Form.Label>third: {show.third}</Form.Label>
-                                </Form.Group>
-                                <Form.Group className="mb-3" controlId="second" onChange={handleChange} >
-                                    <Form.Label>second: {show.second}</Form.Label>
-                                </Form.Group>
-                                <Form.Group className="mb-3" controlId="opener" onChange={handleChange} >
-                                    <Form.Label>opener: {show.opener}</Form.Label>
-                                </Form.Group>
-                                <Form.Group className="mb-3 text-primary" controlId="venue" onChange={handleChange} >
-                                    <Form.Label>venue: {show.venue}</Form.Label>
-                                </Form.Group>
+                                {show.artists.map((artist) => {
+                                    <Form.Group className="mb-3" controlId="headliner" onChange={handleChange} >
+                                        <Form.Label>artist: {artist.firstName} {artist.lastName}</Form.Label>
+                                    </Form.Group>                                    
+                                })}
                                 <Form.Group className="mb-3 text-center" controlId="price" onChange={handleChange} >
                                     <Form.Label>Enter Price Per Ticket</Form.Label>
                                     <Form.Control type="text" placeholder="$" 
@@ -136,7 +123,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = dispatch => {
     return {
       updateTicket: (ticket) => dispatch(updateTicket(ticket)),
-      updateVenue: (venue) => dispatch(updateVenue(venue))
+      updateVenue: (venue, decision) => dispatch(updateVenue(venue, decision))
     }
 }
 

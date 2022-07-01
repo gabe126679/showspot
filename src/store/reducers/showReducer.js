@@ -8,6 +8,18 @@ const showReducer = (state = initState, action) => {
       case 'CREATE_SHOW_ERROR': 
         console.log('created SHOW error');
         return state;
+      case 'SHOW_ACTIVATION_SUCCESS': 
+        console.log('activated show');
+        return state;
+      case 'SHOW_ACTIVATION_ERROR': 
+        console.log('activated show error');
+        return state;
+      case 'BAND_ACTIVATION_SUCCESS': 
+        console.log('activated band');
+        return state;
+      case 'BAND_ACTIVATION_ERROR': 
+        console.log('activated band error');
+        return state;
       case 'CREATE_BAND_SUCCESS': 
         console.log('created BAND');
         return state;
@@ -73,6 +85,12 @@ const showReducer = (state = initState, action) => {
         return state;
       case 'UPDATE_VOTE_ERROR': 
         console.log('updated vote error');
+        return state;
+      case 'UPDATE_MEMBER_SUCCESS': 
+        console.log('updated MEMBER success');
+        return state;
+      case 'UPDATE_MEMBER_ERROR': 
+        console.log('updated MEMBER error');
         return state;
       case 'UPDATE_NOTIFICATION_SUCCESS': 
         console.log('updated notification success');

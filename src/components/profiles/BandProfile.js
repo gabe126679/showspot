@@ -13,6 +13,7 @@ function BandProfile(props) {
 
     const handleClick = (e) => {
         e.preventDefault();
+        console.log("hello")
     }
 
     const pushBands = () => {
@@ -50,65 +51,41 @@ function BandProfile(props) {
             <Table  hover>
                 <thead >
                 <tr>
-                    <th>Band</th>
+                    <th >Band</th>
                     <th>Members</th>
                     <th>Creator</th>
                 </tr>
                 </thead>
           {bands && bands.map((band) => {
-              if (
-                  band.firstId === auth.uid ||
-                  band.secondId === auth.uid ||
-                  band.thirdId === auth.uid ||
-                  band.fourthId === auth.uid ||
-                  band.fifthId === auth.uid
-                ) 
-                {
+              if (band.ids.includes(auth.uid)) {
                 return (
+                    <tbody>
+                    <tr>
+                        <td onClick={handleClick}>{band.bandName}</td>
+                        <td>                      
+                        <Dropdown >
+                            <Dropdown.Toggle className="dropdown-basic" variant="warning" id="dropdown-basic"
+                            >
+                            {band.members[0].firstName} {band.members[0].lastName}
+                            </Dropdown.Toggle>
 
-                      <tbody>
-                        <tr>
-                            <td>{band.bandName}</td>
-                            <td>                      
-                            <Dropdown >
-                                <Dropdown.Toggle className="dropdown-basic" variant="warning" id="dropdown-basic"
-                                >
-                                {band.first}
-                                </Dropdown.Toggle>
-
-                                <Dropdown.Menu>
-                                <Dropdown.Item href="#/action-1">                           
-                                    <Link to={"/artist/" + band.firstId}>
-                                        {band.first}
-                                    </Link>
-                                </Dropdown.Item>
-                                <Dropdown.Item href="#/action-3">
-                                    <Link to={"/artist/" + band.secondId}>
-                                        {band.second}
-                                    </Link>
-                                </Dropdown.Item>
-                                <Dropdown.Item href="#/action-2">
-                                    <Link to={"/artist/" + band.thirdId}>
-                                        {band.third}
-                                    </Link>
-                                </Dropdown.Item>
-                                <Dropdown.Item href="#/action-1">    
-                                    <Link to={"/artist/" + band.fourthId}>
-                                        {band.fourth}
-                                    </Link>
-                                </Dropdown.Item>
-                                <Dropdown.Item href="#/action-3">
-                                    <Link to={"/artist/" + band.fifthId}>
-                                        {band.fifth}
-                                    </Link>
-                                </Dropdown.Item>
-                                </Dropdown.Menu>
-                            </Dropdown>
-                            </td>
-                            <td>{band.first}</td>
-                        </tr>
-                      </tbody>
-              ) 
+                            <Dropdown.Menu>
+                            {band.members.map((artist) => {
+                                return (
+                                    <Dropdown.Item href="#/action-1">                           
+                                        <Link to={"/artist/" + artist.id}>
+                                            {artist.firstName} {artist.lastName}
+                                        </Link>
+                                    </Dropdown.Item>
+                                )
+                            })}
+                            </Dropdown.Menu>
+                        </Dropdown>
+                        </td>
+                        <td>{band.creatorUserName}</td>
+                    </tr>
+                    </tbody>
+                )
               }
             })}
             </Table>

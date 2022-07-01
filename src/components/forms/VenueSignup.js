@@ -162,7 +162,7 @@ function VenueSignup(props) {
                 </Form.Group>
                 <br/>
                 <div>
-                    <Locate panTo={panTo} />
+
                     <GoogleMap
                         id="map"
                         zoom={9}
@@ -222,27 +222,6 @@ function VenueSignup(props) {
     </div>
   )
 }
-
-function Locate({ panTo }) {
-    return (
-      <button
-        className="locate"
-        onClick={() => {
-          navigator.geolocation.getCurrentPosition(
-            (position) => {
-              console.log(position);
-              panTo({
-                lat: position.coords.latitude,
-                lng: position.coords.longitude,
-              });
-            }
-          );
-        }}
-      >
-        <img src="/1.png" alt="location" />
-      </button>
-    );
-  }
   
 
 const mapStateToProps = (state) => {

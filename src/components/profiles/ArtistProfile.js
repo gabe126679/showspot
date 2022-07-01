@@ -125,7 +125,7 @@ function ArtistProfile(props) {
                   <div className="profile-border">
                     <br/>
                     <Form onSubmit={handleSubmit(onSubmit)}>
-                      <h1 className="text-center">Ticket Price</h1>
+                      <h1 className="text-center">Upload Songs</h1>
                       <br/>
                       <Form.Group className="mb-3 text-center" onChange={handleChange} controlId="title" >
                           <Form.Label>Enter Song Title</Form.Label>
