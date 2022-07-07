@@ -14,6 +14,18 @@ const showReducer = (state = initState, action) => {
       case 'SHOW_ACTIVATION_ERROR': 
         console.log('activated show error');
         return state;
+      case 'CREATED_SONG_PURCHASE_SUCCESS': 
+        console.log('created song purchase');
+        return state;
+      case 'CREATED_SONG_PURCHASE_ERROR': 
+        console.log('created song purchase error');
+        return state; 
+      case 'CREATED_SHOW_PURCHASE_SUCCESS': 
+        console.log('created show purchase');
+        return state;
+      case 'CREATED_SHOW_PURCHASE_ERROR': 
+        console.log('created show purchase error');
+        return state;        
       case 'BAND_ACTIVATION_SUCCESS': 
         console.log('activated band');
         return state;

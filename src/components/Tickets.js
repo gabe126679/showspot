@@ -78,13 +78,13 @@ function Tickets(props) {
                 if (show.id === id) {
                     show.backlines.map((backline) => {
                         if (backline.artist === auth.uid && !checkedBacklines.includes(auth.uid)) {
-                          setCheckedBacklines([...checkedBacklines, auth.uid]);
+                          checkedBacklines.push(auth.uid);
+                          
                         }
                       })
                 }
-
             })
-            console.log(checkedBacklines)
+            
           }
 
       });
@@ -148,30 +148,33 @@ function Tickets(props) {
                                     </thead>
                                     {show.backlines && show.backlines.map((backline) => {
                                         return (
-                                    <tbody>
-                                    <tr>
-                                        <td>
-                                            {backline.firstName + " " + backline.lastName}
-                                            {(() => {
+                                            <tbody>
 
-                                            if (!checkedBacklines.includes(auth.uid)) {
-                                                return (
-                                                    <button className={"btn btn-primary"} id={show.id} onClick={handleClick}>+</button>      
-                                                )
-                                            }
-                                            })()}
-                                            
-                                        </td>
-                                        <td>
-                                            {backline.voteCount}
-                                        </td>
-                                        <td>
-                                            <button className={"btn btn-primary"} onClick={() => {
-                                                handleBacklineVote(show, backline.artist)
-                                            }}>+</button> 
-                                        </td>
-                                    </tr>
-                                    </tbody>
+                                                            <tr>
+                                                                <td>
+                                                                    {backline.firstName + " " + backline.lastName}
+                                                                    
+                                                                </td>
+                                                                <td>
+            
+                                                                    {backline.voteCount}
+                                                                </td>
+                                                                <td>
+            
+                                                            {(() => {
+                                                                    if (backline.artist !== auth.uid && !backline.votedOn.includes(auth.uid)) {
+                                                                        return (
+            
+                                                                        <button className={"btn btn-primary"} onClick={() => {
+                                                                            handleBacklineVote(show, backline.artist)
+                                                                        }}>+</button>      
+                                                                        )
+                                                                }
+                                                            })()}
+                                                                </td>
+                                                            </tr>
+
+                                            </tbody>
                                         )
                                     })}
                                 </Table>                          

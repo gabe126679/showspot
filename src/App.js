@@ -5,6 +5,7 @@ import Spotters from "./components/Spotters";
 import NavMain from "./components/layout/NavMain";
 import SpotterLogin from "./components/forms/SpotterLogin";
 import SpotterSignup from "./components/forms/SpotterSignup";
+import SpotterProfile from "./components/profiles/SpotterProfile";
 import Promote from "./components/forms/Promote";
 import FormBand from "./components/forms/FormBand";
 import Footer from "./components/Footer";
@@ -37,6 +38,7 @@ function App() {
             <Route exact path='/spotters' element={<Spotters />} />
             <Route exact path='/spotterLogin' element={<SpotterLogin />} />
             <Route exact path='/spotterSignup' element={<SpotterSignup />} />
+            <Route exact path='/spotterProfile' element={<SpotterProfile />} />
             <Route exact path='/promote' element={<Promote />} />
             <Route exact path='/formBand'element={<FormBand />} />
             <Route exact path='/profile' element={<Profile />} />

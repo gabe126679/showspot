@@ -13,6 +13,7 @@ body {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     font-size: 18px;
+
 }
 
 code {
@@ -20,7 +21,9 @@ code {
         monospace;
 }
 
+.fool  {
 
+}
 .testBtn {
     position: absolute;
     top: 8em;
@@ -171,10 +174,11 @@ code {
     background-color: $success;
     position: relative;
     top: 22px;
+    right: 180px;
     margin: 0px auto;
     padding: 15px;
     border-radius: 16px;
-    width: 100%;
+    width: 65%;
     height: 70px;
     box-shadow: inset -6px -6px 12px rgba(0, 0, 0, 0.8), inset 6px 6px 12px rgba(255, 255, 255, 0.4);
 }
@@ -185,7 +189,28 @@ code {
     justify-content: center;
     height: 12px;
 }
+.c-test {
+    z-index: 10;
+    position: relative;
+    left: 270px;
+    bottom: -5px;
+    display: flex;
+    flex-direction: row;
+    height: 85%;
+    width: 300px;
+    color: white;
+}
 
+.c-test button {
+    width: 130px;
+    margin-left: 25px;
+    color: white;
+}
+.playerButton {
+    overflow-x: hidden;
+    overflow-y: hidden;
+    white-space:nowrap;
+}
 .c-player--controls .play-btn {
     display: flex;
     position: relative;
@@ -251,11 +276,13 @@ code {
     height: 100vh;
 }
 .profile-border {
-
-    margin: 80px;
-    border: 1px solid rgb(80, 72, 72);
-    padding: 12px;
+    margin-left: auto;
+    margin-right: auto;
+    margin: 50px;
+    border: 1px solid #504848;
     border-radius: 10px;
+    overflow-x: hidden;
+    padding: 5px;
 }
 .dropdown-basic {
     max-width: 100px;
@@ -268,6 +295,51 @@ code {
     align-items: end;
     flex-direction: row;
 }
+//playlist
+.playlist-container {
+    background-color: $info;
+    position: relative;
+    left: 292px;
+    bottom: 470px;
+    width: 300px;
+    height: 400px;
+    z-index: -1;
+    display: none;
+    flex-direction: row;
+    margin: auto;
+}
+.playlist-section {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    left: 44.5%;
+    border: 1px solid black;
+    width: 250px;
+}
+.current-song-section {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    right: 44.5%;
+    border: 1px solid black;
+    width: 250px;
+}
+.playlist-banner {
+    border: 1px solid black;
+    background-color: $warning;
+    color: white;
+    position: relative;
+    right: 0.2%;
+    width: 80px;
+}
+.playlist-button {
+    position: relative;
+    background-color: $primary;
+    border: none; 
+    width: 50px;
+    left: 0.2%;  
+}
+
 
 
 @media (max-width: 768px) {

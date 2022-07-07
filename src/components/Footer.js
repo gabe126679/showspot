@@ -5,13 +5,8 @@ import { connect } from 'react-redux';
 import { compose } from 'redux';
 import Player from '../components/player/Player';
 import firebase from "../config/fbConfig";
-import { getStorage, ref } from "firebase/storage";
 import "firebase/storage";
 
-const storage = getStorage();
-
-// Points to the root reference
-const storageRef = ref(storage);
 
 function Footer(props) {
 
@@ -26,46 +21,35 @@ function Footer(props) {
   }
 
   useEffect(() => {
-    
-
-    // console.log(songs);
-    const getFromFirebase = () => {
-      //1.
-   
-
-      firebase.storage().ref('songs/').listAll().then(function (res) {
-          //3.
-          res.items.forEach((songRef) => {
-            songRef.getDownloadURL().then((url) => {
-                //4.
-                console.log(url);
-                let newArray = [];
-                users.map((user) => {
-                  if (user.firstName === "Tom") {
-                    user.songs.map((item) => {
-                      
-                      const songObject = {
-                        title: item.title,
-                        artist: user.firstName + " " + user.lastName,
-                        src: item.song
-                      }
-                      if (!newArray.includes(songObject)) {
-                        newArray.push(songObject);
-                      }
-                    })
-                  }
-                })
-                setSongs(newArray);
-
-                // setImages((allImages) => [...allImages, url]);
-            });
-          });
-        })
-        .catch(function (error) {
-          console.log(error);
-        });
-    };
-    getFromFirebase();
+      // firebase.storage().ref('songs/').listAll().then(function (res) {
+      //     res.items.forEach((songRef) => {
+      //       songRef.getDownloadURL().then((url) => {
+      //           console.log(url);
+                const newArray = [];
+                
+                  users.map((user) => {
+                    if (user.id === auth.uid && user.purchasedSongs) {
+                      user.purchasedSongs.map((item) => {
+                        
+                        const songObject = {
+                          title: item.title,
+                          artist: user.firstName + " " + user.lastName,
+                          src: item.song
+                        }
+                        if (!newArray.includes(songObject) && newArray.length <= user.purchasedSongs.length) {
+                          newArray.push(songObject);
+                          setSongs(newArray);
+                        }
+                        console.log(!newArray.includes(songObject));
+                      })
+                    }
+                  })
+        //     });
+        //   });
+        // })
+        // .catch(function (error) {
+        //   console.log(error);
+        // });
   }, [])
 
   const [currentSongIndex, setCurrentSongIndex] = useState(0);
@@ -103,20 +87,7 @@ function Footer(props) {
                   songs={songs}
                 />
               </div>
-
-              <div >
-                <div className="song-info float-end">
-                  <button className="btn btn-primary" onClick={handleClick}>song</button>
-                  <br/>
-                  <br/>
-                  <br/>
-                  <button className="btn btn-primary">artist</button>
-                </div>
-              </div>
-            </div>
-
-
-          
+            </div>          
         </div>
     </div>
   )

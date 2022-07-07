@@ -136,3 +136,22 @@ export const updateCart = (item, price) => {
 
   }
 }
+
+export const updateCartSong = (song) => {
+  return async (dispatch, getState, { getFirestore }) => {
+      const firestore = getFirestore();
+      const cartHolder = getState().firebase.auth.uid;
+
+      firestore.collection('users').doc(cartHolder).update({
+        cartItems: firestore.FieldValue.arrayRemove(song)
+      }).then(() => {
+          dispatch({ type: 'DELETE_CART_SONG_SUCCESS' });
+      }).catch((err) => {
+          dispatch({ type: 'DELETE_CART_SONG_ERROR', err });
+      });
+
+  }
+}
+
+
+

@@ -243,3 +243,134 @@ export const activateBand = (band, decision) => {
 
   }
 }
+
+
+export const createSongPurchase = (purchase) => {
+  return async (dispatch, getState, { getFirestore }) => {
+      const firestore = getFirestore();
+      const currentUsers = getState().firestore.ordered.users;
+      const newSongs = [];
+      const purchasedSongs = [];
+
+      const newPrice = purchase.price.split('$').join('');
+      const newNumber = parseInt(newPrice);
+      const songObject = {
+        price: purchase.price,
+        song: purchase.url,
+        title: purchase.title,
+        buyerCount: purchase.count,
+        buyers: [purchase.buyer],
+        revenue: newNumber
+      }
+
+      currentUsers.map((user) => {
+        if (user.id === purchase.artistId) {
+          user.songs.map((track) => {
+            if (track.song !== purchase.url && !newSongs.includes(track)) {
+              newSongs.push(track);
+            }
+            else if (track.song === purchase.url) {
+              newSongs.push(songObject);                    
+            } 
+            if (track.buyers) {
+              track.buyers.map((buyer) => {
+                if (buyer === purchase.buyer && track.song !== purchase.url) {
+                  purchasedSongs.push(track);
+                }
+              })
+            }
+          })
+        }
+      })
+
+      firestore.collection('reciepts').add({
+        purchaseType: purchase.purchaseType, 
+        artist: purchase.artist,
+        artistId: purchase.artistId,
+        buyer: purchase.buyer,
+        buyerCreditChange: purchase.buyerCreditChange,
+        count: purchase.count,
+        price: purchase.price,
+        title: purchase.title,
+        url: purchase.url,
+        createdAt: new Date(),
+        creatorId: purchase.buyer
+      })
+      .then(() => {
+        firestore.collection('users').doc(purchase.artistId).update({
+          songs: [...newSongs],
+          artistCredit: newNumber
+        })
+      })
+      .then(() => {
+        firestore.collection('users').doc(purchase.buyer).update({
+          cartItems: [],
+          purchasedSongs: [...purchasedSongs, songObject]
+        })
+      })
+      .then(() => {
+          dispatch({ type: 'CREATE_SONG_PURCHASE_SUCCESS' });
+      }).catch((err) => {
+          console.log(err)
+          dispatch({ type: 'CREATE_SONG_PURCHASE_ERROR', err });
+      });
+
+  }
+}
+
+export const createShowPurchase = (purchase) => {
+  return async (dispatch, getState, { getFirestore }) => {
+      const firestore = getFirestore();
+      const currentShows = getState().firestore.ordered.shows;
+      const tickets = [];
+
+      currentShows.map((show => {
+        if (show.id === purchase.id) {
+          const showObject = {
+            purchaseType: purchase.purchaseType, 
+            artists: purchase.artists,
+            buyer: purchase.buyer,
+            buyerCreditChange: purchase.buyerCreditChange,
+            count: purchase.count,
+            price: purchase.price,
+            venue: purchase.venue,
+            createdAt: new Date(),
+            creatorId: purchase.buyer
+          }
+          tickets.push(showObject);                    
+        }
+      }))
+
+      firestore.collection('reciepts').add({
+        purchaseType: purchase.purchaseType, 
+        id: purchase.id,
+        artists: purchase.artists,
+        buyer: purchase.buyer,
+        buyerCreditChange: purchase.buyerCreditChange,
+        count: purchase.count,
+        price: purchase.price,
+        venue: purchase.venue,
+        createdAt: new Date(),
+        creatorId: purchase.buyer
+      })
+      .then(() => {
+        firestore.collection('users').doc(purchase.buyer).update({
+          cartItems: [],
+          purchasedTickets: [...tickets]
+        })
+      })
+      .then(() => {
+        firestore.collection('shows').doc(purchase.id).update({
+          ticketBuyers: [purchase.buyer],
+          ticketCount: purchase.count
+        })
+      })
+      .then(() => {
+          dispatch({ type: 'CREATE_SHOW_PURCHASE_SUCCESS' });
+      }).catch((err) => {
+          console.log(err)
+          dispatch({ type: 'CREATE_SHOW_PURCHASE_ERROR', err });
+      });
+
+  }
+}

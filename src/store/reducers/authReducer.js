@@ -16,20 +16,39 @@ const initState = {
           ...state,
           authError: null
         }
-      case 'UPDATE_CART_ERROR':
-        console.log('cart add error');
-        return {
-          ...state,
-          authError: 'cart add failed'
-        }
+
       case 'UPDATE_CART_SUCCESS':
         console.log('cart add success');
         return {
           ...state,
           authError: null
         }
+      case 'UPDATE_CART_ERROR':
+        console.log('cart add error');
+        return {
+          ...state,
+          authError: 'cart add failed'
+        }
+      case 'DELETE_CART_SUCCESS':
+        console.log('delete cart success');
+        return {
+          ...state,
+          authError: null
+        }
       case 'DELETE_CART_ERROR':
         console.log('cart delete error');
+        return {
+          ...state,
+          authError: 'cart add failed'
+        }
+      case 'DELETE_CART_SONG_SUCCESS':
+        console.log('delete cart song success');
+        return {
+          ...state,
+          authError: null
+        }
+      case 'DELETE_CART_SONG_ERROR':
+        console.log('cart delete song error');
         return {
           ...state,
           authError: 'cart add failed'

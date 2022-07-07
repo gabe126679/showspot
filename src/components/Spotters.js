@@ -37,6 +37,11 @@ function Spotters(props) {
     })
 
   }
+
+  const pushProfile = (e) => {
+    e.preventDefault();
+    navigate('/spotterProfile');
+  }
   
   const handleView = (e) => {
     e.preventDefault();
@@ -61,8 +66,18 @@ function Spotters(props) {
       <div>
         <br/>
         <br/>
+
+
         {/* <button onClick={handleClick} id={show.id}> hi </button> */}
         <div className="profile-border">
+        <br/>
+        <div>
+            <button className="btn btn-primary" id={auth.uid} onClick={pushProfile}>
+                My Profile
+            </button>
+
+        </div>
+        <br/>
                 <br/>
                   <p className="text-center text-white bg-warning rounded">Active Shows:</p>
                 <br/>

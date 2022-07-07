@@ -55,24 +55,20 @@ function PublicArtist(props) {
             if (secondUser.songs) {
               secondUser.songs.map((song) => {
                 if (secondUser.id === auth.uid) {
-                  
-                    secondUser.cartItems.map((item) => {
-                      if (item === song.song && newArray && !newArray.includes(item)) {
-                        newArray.push(item);
+                  if (secondUser.purchasedSongs) {
+                    secondUser.purchasedSongs.map((item) => {
+                      if (item.song === song.song && newArray && !newArray.includes(item.song)) {
+                        newArray.push(item.song);
                       }
                     })
-                  
+                  }
                 }
               })
             }
           }
         })
       }
-      if (newArray) {
-        newArray.map((item) => {
-          console.log(item);
-        })
-      }
+
     })
 
     if (!auth.uid) return navigate('/artistSignup');
@@ -125,38 +121,54 @@ function PublicArtist(props) {
                           <th>Add to Cart</th>
                         </tr>
                       </thead>
-                      {users.songs && user.songs.map((track) => {         
+                      {user.songs && user.songs.map((track) => {         
+                        
                           users.map((secondUser) => {
                             if (secondUser.id === id) {
                               secondUser.songs.map((song) => {
                                 if (secondUser.id === auth.uid) {
-                                  secondUser.cartItems.map((item) => {
-                                    if (item === song.song && !newArray.includes(item)) {
-                                      newArray.push(item);
-                                    }
-                                  })
+                                  if (secondUser.purchasedSongs) {
+                                    secondUser.purchasedSongs.map((item) => {
+                                      if (item.song === song.song && !newArray.includes(item.song)) {
+                                        setNewArray([...newArray, item.song]);
+                                      }
+                                    })
+                                  }
                                 }
                               })
                             }
-                          })                         
-                          if (newArray && !newArray.includes(track.song)) {
+                          })       
+                          if (!user.cartItems.includes(track.song) && !newArray.includes(track.song)) {
                             
                             return (
                               <tbody>
-    
-                                <tr>
-                                  <td>{track.title}</td>
-                                  <td>{track.price}</td>
-                                  <td className=" text-center"><button className="btn btn-primary" onClick={addToCart} id={track.song}>+</button></td>
-                                </tr>
+                                  {/* {(() => {
+                                      if (user.id === auth.uid && user.purchasedSongs) {
+                                          user.purchasedSongs.map((purchasedSong) => {
+                                            if (purchasedSong.song === track.song) {
+                                              console.log(purchasedSong);
+                                                return (  */}
+                                                <tr>
+                                                <td>{track.title}</td>
+                                                <td>{track.price}</td>
+                                                <td className=" text-center"><button className="btn btn-primary" onClick={addToCart} id={track.song}>+</button></td>
+                                              </tr>
+                                              {/* )
+
+                                            } 
+                                          })
+                                      } 
+                                  })()} */}
+
                               </tbody>
-                            )
-                          }
+                            )                            
+                          }               
                       })}
                     </Table>
                   </div>
               ) 
               }
+              
             })}
           <br/>
           <br/>
