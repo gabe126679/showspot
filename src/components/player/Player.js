@@ -6,7 +6,7 @@ import { compose } from 'redux';
 import Controls from './Controls';
 
 
-function Player(props) {
+const Player = (props) => {
 
     const { auth, users } = props;
 
@@ -14,12 +14,18 @@ function Player(props) {
 
     const audioEl = useRef(null);
     const [isPlaying, setIsPlaying] = useState(false);
+    const [opener, setOpener] = useState(0);
 
     const handleSong = (e) => {
         e.preventDefault();
         const close = document.querySelector(".playlist-container");
-        close.style.display = "flex";
-        console.log(close);
+        if (e.target.id === true) {
+            close.style.display = "none";
+        } else if (e.target.id === false) {
+            close.style.display = "flex";
+
+        }
+
         users.map((user) => {
             if (user.firstName + " " + user.lastName === props.songs[props.currentSongIndex].artist) {
                 
@@ -30,6 +36,20 @@ function Player(props) {
                 })
             }
         })
+        
+    }
+
+    const handleOpener = (e) => {
+        e.preventDefault();
+        const close = document.querySelector(".playlist-container");
+        if (close.style.display === "flex") {
+            close.style.display = "none";
+            setOpener(0)
+        }
+        else if (e.target.id === "0") {
+            close.style.display = "flex";
+            setOpener(1)
+        } 
     }
 
     const handleOpen = (e) => {
@@ -85,12 +105,9 @@ function Player(props) {
     return (
         <div className="c-player">
             <audio src={props.songs[props.currentSongIndex].src} ref={audioEl}></audio>
-            {/* <h4>Playing now</h4> */}
-
             <Controls isPlaying={isPlaying} setIsPlaying={setIsPlaying} SkipSong={SkipSong} />
             <div className="c-test">
-                <button className="playerButton btn btn-primary" id={props.songs[props.currentSongIndex]} onClick={handleSong}>{props.songs[props.currentSongIndex].title}</button> 
-                
+                <button className="playerButton btn btn-primary" id={opener} onClick={handleOpener}>{props.songs[props.currentSongIndex].title}</button> 
                 <button className="playerButton btn btn-primary" onClick={handleArtist}>{props.songs[props.currentSongIndex].artist}</button>
             </div>
 
@@ -103,14 +120,14 @@ function Player(props) {
 
                             <p className="playlist-banner text-center">playlist:</p>
                             <p className="text-center">"Purchased Songs"</p>     
-                            <a href="#">playlists</a>                     
+                            <Link to="/playlists">playlists</Link>                     
                             <br/>  
                             <table>
                                 <tbody>
                                     {user.purchasedSongs && user.purchasedSongs.map((purchasedSong) => {
                                         return (
-                                                <tr className="p-3 m-1 border">
-                                                    <td className="p-3 m-1 border bg-warning text-white">{purchasedSong.title}</td>
+                                                <tr className="p-3 m-1 border" >
+                                                    <td className="p-3 m-1 border bg-warning text-white" key={purchasedSong.song}>{purchasedSong.title}</td>
                                                 </tr> 
                                         )
                                     })}

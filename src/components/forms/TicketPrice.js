@@ -3,9 +3,11 @@ import { Form, Button } from 'react-bootstrap';
 import { firestoreConnect } from 'react-redux-firebase';
 import { connect } from 'react-redux';
 import { compose } from "redux";
-import { updateTicket } from '../../store/actions/showActions';
-import { updateVenue} from '../../store/actions/showActions';
+import { updateTicket, updateVenue, updateTime } from '../../store/actions/showActions';
 import { useNavigate, useParams } from "react-router-dom";
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css'
+import "./customDatePickerWidth.css";
 
 
 function Tickets(props) {
@@ -15,6 +17,9 @@ function Tickets(props) {
     const {id} = useParams();
 
     const [price, setPrice] = useState("0");
+    const [startDate, setStartDate] = useState(null);
+    const [endDate, setEndDate] = useState(null);
+
 
     const navigate = useNavigate();
 
@@ -39,6 +44,7 @@ function Tickets(props) {
             if (e.target.id === show.id && auth.uid === show.venueId) {
                 props.updateVenue(show, true)
                 props.updateTicket(decisionObject)
+                props.updateTime(show, startDate, endDate)
             }
         })
         
@@ -71,6 +77,49 @@ function Tickets(props) {
                     if (show.id === id) {
                         return (
                             <Form onSubmit={handleSubmit} id={show.id}>
+                                <br/>
+                                <h1 className="text-center">Start Date</h1>
+                                <br/>
+                                <p className="text-center">Choose Start Date & Time</p>
+                                
+                                <div className="customDatePickerWidth">
+                                    <DatePicker
+                                        selected={startDate}
+                                        onChange={(date) => {
+                                            setStartDate(date);
+                                            console.log(date);
+                                        }}
+                                        dateFormat="MM/dd/yyyy hh:mm a" 
+                                        
+                                        isClearable
+                                        scrollableMonthYearDropdown
+                                        showTimeSelect
+                                        timeIntervals={15}
+                                        
+                                    />
+                                </div>
+                                <br/>
+                                <h1 className="text-center">End Date</h1>
+                                <br/>
+                                <p className="text-center">Choose End Date & Time</p>
+                                
+                                <div className="customDatePickerWidth">
+                                    <DatePicker
+                                        selected={endDate}
+                                        onChange={(date) => {
+                                            setEndDate(date);
+                                            console.log(date);
+                                        }}
+                                        dateFormat="MM/dd/yyyy hh:mm a" 
+                                        
+                                        isClearable
+                                        scrollableMonthYearDropdown
+                                        showTimeSelect
+                                        timeIntervals={15}
+                                        
+                                    />
+                                </div>
+                                <br/>
                                 <h1 className="text-center">Ticket Price</h1>
                                 <br/>
                                 {show.artists.map((artist) => {
@@ -123,7 +172,8 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = dispatch => {
     return {
       updateTicket: (ticket) => dispatch(updateTicket(ticket)),
-      updateVenue: (venue, decision) => dispatch(updateVenue(venue, decision))
+      updateVenue: (venue, decision) => dispatch(updateVenue(venue, decision)),
+      updateTime: (show, startDate, endDate) => dispatch(updateTime(show, startDate, endDate))
     }
 }
 

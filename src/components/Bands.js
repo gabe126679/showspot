@@ -12,21 +12,47 @@ function Bands(props) {
     const navigate = useNavigate();
   
     const [count, setCount] = useState(0);
-    
+    const [active, setActive] = useState(true);
     const [status, setStatus] = useState("");
 
     const handleClick = () => {
         console.log(bands);
     }
 
-
+    const toggleStatus = (e) => {
+        e.preventDefault();
+        const activeButton = document.querySelector(".active");
+        const pendingButton = document.querySelector(".pending");
+        if (active === true) {
+          pendingButton.classList.add("btn-primary");
+          pendingButton.classList.remove("btn-warning");
+          activeButton.classList.add("btn-warning");
+          activeButton.classList.remove("btn-primary");
+          setActive(false);
+        } else {
+          pendingButton.classList.add("btn-warning");
+          pendingButton.classList.remove("btn-primary");
+          activeButton.classList.add("btn-primary");
+          activeButton.classList.remove("btn-warning");
+          setActive(true);
+        }
+      }
 
     const pushArtists = () => {
         navigate('/artists');
     }
 
+    const pushArtistSignup = () => {
+        navigate('/artistSignup');
+    }
+
     const pushBands = () => {
         navigate('/bandProfile');
+    }
+
+    const pushBand = (e) => {
+        e.preventDefault();
+        navigate('/band/' + e.target.id);
     }
   
     useEffect(() => {
@@ -43,9 +69,12 @@ function Bands(props) {
     if (bands) {
         return (
             <div>
-            <br/>
-            <br/>
-            <br/>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
 
             <div className="profile-border">
                     <br/>
@@ -63,15 +92,26 @@ function Bands(props) {
                                 )
                             } else if (user.id === auth.uid) {
                                 return (
-                                    <button className="btn btn-primary" onClick={pushBands}>
+                                    <button className="btn btn-primary" onClick={pushArtistSignup}>
                                         Become an Artist
                                     </button>
                                 )
                             }
                         })}
                         <br/>
+                        <div className="text-center">
+                        {(() => {
+                            if (active) {
+                            return <h4>ACTIVE BANDS</h4>
+                            } else {
+                            return <h4>PENDING BANDS</h4>
+                            }
+                        })()}       
                         <br/>
-                        <p className="text-center border bg-dark text-white">active bands:</p>
+                        <button className="active btn btn-primary" onClick={toggleStatus}>active</button>
+                        <button className="pending btn btn-warning" onClick={toggleStatus}>pending</button>
+                        
+                        </div>
                         
                     <br/>
                     <Table hover>
@@ -85,14 +125,14 @@ function Bands(props) {
                         
                     {bands && bands.map((band) => {
                         
-                        if (band.activated === true) {
+                        if (!band.activated && active === false) {
 
                                 return (
                                         
                                     <tbody >
                                         
                                     <tr>
-                                        <td>{band.bandName}</td>
+                                        <td id={band.id} onClick={pushBand}>{band.bandName}</td>
                                         
                                         <td>                      
                                         <Dropdown >
@@ -123,40 +163,14 @@ function Bands(props) {
                                     </tbody>
                                 
                                 )   
-                            } 
-                    })}
-                    </Table>
-            </div>
-            <br/>
-            <br/>
-            <br/>
-
-            <div className="profile-border">
-                    <br/>
-
-                        <br/>
-                        <br/>
-                        <p className="text-center border bg-dark text-white">pending bands:</p>
-                        
-                    <br/>
-                    <Table hover>
-                        <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Members</th>
-                            <th>Creator</th>
-                        </tr>
-                        </thead>
-                        
-                    {bands && bands.map((band) => {
-                        
-                        if (band.activated === false) {
+                            } else if (band.activated === true && active === true) {
+                                
                                 return (
                                         
                                     <tbody >
                                         
                                     <tr>
-                                        <td>{band.bandName}</td>
+                                        <td id={band.id} onClick={pushBand}>{band.bandName}</td>
                                         
                                         <td>                      
                                         <Dropdown >
@@ -186,11 +200,17 @@ function Bands(props) {
                                         
                                     </tbody>
                                 
-                                )   
-                            } 
+                                ) 
+                            }
                     })}
                     </Table>
             </div>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
             </div>
         )
     } else {

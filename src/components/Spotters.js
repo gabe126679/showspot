@@ -10,9 +10,11 @@ function Spotters(props) {
   const { auth, shows, users } = props;
 
   const [buttonStyle, setButtonStyle] = useState("")
-  
+  const [active, setActive] = useState(true);
+
   const [checkedBacklines, setCheckedBacklines] = useState([])
   const newArray = [];
+  const [voted, setVoted] = useState(false);
 
 
   const navigate = useNavigate();
@@ -42,10 +44,39 @@ function Spotters(props) {
     e.preventDefault();
     navigate('/spotterProfile');
   }
+
+  const pushArtistProfile = (e) => {
+    e.preventDefault();
+    navigate('/artistProfile');
+  }
+
+  const pushArtistSignup = (e) => {
+    e.preventDefault();
+    navigate('/artistSignup');
+  }
   
   const handleView = (e) => {
     e.preventDefault();
     navigate('/tickets/' + e.target.id);
+  }
+
+  const toggleStatus = (e) => {
+    e.preventDefault();
+    const activeButton = document.querySelector(".active");
+    const pendingButton = document.querySelector(".pending");
+    if (active === true) {
+      pendingButton.classList.add("btn-primary");
+      pendingButton.classList.remove("btn-warning");
+      activeButton.classList.add("btn-warning");
+      activeButton.classList.remove("btn-primary");
+      setActive(false);
+    } else {
+      pendingButton.classList.add("btn-warning");
+      pendingButton.classList.remove("btn-primary");
+      activeButton.classList.add("btn-primary");
+      activeButton.classList.remove("btn-warning");
+      setActive(true);
+    }
   }
 
   useEffect(() => {
@@ -59,11 +90,27 @@ function Spotters(props) {
         }
       })
     }
+    if (shows) {
+      shows.map((show) => {
+        if (show.backlines) {
+          show.backlines.map((backline) => {
+            if (backline.artist === auth.uid) {
+              checkedBacklines.push(show.id)
+            }
+          })
+        }
+      })
+    }
+    console.log(checkedBacklines);
   });
 
   if (shows) {
     return (
       <div>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
         <br/>
         <br/>
 
@@ -73,13 +120,36 @@ function Spotters(props) {
         <br/>
         <div>
             <button className="btn btn-primary" id={auth.uid} onClick={pushProfile}>
-                My Profile
+                Spotter Profile
             </button>
-
+            {users && users.map((user) => {
+                            
+              if (user.id === auth.uid && user.isArtist) {
+                  return <button className="btn btn-warning float-end" onClick={pushArtistProfile}>
+                              Artist Profile
+                          </button>
+              } else if (user.id === auth.uid) {
+                  return <button className="btn btn-warning float-end" onClick={pushArtistSignup}>
+                          Become an Artist
+                      </button>
+              }
+            })}
         </div>
-        <br/>
+        <br/>   
+        <div className="text-center">
+          {(() => {
+            if (active) {
+              return <h4>ACTIVE SHOWS</h4>
+            } else {
+              return <h4>PENDING SHOWS</h4>
+            }
+          })()}       
+          <br/>
+          <button className="active btn btn-primary" onClick={toggleStatus}>active</button>
+          <button className="pending btn btn-warning" onClick={toggleStatus}>pending</button>
+          
+        </div>
                 <br/>
-                  <p className="text-center text-white bg-warning rounded">Active Shows:</p>
                 <br/>
                 <Table bordered hover>
                   <thead>
@@ -87,10 +157,12 @@ function Spotters(props) {
                       <th>Artists</th>
                       <th>Details</th>
                       <th>Venue</th>
+                      <th>Votes</th>
+                      <th>Backlines</th>
                     </tr>
                   </thead>
                 {shows && shows.map((show) => {
-                  if (show.activated) {
+                  if (show.activated && active === true) {
                     return (
                       <tbody>
                         <tr>
@@ -122,11 +194,15 @@ function Spotters(props) {
                           <td>
                             <div className="backlines">
                               <div className="col-4">{show.voteCount}</div>
-                              <button className="btn btn-primary" onClick={() => {   
-                                props.updateVote(auth.uid, show.id);  
-                              }} id={show.id}>^</button>
+                              {(() => {
+                                if (!show.votedOn.includes(auth.uid)) {
+                                  <button className="btn btn-primary" onClick={() => {   
+                                    props.updateVote(auth.uid, show.id);  
+                                  }} id={show.id}>^</button>
+                                }
+                              })()}
                             </div>
-                            </td>
+                          </td>
                           <td className="backlines">
   
                                 <div>
@@ -139,14 +215,7 @@ function Spotters(props) {
                                   </Dropdown.Toggle>
                                   <Dropdown.Menu  >
                                   {show.backlines && show.backlines.map((backline) => {
-                                    const newBackline = {
-                                      artist: auth.uid,
-                                      show: show
-                                    }
-                                    if (backline.artist === auth.uid && !checkedBacklines.includes(newBackline)) {
-                                      
-                                      checkedBacklines.push(newBackline);
-                                    }
+
                                     return (
                                       <div className="container w-100 p-2 m-2">
                                         <Dropdown.Item href="#/action-1">  
@@ -171,44 +240,17 @@ function Spotters(props) {
     
                                 </div>
                                 {(() => {
-                                  checkedBacklines.map((checkedBackline) => {
-                                    if (checkedBackline.artist === auth.uid && checkedBackline.show === show) {
-                                      newArray.push(show.id);
-                                    } 
-                                  })
-                                  if (newArray.includes(show.id)) {
-                                    console.log(show);
-                                    
-                                  } else if (!newArray.includes(show.id)) {
-                                    return <button className="btn btn-primary" onClick={handleClick} id={show.id}>+</button>
-                                  }
-                                })()}   
+                                      if (!checkedBacklines.includes(show.id)) {
+                                        return <button className="btn btn-primary" onClick={handleClick} id={show.id}>+</button>
+                                      }
+                                })()}
                                
                           </td>
                         </tr>
                       </tbody>
                     ) 
-                  }
-
-                })}
-                </Table>
-                <br/>
-                  <p className="text-center text-white bg-warning rounded">Pending Shows:</p>
-                <br/>
-
-                <Table bordered hover>
-
-                  <thead>
-                    <tr>
-                      <th>Artists</th>
-                      <th>Details</th>
-                      <th>Venue</th>
-                      <th>Backlines</th>
-                    </tr>
-                  </thead>
-                  {shows && shows.map((show) => {
-                  if (!show.activated) {
-                  return (
+                  } else if (!show.activated && active === false) {
+                    return (
                       <tbody>
                         <tr>
                           
@@ -221,22 +263,46 @@ function Spotters(props) {
   
                               <Dropdown.Menu>
                                 {show.artists.map((artist) => {
-                                  return (
-                                    <div>
-                                      <Dropdown.Item href="#/action-1">                             
-                                          <Link to={"/artist/" + artist.id}>
-                                            {artist.firstName} {artist.lastName}
-                                          </Link>
-                                      </Dropdown.Item>
-                                    </div>
-                                  )
+                                  if (artist.type === "artist") {
+                                    return (
+                                      <div>
+                                        <Dropdown.Item href="#/action-1">                             
+                                            <Link to={"/artist/" + artist.id}>
+                                              {artist.firstName} {artist.lastName}
+                                            </Link>
+                                        </Dropdown.Item>
+                                      </div>
+                                    )
+                                  } else if (artist.type === "band") {
+                                    return (
+                                      <div>
+                                        <Dropdown.Item href="#/action-1">                             
+                                            <Link to={"/artist/" + artist.id}>
+                                              {artist.bandName}
+                                            </Link>
+                                        </Dropdown.Item>
+                                      </div>
+                                    )
+                                  }
+
                                 })}
                               </Dropdown.Menu>
                             </Dropdown>
                           </td>
                           <td><button className="btn btn-primary" id={show.id} onClick={handleView}>View</button></td>
                           <td>{show.venueName}</td>
-
+                          <td>
+                            <div className="backlines">
+                              <div className="col-4">{show.voteCount}</div>
+                              {(() => {
+                                if (!show.votedOn.includes(auth.uid)) {
+                                  <button className="btn btn-primary" onClick={() => {   
+                                    props.updateVote(auth.uid, show.id);  
+                                  }} id={show.id}>^</button>
+                                }
+                              })()}
+                            </div>
+                          </td>
                           <td className="backlines">
   
                                 <div>
@@ -249,15 +315,6 @@ function Spotters(props) {
                                   </Dropdown.Toggle>
                                   <Dropdown.Menu  >
                                   {show.backlines && show.backlines.map((backline) => {
-                                    const newBackline = {
-                                      artist: auth.uid,
-                                      show: show
-                                    }
-                                    if (backline.artist === auth.uid && !checkedBacklines.includes(newBackline)) {
-                                      
-                                      checkedBacklines.push(newBackline);
-                                    }
-                                    
                                     return (
                                       <div className="container w-100 p-2 m-2">
                                         <Dropdown.Item href="#/action-1">  
@@ -282,31 +339,28 @@ function Spotters(props) {
     
                                 </div>
                                 {(() => {
-                                  checkedBacklines.map((checkedBackline) => {
-                                    if (checkedBackline.artist === auth.uid && checkedBackline.show === show) {
-                                      newArray.push(show.id);
-                                    } 
-                                  })
-                                  if (newArray.includes(show.id)) {
-                                    console.log(show);
-                                    
-                                  } else if (!newArray.includes(show.id)) {
-  
-                                    return <button className="btn btn-primary" onClick={handleClick} id={show.id}>+</button>
-                                  }
-                                })()}   
+                                      if (!checkedBacklines.includes(show.id)) {
+                                        return <button className="btn btn-primary" onClick={handleClick} id={show.id}>+</button>
+                                      }
+                                })()}
+                                   
                                
                           </td>
 
                         </tr>
                       </tbody>
-                  ) 
-                }
+                    )
+                  }
 
-              })}
+                })}
                 </Table>
-
         </div>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
       </div>
     )
   }

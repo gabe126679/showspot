@@ -36,6 +36,20 @@ export const signUp = (newUser) => {
 
           return firestore.collection('users').doc(resp.user.uid).set({
             userName: newUser.userName,
+            purchasedSongs: [
+              {
+                artist: "Tom Petty",
+                artistId: "EaW4JkM7I1foFyPisILTvDzFpsk1",
+                title: "Free Fallin",
+                song: "https://firebasestorage.googleapis.com/v0/b/dream-project-1040a.appspot.com/o/songs%2FTom_Petty_-_Free_Fallin_(getmp3.pro).mp3?alt=media&token=c6e362f4-2869-4705-88ec-e3e79bec61d8"
+              },
+              {
+                artist: "Tom Petty",
+                artistId: "EaW4JkM7I1foFyPisILTvDzFpsk1",
+                title: "You Don't Know How It Feels",
+                song: "https://firebasestorage.googleapis.com/v0/b/dream-project-1040a.appspot.com/o/songs%2FTom_Petty_-_You_Dont_Know_How_It_F_(getmp3.pro).mp3?alt=media&token=9567c526-87e7-4072-9609-9a5372a4d14d"
+              }
+            ]
           });
       }).then(() => {
         dispatch({ type: 'SIGNUP_SUCCESS' });
@@ -118,16 +132,29 @@ export const addSong = (song) => {
   }
 }
 
-export const updateCart = (item, price) => {
+export const addBandSong = (song) => {
+  return async (dispatch, getState, { getFirestore }) => {
+      const firestore = getFirestore();
+      
+      firestore.collection('bands').doc(song.id).update({
+          songs: firestore.FieldValue.arrayUnion(song)
+      })
+      .then(() => {
+          dispatch({ type: 'ADD_BAND_SONG_SUCCESS' });
+      }).catch((err) => {
+          dispatch({ type: 'ADD_BAND_SONG_ERROR', err });
+      });
+
+  }
+}
+
+export const updateCart = (item) => {
   return async (dispatch, getState, { getFirestore }) => {
       const firestore = getFirestore();
       const cartHolder = getState().firebase.auth.uid;
 
       firestore.collection('users').doc(cartHolder).update({
-        cartItems: firestore.FieldValue.arrayRemove({
-          id: item,
-          price: price
-        })
+        cartItems: firestore.FieldValue.arrayRemove(item)
       }).then(() => {
           dispatch({ type: 'DELETE_CART_SUCCESS' });
       }).catch((err) => {
@@ -148,6 +175,70 @@ export const updateCartSong = (song) => {
           dispatch({ type: 'DELETE_CART_SONG_SUCCESS' });
       }).catch((err) => {
           dispatch({ type: 'DELETE_CART_SONG_ERROR', err });
+      });
+
+  }
+}
+
+export const updateRating = (raters, artistRating, artistRatings, artist) => {
+  return async (dispatch, getState, { getFirestore }) => {
+      const firestore = getFirestore();
+
+      firestore.collection('users').doc(artist).update({
+        averageRating: artistRating,
+        ratings: artistRatings,
+        raters: raters 
+      }).then(() => {
+          dispatch({ type: 'UPDATE_RATING_SUCCESS' });
+      }).catch((err) => {
+          dispatch({ type: 'UPDATE_RATING_ERROR', err });
+      });
+
+  }
+}
+
+export const updateBandRating = (raters, bandRating, bandRatings, band) => {
+  return async (dispatch, getState, { getFirestore }) => {
+      const firestore = getFirestore();
+
+      firestore.collection('bands').doc(band).update({
+        averageRating: bandRating,
+        ratings: bandRatings,
+        raters: raters 
+      }).then(() => {
+          dispatch({ type: 'UPDATE_BAND_RATING_SUCCESS' });
+      }).catch((err) => {
+          dispatch({ type: 'UPDATE_BAND_RATING_ERROR', err });
+      });
+
+  }
+}
+
+export const updateBandSongVote = (band, songs) => {
+  return async (dispatch, getState, { getFirestore }) => {
+      const firestore = getFirestore();
+
+      firestore.collection('bands').doc(band).update({
+        songs: songs
+      }).then(() => {
+          dispatch({ type: 'UPDATE_BAND_SONG_VOTE_SUCCESS' });
+      }).catch((err) => {
+          dispatch({ type: 'UPDATE_BAND_SONG_VOTE_ERROR', err });
+      });
+
+  }
+}
+
+export const activateBandSong = (band, decision) => {
+  return async (dispatch, getState, { getFirestore }) => {
+      const firestore = getFirestore();
+
+      firestore.collection('bands').doc(band).update({
+        activated: decision
+      }).then(() => {
+          dispatch({ type: 'ACTIVATE_BAND_SONG_SUCCESS' });
+      }).catch((err) => {
+          dispatch({ type: 'ACTIVATE_BAND_SONG_ERROR', err });
       });
 
   }

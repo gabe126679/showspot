@@ -7,14 +7,13 @@ import { updateTicket } from '../store/actions/showActions';
 import { addToCart } from '../store/actions/authActions'
 import { useNavigate, useParams, Link } from "react-router-dom";
 import { createBackline, updateVote, updateBackline } from '../store/actions/showActions';
+import { format } from 'date-fns'
 
 function Tickets(props) {
 
     const { auth, shows, users } = props;
 
     const { id } = useParams();
-
-    const [checkedBacklines, setCheckedBacklines] = useState([])
 
     const navigate = useNavigate();
 
@@ -67,54 +66,60 @@ function Tickets(props) {
     const handleCart = async (e) => {
         e.preventDefault(); 
         props.addToCart(id);
+        navigate('/spotters');
       }
 
     useEffect(() => {
         if (!auth.uid) {
             navigate("/spotterLogin");
         }
-        if (shows) {
-            shows.map((show) => {
-                if (show.id === id) {
-                    show.backlines.map((backline) => {
-                        if (backline.artist === auth.uid && !checkedBacklines.includes(auth.uid)) {
-                          checkedBacklines.push(auth.uid);
-                          
-                        }
-                      })
-                }
-            })
-            
-          }
+
 
       });
 
     return (
         <div>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
-            <div className="login-container container border">
-            <button onClick={handleClick}> hello </button>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+            <div className="login-container container border bg-warning text-primary">
                 <br/>
                 <br/>
                 {shows && shows.map((show) => {
                     if (show.id === id) {
                         const artistArray = [...show.artists];
+                        
                         return (
                             <Container fluid>
+                                {(() => {
+                                    if (show.startTime) {
+                                        return <h1 className="text-center ">{show.startTime.toDate().toDateString()}</h1>
+                                    }
+                                })()}
+                                <p className="text-center ">@ : {show.venueName}</p>
                                 <br/>
                                 {artistArray.sort((a, b) => a.number - b.number).map((artist) => {
-                                    return (
-                                        <Row className="mb-3 text-center"  >
-                                            artist {artist.number} : {artist.firstName} {artist.lastName}
-                                        </Row>
-                                    )
+                                    if (artist.type === "artist" || !artist.type) {
+                                        return (
+                                            <Row className="mb-3 text-center"  >
+                                                artist {artist.number} : {artist.firstName} {artist.lastName}
+                                            </Row>
+                                        )
+                                    } else if (artist.type === "band" || !artist.type) {
+                                        return (
+                                            <Row className="mb-3 text-center"  >
+                                                artist {artist.number} : {artist.bandName}
+                                            </Row>
+                                        )
+                                    }
+
                                 })}
                                 <Row className="mb-3 text-center"  >
                                     @ : {show.venueName}
+                                    
                                 </Row>  
                                 <Row className="float-end">
                                     {(() => {
@@ -150,29 +155,31 @@ function Tickets(props) {
                                         return (
                                             <tbody>
 
-                                                            <tr>
-                                                                <td>
-                                                                    {backline.firstName + " " + backline.lastName}
-                                                                    
-                                                                </td>
-                                                                <td>
-            
-                                                                    {backline.voteCount}
-                                                                </td>
-                                                                <td>
-            
-                                                            {(() => {
-                                                                    if (backline.artist !== auth.uid && !backline.votedOn.includes(auth.uid)) {
-                                                                        return (
-            
-                                                                        <button className={"btn btn-primary"} onClick={() => {
-                                                                            handleBacklineVote(show, backline.artist)
-                                                                        }}>+</button>      
-                                                                        )
-                                                                }
-                                                            })()}
-                                                                </td>
-                                                            </tr>
+                                                <tr>
+                                                    <td>
+                                                        {backline.firstName + " " + backline.lastName}
+                                                        
+                                                    </td>
+                                                    <td>
+
+                                                        {backline.voteCount}
+                                                    </td>
+                                                    <td>
+
+                                                {(() => {
+                                                        if (backline.artist !== auth.uid && !backline.votedOn.includes(auth.uid)) {
+                                                            return (
+
+                                                            <button className={"btn btn-primary"} onClick={() => {
+                                                                handleBacklineVote(show, backline.artist)
+                                                            }}>+</button>      
+                                                            )
+                                                        } else {
+                                                            return <div> backline voted</div>
+                                                        }
+                                                })()}
+                                                    </td>
+                                                </tr>
 
                                             </tbody>
                                         )
@@ -183,9 +190,30 @@ function Tickets(props) {
                                     {show.ticketPrice}
                                 </Row>
                                 <div className="col text-center">
-                                <Button className="align-center" onClick={handleCart} >
-                                    Add to Cart
-                                </Button>
+                                {users && users.map((user) => {
+                                    if (user.id === auth.uid && user.cartItems && user.cartItems.includes(auth.uid)) {
+                                        return (
+                                            <span className="align-center" onClick={handleCart} >
+                                                Item In Cart
+                                            </span>
+                                        )
+                                    }
+                                    else if (user.id === auth.uid && show.ticketBuyers && show.ticketBuyers.includes(auth.uid)) {
+                                        return (
+                                            <span className="align-center" onClick={handleCart} >
+                                                Ticket Purchased
+                                            </span>
+                                        )
+                                    }                                    
+                                    else if (user.id === auth.uid && show.ticketPrice) {
+                                        return (
+                                            <Button className="align-center" onClick={handleCart} >
+                                                Add to Cart
+                                            </Button>
+                                        )
+                                    }
+                                })}
+
 
                                 </div>
                             </Container>
@@ -218,6 +246,7 @@ const mapDispatchToProps = dispatch => {
       createBackline: (backline) => dispatch(createBackline(backline)),
       updateBackline: (backline, oldBackline) => dispatch(updateBackline(backline, oldBackline)),
       updateTicket: (ticket) => dispatch(updateTicket(ticket)),
+      updateVote: (voter, show) => dispatch(updateVote(voter, show)),
       addToCart: (item) => dispatch(addToCart(item))
     }
 }

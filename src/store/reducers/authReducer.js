@@ -53,6 +53,54 @@ const initState = {
           ...state,
           authError: 'cart add failed'
         }
+      case 'UPDATE_RATING_SUCCESS':
+        console.log('update rating success');
+        return {
+          ...state,
+          authError: null
+        }
+      case 'UPDATE_RATING_ERROR':
+        console.log('update rating error');
+        return {
+          ...state,
+          authError: 'update rating'
+        }
+      case 'UPDATE_BAND_RATING_SUCCESS':
+        console.log('update band rating success');
+        return {
+          ...state,
+          authError: null
+        }
+      case 'UPDATE_BAND_RATING_ERROR':
+        console.log('update band rating error');
+        return {
+          ...state,
+          authError: 'update rating'
+        }
+      case 'UPDATE_BAND_SONG_VOTE_SUCCESS':
+        console.log('update band song vote success');
+        return {
+          ...state,
+          authError: null
+        }
+      case 'UPDATE_BAND_SONG_VOTE_ERROR':
+        console.log('update band song vote error');
+        return {
+          ...state,
+          authError: 'update rating'
+        }
+      case 'ACTIVATE_BAND_SONG_SUCCESS':
+        console.log('activate band song success');
+        return {
+          ...state,
+          authError: null
+        }
+      case 'ACTIVATE_BAND_SONG_ERROR':
+        console.log('activate band song error');
+        return {
+          ...state,
+          authError: 'update rating'
+        }
       case 'ARTIST_CREAT_SUCCESS':
         console.log('artist create success');
         return {
@@ -85,6 +133,19 @@ const initState = {
         }
       case 'ADD_SONG_ERROR':
         console.log('add song error');
+        return {
+          ...state,
+          authError: 'cart add failed'
+        }
+
+      case 'ADD_BAND_SONG_SUCCESS':
+        console.log('add band song success');
+        return {
+          ...state,
+          authError: null
+        }
+      case 'ADD_BAND_SONG_ERROR':
+        console.log('add band song error');
         return {
           ...state,
           authError: 'cart add failed'

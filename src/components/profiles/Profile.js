@@ -33,10 +33,12 @@ function Profile(props) {
 
   return (
       <div>
-      <br/>
-      <br/>
-      <br/>
-      <br/>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
       {users && users.map((user) => {
           if (user.id === auth.uid) {
             return (

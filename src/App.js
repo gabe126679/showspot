@@ -19,12 +19,14 @@ import Venues from "./components/Venues";
 import VenueSignup from "./components/forms/VenueSignup";
 import PublicVenue from "./components/profiles/PublicVenue";
 import BandProfile from "./components/profiles/BandProfile";
+import PublicBand from "./components/profiles/PublicBand";
+import BandInvites from "./components/BandInvites";
 import Bands from "./components/Bands";
 import Invites from "./components/Invites";
 import Tickets from "./components/Tickets";
 import TicketPrice from "./components/forms/TicketPrice";
 import Cart from "./components/cart/Cart";
-import VenueInvites from "./components/VenueInvites";
+import Playlists from "./components/Playlists"
 
 import "./custom.scss"
 
@@ -56,7 +58,9 @@ function App() {
             <Route exact path='/tickets/:id' element={<Tickets />} />
             <Route exact path='/ticketPrice/:id' element={<TicketPrice />} />
             <Route exact path='/cart' element={<Cart />} />
-            <Route exact path='/venueInvites' element={<VenueInvites />} />
+            <Route exact path='/playlists' element={<Playlists />} />
+            <Route exact path='/bandInvites/:id' element={<BandInvites />} />
+            <Route exact path='/band/:id' element={<PublicBand />} />
           </Routes>
         <Footer />
     </BrowserRouter>

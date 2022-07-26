@@ -1,8 +1,11 @@
-$primary: #F73D93;
+$primary: #40f4e2;
 $secondary: #7F8487;
 $success: #C4DDFF;
-$warning: #16003B;
+$warning: #0f0520;
 $info: #FEE2C5;
+
+
+@import 'react-big-calendar/lib/sass/styles';
 
 
 body {
@@ -13,7 +16,6 @@ body {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     font-size: 18px;
-
 }
 
 code {
@@ -21,25 +23,142 @@ code {
         monospace;
 }
 
-.fool  {
+Table, thead, tbody, tbody {
+    color: $primary;
+    padding: 12px;
+}
+tr, td {
+    background-color: $warning;
+    text-align: center;
+}
+
+tr:hover, td:hover {
+    background-color: $primary;
+}
+td:hover {
+    background-color: $info;
+}
+thead:hover {
+    color: $warning;
+}
+button:hover {
+    background-color: red;
+}
+
+
+
+
+.ratings-container {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: -1px -1px 2px rgba(255,255,255,0.25),
+    inset 2px 2px 5px rgba(255,255,255,0.25),
+    8px 30px 30px rgba(0,0,0,0.4),
+    inset -2px -2px 5px rgba(0,0,0,0.3);
+}
+.ratings-container h2 {
+    margin-bottom: 10px;
+    font-weight: 500;
+}
+.ratings-container .skills {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 10px 0;
+    padding-right: 10px;
+    box-shadow: -1px -1px 2px rgba(255,255,255,0.25),
+    inset 2px 2px 5px rgba(255,255,255,0.25),
+    8px 30px 30px rgba(0,0,0,0.4),
+    inset -2px -2px 5px rgba(0,0,0,0.3);
+}
+
+.ratings-container .skills h3 {
+    min-width: 180px;
+    margin-left: 25px;
+    color: #000;
+    font-size: 20px;
+    font-weight: 400;
+    letter-spacing: 2px;
+}
+.ratings-container .skills .rating {
+    position: relative;
+    display: flex;
+    margin: 10px 0;
+    flex-direction: row-reverse;
+}
+.ratings-container .skills .rating input {
+    position: relative;
+    width: 20px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    -webkit-appearance: none;
+    appearance: none;
+}
+.ratings-container .skills .rating input::before {
+    content: '\f005';
+    position: absolute;
+    font-family: fontAwesome;
+    font-size: 34px;
+    position: absolute;
+    left: 4px;
+    color: #030b0f;
+    transition: 0.5s;
+}
+.ratings-container .skills .rating input:nth-child(2n + 1)::before {
+    right: 4px;
+    left: initial;
+}
+.ratings-container .skills .rating input:hover ~ input::before,
+.ratings-container .skills .rating input:hover::before,
+.ratings-container .skills .rating input:checked ~ input::before,
+.ratings-container .skills .rating input:checked::before {
+    color: $primary;
+}
+.artist-search-form {
+    display: flex;
+    flex-direction: row;
+
 
 }
+.artist-search-field {
+    width: 400px;
+    position: relative;
+    left: 25px;
+}
+.artist-search-form Button {
+    position: absolute;
+    top: 328px;
+    right: 90px;
+    -ms-transform: translateY(-50%);
+    transform: translateY(-50%);
+}
+
+
+
 .testBtn {
     position: absolute;
     top: 8em;
     left: 5em;
-    z-index: 20;
+    z-index: 0;
 }
 .home-search {
     position: absolute;
     top: 5.65rem;
     width: 100%;
-    z-index: 8;
+    z-index: 2;
 }
 .map-search {
     position: relative;
     width: 100%;
-    z-index: 8;
+    z-index: 0;
 }
 
 .home-search input {
@@ -160,10 +279,19 @@ code {
     position: relative;
     font-size: 14px;
     bottom: 20px;
+    left: 45%;
     font-weight: bold;
-    border-radius: 35%;
     background: linear-gradient(to left, $info 25%, $primary 75%);
-    line-height: 40px;
+    line-height: 43px;
+    width: 65px;
+    z-index: 10;
+}
+.promote-link {
+    background: linear-gradient(to left, white 25%, $info 75%);
+    text-decoration: none;
+    position: relative;
+    right: 1.9%;
+    color: $warning;
 }
 
 .promote-link {
@@ -283,6 +411,12 @@ code {
     border-radius: 10px;
     overflow-x: hidden;
     padding: 5px;
+    background-color: $secondary;
+    color: $info;
+    box-shadow: -1px -1px 2px rgba(255,255,255,0.25),
+    inset 2px 2px 5px rgba(255,255,255,0.25),
+    8px 30px 30px rgba(0,0,0,0.4),
+    inset -2px -2px 5px rgba(0,0,0,0.3);
 }
 .dropdown-basic {
     max-width: 100px;
@@ -297,16 +431,18 @@ code {
 }
 //playlist
 .playlist-container {
-    background-color: $info;
+    
+    border: 5px solid $warning;
     position: relative;
-    left: 292px;
-    bottom: 470px;
+    left: 271px;
+    bottom: 469px;
     width: 300px;
     height: 400px;
     z-index: -1;
     display: none;
     flex-direction: row;
     margin: auto;
+    background: linear-gradient(to left, $info 89%, $primary 11%);
 }
 .playlist-section {
     display: flex;
@@ -331,13 +467,14 @@ code {
     position: relative;
     right: 0.2%;
     width: 80px;
+    bottom: 0.01%;
 }
 .playlist-button {
     position: relative;
-    background-color: $primary;
+    background-color: $info;
     border: none; 
-    width: 50px;
-    left: 0.2%;  
+    width: 50.6px;
+    height: 27px;
 }
 
 

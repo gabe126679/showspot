@@ -1,6 +1,6 @@
 import { CardElement, useElements, useStripe } from "@stripe/react-stripe-js"
 import axios from "axios"
-import React, { useState, useEffect, useTransition } from 'react'
+import React, { useState, useEffect } from 'react'
 import { connect } from "react-redux";
 import { firestoreConnect } from "react-redux-firebase";
 import { compose } from "redux";
@@ -54,46 +54,71 @@ const Items = (props) => {
         if (users) {
             users.map((user) => {
                 if (user.id === auth.uid) {
-                    user.cartItems.map((item) => {
-                        if (shows) {     
-                            
-                            shows.map((show) => {
-                                if (item === show.id && show.ticketPrice) {
-                                    const newPrice = show.ticketPrice.split("$").join("").split(".00").join("");
-                                    const newTotal = parseInt(newPrice)
-                                    counter += newTotal;
-                                    setTotal(counter);
-                                    const newArtists = [];
-                                    if (show.artists) {
-                                        show.artists.map((artist) => {
-                                            const newArtist = {
-                                                firstName: artist.firstName,
-                                                lastName: artist.lastName
-                                            }
-                                            newArtists.push(newArtist)
-                                        })
+                    if (user.cartItems) {
+                        user.cartItems.map((item) => {
+                            if (shows) {     
+                                shows.map((show) => {
+                                    if (item === show.id && show.ticketPrice) {
+                                        const newPrice = show.ticketPrice.split("$").join("").split(".00").join("");
+                                        const newTotal = parseInt(newPrice)
+                                        counter += newTotal;
+                                        setTotal(counter);
+                                        const newArtists = [];
+                                        if (show.artists) {
+                                            show.artists.map((artist) => {
+                                                const newArtist = {
+                                                    firstName: artist.firstName,
+                                                    lastName: artist.lastName
+                                                }
+                                                newArtists.push(newArtist)
+                                            })
+                                        }
+                                        if (show.ticketBuyers) {
+                                            const newShow = 
+                                            {
+                                                purchaseType: "show",
+                                                id: show.id,
+                                                artists: newArtists, 
+                                                venue: show.venueName,
+                                                createdAt: show.createdAt,
+                                                price: show.ticketPrice,
+                                                count: 1,
+                                                buyer: auth.uid,
+                                                buyers: [...show.ticketBuyers, auth.uid],
+                                                buyerCreditChange: -newTotal
+                                            } 
+                                            
+                                            if (!newItems.includes(newShow) && items.length <= newItems.length) {
+                                                newItems.push(newShow);
+                                                setItems(items => ([...items, newShow]));
+                                            }  
+                                        } else if (!show.ticketBuyers) {
+                                            const newShow = 
+                                            {
+                                                purchaseType: "show",
+                                                id: show.id,
+                                                artists: newArtists, 
+                                                venue: show.venueName,
+                                                createdAt: show.createdAt,
+                                                price: show.ticketPrice,
+                                                count: 1,
+                                                buyer: auth.uid,
+                                                buyers: [auth.uid],
+                                                buyerCreditChange: -newTotal
+                                            } 
+                                            
+                                            if (!newItems.includes(newShow) && items.length <= newItems.length) {
+                                                newItems.push(newShow);
+                                                setItems(items => ([...items, newShow]));
+                                            }  
+                                        }
+                             
                                     }
-                                    const newShow = 
-                                    {
-                                        purchaseType: "show",
-                                        id: show.id,
-                                        artists: newArtists, 
-                                        venue: show.venueName,
-                                        createdAt: show.createdAt,
-                                        price: show.ticketPrice,
-                                        count: 1,
-                                        buyer: auth.uid,
-                                        buyerCreditChange: -newTotal
-                                    } 
-                                    // setItems(items => ([...items, newShow]));
-                                    if (!newItems.includes(newShow) && items.length <= newItems.length) {
-                                        newItems.push(newShow);
-                                        setItems(items => ([...items, newShow]));
-                                    }                           
-                                }
-                            })
-                        }
-                    })
+                                })
+                            }
+                        })
+                    }
+
                 }
             })
         }  
@@ -104,54 +129,62 @@ const Items = (props) => {
     useEffect(() => {  
         if (users) {
             users.map((user) => {
-                if (user.id === auth.uid) {      
-                    user.cartItems.map((item) => {
-                        if (user.songs) {
-                            user.songs.map((song) => {
-                                if (song.song === item) {
-                                    const newPrice = song.price.split("$").join("");
-                                    const newTotal = parseInt(newPrice)
-                                    songCounter += newTotal;
-                                    setSongTotal(songCounter);                    
-                                    if (song.buyerCount) {
-                                        const newSong = 
-                                        {
-                                            purchaseType: "song",
-                                            artistId: user.id,
-                                            artist: user.firstName + " " + user.lastName,
-                                            title: song.title, 
-                                            url: song.song,
-                                            price: song.price,
-                                            count: song.buyerCount + 1,
-                                            buyer: auth.uid,
-                                            buyerCreditChange: -newTotal
-                                        }          
-                                        if (!newSongs.includes(newSong.url) && songs.length <= newSongs.length) {
-                                            newSongs.push(newSong.url);
-                                            songs.push(newSong);
-                                        } 
-                                    } else if (!song.buyerCount) {
-                                        const newSong = 
-                                        {
-                                            purchaseType: "song",
-                                            artistId: user.id,
-                                            artist: user.firstName + " " + user.lastName,
-                                            title: song.title, 
-                                            url: song.song,
-                                            price: song.price,
-                                            count: 1,
-                                            buyer: auth.uid,
-                                            buyerCreditChange: -newTotal
-                                        }          
-                                        if (!newSongs.includes(newSong.url) && songs.length <= newSongs.length) {
-                                            newSongs.push(newSong.url);
-                                            songs.push(newSong);
-                                        }              
-                                    }
-                                }
-                            })  
-                        } 
-                    })
+                if (user.id === auth.uid) {   
+                    if (user.cartItems) {
+                        user.cartItems.map((item) => {
+                            users.map((newUser) => {
+                                if (newUser.songs) {
+                                    newUser.songs.map((song) => {
+                                        if (song.song === item) {
+                                            const newPrice = song.price.split("$").join("");
+                                            const newTotal = parseInt(newPrice)
+                                            songCounter += newTotal;
+                                            setSongTotal(songCounter);                    
+                                            if (song.buyerCount) {
+                                                const newSong = 
+                                                {
+                                                    purchaseType: "song",
+                                                    artistId: newUser.id,
+                                                    artist: newUser.firstName + " " + newUser.lastName,
+                                                    title: song.title, 
+                                                    url: song.song,
+                                                    price: song.price,
+                                                    revenue: song.revenue + newTotal,
+                                                    buyer: auth.uid,
+                                                    buyers: [...song.buyers, auth.uid],
+                                                    buyerCreditChange: -newTotal
+                                                }          
+                                                if (!newSongs.includes(newSong.url) && songs.length <= newSongs.length) {
+                                                    newSongs.push(newSong.url);
+                                                    songs.push(newSong);
+                                                } 
+                                            } else if (!song.buyerCount) {
+                                                const newSong = 
+                                                {
+                                                    purchaseType: "song",
+                                                    artistId: newUser.id,
+                                                    artist: newUser.firstName + " " + newUser.lastName,
+                                                    title: song.title, 
+                                                    url: song.song,
+                                                    price: song.price,
+                                                    revenue: song.revenue + newTotal,
+                                                    buyer: auth.uid,
+                                                    buyers: [auth.uid],
+                                                    buyerCreditChange: -newTotal
+                                                }          
+                                                if (!newSongs.includes(newSong.url) && songs.length <= newSongs.length) {
+                                                    newSongs.push(newSong.url);
+                                                    songs.push(newSong);
+                                                }              
+                                            }
+                                        }
+                                    })  
+                                } 
+                            })
+    
+                        })
+                    }   
+
                 }
             })
         }
@@ -207,12 +240,12 @@ const Items = (props) => {
 
         songs.map((song) => {
             props.createSongPurchase(song)
-            console.log(song);
+            
         })
 
         items.map((item) => {
             props.createShowPurchase(item)
-            console.log(item);
+           
         })
         
 
@@ -314,6 +347,11 @@ const Items = (props) => {
         {!success ? 
         <div className="container">
             <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
             <div className="center">
                 <div className="container border bg-light">
                     <div className="category-tag container center">
@@ -348,7 +386,7 @@ const Items = (props) => {
                             
                             <button className="btn btn-two" id={item.id} onClick={handleIncrease}>increase quantity</button>
                             <button className="btn btn-two" id={item.id} onClick={handleDecrease}>decrease quantity</button>
-                            <button className="btn btn-three" id={item.id} onClick={handleDelete}>X</button>
+                            <button className="btn-sm btn-three" id={item.id} onClick={handleDelete}>X</button>
                             <p>{item.count}</p>
                             <br/>
                             <br/>
@@ -431,7 +469,12 @@ const Items = (props) => {
                 </fieldset>
                 <button>Pay</button>
             </form>
-            
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
         </div>
         :
        <div>

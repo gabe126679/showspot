@@ -20,6 +20,12 @@ const showReducer = (state = initState, action) => {
       case 'CREATED_SONG_PURCHASE_ERROR': 
         console.log('created song purchase error');
         return state; 
+      case 'ARTIST_PURCHASE_SUCCESS': 
+        console.log('artist purchase');
+        return state;
+      case 'ARTIST_PURCHASE_ERROR': 
+        console.log('artist purchase error');
+        return state; 
       case 'CREATED_SHOW_PURCHASE_SUCCESS': 
         console.log('created show purchase');
         return state;
@@ -73,6 +79,12 @@ const showReducer = (state = initState, action) => {
         return state;
       case 'UPDATE_VOTE_ERROR': 
         console.log('updated vote error');
+        return state;
+      case 'UPDATE_TIME_SUCCESS': 
+        console.log('updated time success');
+        return state;
+      case 'UPDATE_TIME_ERROR': 
+        console.log('updated time error');
         return state;
       case 'UPDATE_MEMBER_SUCCESS': 
         console.log('updated MEMBER success');

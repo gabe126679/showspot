@@ -1,0 +1,16 @@
+.customDatePickerWidth input {
+   width: 100%;
+
+}
+
+.react-datepicker__input-container {
+    width: inherit;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+  }
+  
+  .react-datepicker-wrapper {
+    width: 100%;
+  }

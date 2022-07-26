@@ -1,19 +1,23 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { firestoreConnect } from 'react-redux-firebase';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
-import { useNavigate } from "react-router-dom";
-import { Table, Form, Button } from "react-bootstrap";
+import { useNavigate, Link } from "react-router-dom";
+import { Table, Form, Button, Dropdown } from "react-bootstrap";
 import { useForm } from "react-hook-form";
 import { storage } from '../../config/fbConfig';
 import { ref, getDownloadURL, uploadBytesResumable } from "firebase/storage";
-import { addSong } from '../../store/actions/authActions';
+import { addSong, addBandSong } from '../../store/actions/authActions';
+import { Calendar, momentLocalizer } from 'react-big-calendar'
+import moment from 'moment'
 
 function ArtistProfile(props) {
 
-    const { auth, users } = props;
+    const { auth, users, shows, bands } = props;
 
     const { register, handleSubmit } = useForm();
+
+    const localizer = momentLocalizer(moment) 
 
     let navigate = useNavigate();
 
@@ -22,7 +26,10 @@ function ArtistProfile(props) {
     const [title, setTitle] = useState(null);
     const [price, setPrice] = useState(null);
     const [song, setSong] = useState(null);
-    
+    const [myEvents, setMyEvents] = useState([]);
+    const [bandSong, setBandSong] = useState([]);
+    const [type, setType] = useState("artist");
+
     const onSubmit = (data) => {
         const file = data.song[0]
       
@@ -45,13 +52,25 @@ function ArtistProfile(props) {
           () => {
             getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
               setMp3Url(downloadURL)
-              
-                const songObject = {
-                  title: title,
-                  price: price,
-                  song: downloadURL
+                if (type === "band") {
+                  console.log(bandSong);
+                  const songObject = {
+                    id: bandSong.toString(),
+                    title: title,
+                    price: price,
+                    song: downloadURL,
+                    voters: [auth.uid]
+                  }
+                  props.addBandSong(songObject);
+                } else if (type === "artist") {
+                  const songObject = {
+                    title: title,
+                    price: price,
+                    song: downloadURL
+                  }
+                  props.addSong(songObject);
                 }
-                props.addSong(songObject);
+
                 
               }).then(() => {
                 console.log("success");
@@ -71,25 +90,80 @@ function ArtistProfile(props) {
       if (e.target.id === "song") {
         onSubmit();
       }
+      bands.map((band) => {
+        if (e.target.value === band.id) {
+          setType("band");
+          bandSong.push(band.id);
+        }
+      })
+      users.map((user) => {
+        if (e.target.value === user.id) {
+          setType("artist");
+        }
+      })
+      console.log(type);
     }
 
-    const pushShows = () => {
-      navigate('/spotters');
+    const handleClick = (event) => {
+      shows.map((show) => {
+        if (show.id === event.id) {
+          navigate("/tickets/" + show.id);
+        }
+      })
+
+
+    }
+
+    const pushBands = () => {
+      navigate('/bands');
+    }
+
+    const pushShow = (e) => {
+      navigate('/tickets/' + e.target.id);
     }
   
     const pushInvites = () => {
       navigate('/invites');
     }
 
+    useEffect(() => {
+      if (shows) {
+        shows.map((show) => {
+          if (show.artists) {
+            show.artists.map((artist) => {
+              try {
+                if (artist.id === auth.uid && show.activated === true) {
+                  const showObject = {
+                    id: show.id,
+                    title: show.artists[0].firstName + " " + show.artists[0].lastName,
+                    start: new Date(show.startTime.toDate()),
+                    end: new Date(show.endTime.toDate())
+                  }
+                  if (!myEvents.includes(showObject)) {
+                    myEvents.push(showObject);
+                  }
+                }
+              } catch (err) {
+                console.log(err);
+              }
+            })
+          }
+        })
+      }
+
+    })
+
     if (!auth.uid) return navigate('/artistSignup');
 
     if (users) {
       return (
           <div>
-          <br/>
-          <br/>
-          <br/>
-          <br/>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
           {users && users.map((user) => {
               if (user.id === auth.uid) {
                 return (
@@ -97,16 +171,18 @@ function ArtistProfile(props) {
                   <div className="profile-border">
                     <br/>
                     <div>
-                        <button className="btn btn-primary" onClick={pushShows}>
-                            Shows
+                        <button className="btn btn-primary" onClick={pushBands}>
+                            Bands
                         </button>
                         <button className="btn btn-warning float-end" onClick={pushInvites}>
                             Invites
                         </button>
                     </div>
-                    
                     <br/>
-                    <Table  hover>
+                        <br/>
+                        <p className="text-center border bg-warning text-white">{user.userName}</p>
+                    <br/>
+                    <Table className="text-center" hover>
                       <thead >
                         <tr>
                           <th>First Name</th>
@@ -122,15 +198,128 @@ function ArtistProfile(props) {
                         </tr>
                       </tbody>
                     </Table>
+                    <br/>
+                    <br/>
+
+                        <p className="text-center border bg-warning text-white">songs:</p>
+                    <br/>
+                    <Table   hover>
+                      <thead >
+                        <tr>
+                          <th>Title</th>
+                          <th>Revenue</th>
+                          <th>Sales</th>
+                        </tr>
+                      </thead>
+                      {user.songs && user.songs.map((song) => {
+                        return (
+                          <tbody >
+                            <tr>
+                              <td>{song.title}</td>
+                              <td>{song.revenue}</td>
+                              <td>{song.buyers.length}</td>
+                            </tr>
+                          </tbody>
+                        )
+                      })}
+
+                    </Table>
+                    <br/>
+                        <br/>
+                        <p className="text-center border bg-warning text-white">shows:</p>
+                    <br/>
+                    <Table   hover>
+                      <thead >
+                        <tr>
+                          <th>Artists</th>
+                          <th>Details</th>
+                          <th>Venue</th>
+                          <th>Status</th>
+                        </tr>
+                      </thead>
+                      {shows && shows.map((show) => {
+                        
+                          return (
+                            <tbody >
+                              {show.artists.map((item) => {
+                                if (item.id === auth.uid) {
+                                  return (
+                                    <tr>
+                                    <td>
+                                      <Dropdown >
+                                        <Dropdown.Toggle className="dropdown-basic" variant="warning" id="dropdown-basic"
+                                        >
+                                        {show.artists[0].firstName} {show.artists[0].lastName}
+                                        </Dropdown.Toggle>
+            
+                                        <Dropdown.Menu>
+                                          {show.artists.map((artist) => {
+                                            return (
+                                              <div>
+                                                <Dropdown.Item href="#/action-1">                             
+                                                    <Link to={"/artist/" + artist.id}>
+                                                      {artist.firstName} {artist.lastName}
+                                                    </Link>
+                                                </Dropdown.Item>
+                                              </div>
+                                            )
+                                          })}
+                                        </Dropdown.Menu>
+                                      </Dropdown>
+                                    </td>
+                                      <td><button className="btn btn-primary" id={show.id} onClick={pushShow}>view</button></td>
+                                      <td>{show.venueName}</td>
+                                      {(() => {
+                                        if (show.activated) {
+                                          return <td>active</td>
+                                        } else {
+                                          return <td>pending</td>
+                                        }
+                                      })()}
+                                      
+                                    </tr>
+                                  )
+                                }
+                              })}
+
+                            </tbody>
+                          )
+                        
+
+                      })}
+
+                    </Table>
+                    <br/>
                   </div>
                   <div className="profile-border">
                     <br/>
+
                     <Form onSubmit={handleSubmit(onSubmit)}>
                       <h1 className="text-center">Upload Songs</h1>
                       <br/>
                       <Form.Group className="mb-3 text-center" onChange={handleChange} controlId="title" >
+                          <Form.Label>Enter Artist Or Band</Form.Label>
+                          <select className="form-select" aria-label="Default select example">
+
+                            {users && users.map((user) => {
+                              if (user.id === auth.uid) {
+                                return <option selected value={user.id}>{user.firstName} {user.lastName} (you)</option>
+                                
+                              }
+                            })}
+                            {bands && bands.map((band) => {
+                              if (band.ids.includes(auth.uid)){
+                                return <option value={band.id}>{band.bandName}</option>
+                              }
+                            })}
+                            
+                          </select>
+                          
+
+                      </Form.Group>
+                      <Form.Group className="mb-3 text-center" onChange={handleChange} controlId="title" >
                           <Form.Label>Enter Song Title</Form.Label>
-                          <Form.Control type="text" placeholder="Bohemian Rhapsody" 
+                          <Form.Control type="text" placeholder="Enter the title of your song" 
                           
                           />
 
@@ -164,13 +353,37 @@ function ArtistProfile(props) {
                       <br/>
                   </Form>
                     <br/>
+
+                  </div>
+                  <br/>
+                  <div className="profile-border">
+                    <br/>
+                    <h1 className="text-center">Artist Calendar</h1>
+                    <br/>
+                      <div className="myCustomHeight  p-3">
+                        <Calendar
+                          onSelectEvent={handleClick}
+                          selectable
+                          localizer={localizer}
+                          events={myEvents}
+                          startAccessor="start"
+                          endAccessor="end"
+                          view='week'
+                          views={['week']}
+                        />
+                      </div>
                   </div>
                   </div>
               ) 
               }
             })}
-          <br/>
-          <br/>
+
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
 
           </div>
       )
@@ -181,19 +394,24 @@ function ArtistProfile(props) {
 const mapStateToProps = (state) => {
     return {
       auth: state.firebase.auth,
-      users: state.firestore.ordered.users
+      users: state.firestore.ordered.users,
+      bands: state.firestore.ordered.bands,
+      shows: state.firestore.ordered.shows
     }
 }
 
 const mapDispatchToProps = dispatch => {
   return {
-    addSong: (song) => dispatch(addSong(song))
+    addSong: (song) => dispatch(addSong(song)),
+    addBandSong: (song) => dispatch(addBandSong(song))
   }
 }
 
 export default compose(
     connect(mapStateToProps, mapDispatchToProps),
-    firestoreConnect([{
-      collection: 'users'
-    }])
+    firestoreConnect([
+      { collection: 'users' },
+      { collection: 'shows' },
+      { collection: 'bands' }
+    ])
   )(ArtistProfile);

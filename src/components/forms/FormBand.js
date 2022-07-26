@@ -20,16 +20,14 @@ function FormBand(props) {
 
 
     const handleClick = () => {
-        console.log(next);
+        navigate("/promote")
     }
 
     const handleChange = (e) => {
         setNext(e.target.value);
-        console.log(next)
         if (e.target.id === "bandName") {
             setBandName(e.target.value);
         }
-        console.log(artists)
     }
 
     const handleAddArtist = (e) => {
@@ -78,20 +76,7 @@ function FormBand(props) {
         if (!auth.uid) {
             navigate("/spotterLogin");
         }
-        if (users) {
-            users.map((user) => {
-                if (user.id === auth.uid && artists.length <= 0) {
-                    const artistOne = {
-                        id: auth.uid,
-                        number: 1,
-                        firstName: user.firstName,
-                        lastName: user.lastName
-                    }
-                    setArtists((artists) => [...artists, artistOne])
-                    setIds((ids) => [...ids, artistOne.id])
-                }
-            })
-        }
+
       });
 
     return (
@@ -103,8 +88,9 @@ function FormBand(props) {
             <br/>
             <br/>
             
-            <div className="container">
-                <p className="text-center">Create a Band with up to 5 artists. Don't forget to Name your Band</p>
+            <div className="container text-center">
+                <button className="btn btn-primary" onClick={handleClick}>show</button>
+                <button className="btn btn-warning" >band</button>
             </div>
             {/* <button onClick={handleClick}>hi</button> */}
             <div className="login-container container border">
@@ -115,18 +101,18 @@ function FormBand(props) {
                     <br/>
                     {artists && artists.map((artist) => {
                          
-                            return (
-                                <div>
-                                    <Form.Label>Artsit # {artist.number}</Form.Label>
-                                    <div className="mb-3 p-2 border">
-                                        {artist.firstName} {artist.lastName}
-                                    </div>
-                                </div>
-                            ) 
-                    })}
+                         return (
+                             <div>
+                                 <Form.Label>Artsit # {artist.number}</Form.Label>
+                                 <div className="mb-3 p-2 border">
+                                     {artist.firstName} {artist.lastName}
+                                 </div>
+                             </div>
+                         ) 
+                 })}
                     <Form.Group className="mb-3" controlId="second" onChange={handleChange}>
                         <Form.Label>Artsit # {artists.length + 1}</Form.Label>
-                        <Form.Control type="text" placeholder="Enter next artist"
+                        <Form.Control type="text" placeholder="Enter artist"
                          
                         />
 
@@ -180,6 +166,12 @@ function FormBand(props) {
                 <br/>
                 <br/>
             </div> 
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
             <br/>
             <br/>
             <br/>

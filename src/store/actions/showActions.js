@@ -177,6 +177,22 @@ export const updateVote = (voter, show) => {
   };
 };
 
+export const updateTime = (show, startDate, endDate) => {
+  return (dispatch, getState, { getFirestore }) => {
+    const firestore = getFirestore();
+    const currentShows = getState().firestore.ordered.shows;
+
+    firestore.collection('shows').doc(show.id).update({
+      startTime: new Date(startDate),
+      endTime: new Date(endDate)
+    }).then(() => {
+      dispatch({ type: 'UPDATE_TIME_SUCCESS' });
+    }).catch((err) => {
+      dispatch({ type: 'UPDATE_TIME_ERROR', err });
+    });
+  };
+};
+
 export const updateMember = (band, member, decision) => {
   return async (dispatch, getState, { getFirestore }) => {
     const firestore = getFirestore();
@@ -251,33 +267,36 @@ export const createSongPurchase = (purchase) => {
       const currentUsers = getState().firestore.ordered.users;
       const newSongs = [];
       const purchasedSongs = [];
+      let oldSong = {};
 
       const newPrice = purchase.price.split('$').join('');
       const newNumber = parseInt(newPrice);
       const songObject = {
+        artist: purchase.artist,
+        artistId: purchase.artistId,
         price: purchase.price,
         song: purchase.url,
         title: purchase.title,
-        buyerCount: purchase.count,
-        buyers: [purchase.buyer],
+        buyerCount: purchase.buyers.length,
+        buyers: purchase.buyers,
         revenue: newNumber
       }
 
       currentUsers.map((user) => {
         if (user.id === purchase.artistId) {
           user.songs.map((track) => {
-            if (track.song !== purchase.url && !newSongs.includes(track)) {
-              newSongs.push(track);
-            }
-            else if (track.song === purchase.url) {
-              newSongs.push(songObject);                    
-            } 
             if (track.buyers) {
               track.buyers.map((buyer) => {
                 if (buyer === purchase.buyer && track.song !== purchase.url) {
                   purchasedSongs.push(track);
                 }
               })
+            }
+            if (track.song !== purchase.url && !newSongs.includes(track)) {
+              newSongs.push(track);
+            }
+            if (track.song === purchase.url && !newSongs.includes(track)) {
+              oldSong = track;
             }
           })
         }
@@ -289,31 +308,41 @@ export const createSongPurchase = (purchase) => {
         artistId: purchase.artistId,
         buyer: purchase.buyer,
         buyerCreditChange: purchase.buyerCreditChange,
-        count: purchase.count,
         price: purchase.price,
         title: purchase.title,
         url: purchase.url,
-        createdAt: new Date(),
-        creatorId: purchase.buyer
+        createdAt: new Date()
       })
       .then(() => {
-        firestore.collection('users').doc(purchase.artistId).update({
-          songs: [...newSongs],
-          artistCredit: newNumber
-        })
-      })
-      .then(() => {
-        firestore.collection('users').doc(purchase.buyer).update({
+        firestore.collection('users').doc(purchase.buyer)
+        .update({
           cartItems: [],
           purchasedSongs: [...purchasedSongs, songObject]
         })
       })
       .then(() => {
-          dispatch({ type: 'CREATE_SONG_PURCHASE_SUCCESS' });
+        firestore.collection('users').doc(purchase.artistId) 
+        .update({
+          songs: firestore.FieldValue.arrayRemove(oldSong),
+          artistCredit: purchase.revenue,
+          revenue: purchase.revenue
+        })
+      })
+      .then(() => {
+        firestore.collection('users').doc(purchase.artistId) 
+        .update({
+          songs: firestore.FieldValue.arrayUnion(songObject)
+        })
+      })
+      .then(() => {
+          dispatch({ type: 'CREATED_SONG_PURCHASE_SUCCESS' });
       }).catch((err) => {
+          
+          dispatch({ type: 'CREATED_SONG_PURCHASE_ERROR', err });
           console.log(err)
-          dispatch({ type: 'CREATE_SONG_PURCHASE_ERROR', err });
       });
+
+
 
   }
 }
@@ -330,8 +359,8 @@ export const createShowPurchase = (purchase) => {
             purchaseType: purchase.purchaseType, 
             artists: purchase.artists,
             buyer: purchase.buyer,
+            buyers: purchase.buyers,
             buyerCreditChange: purchase.buyerCreditChange,
-            count: purchase.count,
             price: purchase.price,
             venue: purchase.venue,
             createdAt: new Date(),
@@ -346,8 +375,8 @@ export const createShowPurchase = (purchase) => {
         id: purchase.id,
         artists: purchase.artists,
         buyer: purchase.buyer,
+        buyers: purchase.buyers,
         buyerCreditChange: purchase.buyerCreditChange,
-        count: purchase.count,
         price: purchase.price,
         venue: purchase.venue,
         createdAt: new Date(),
@@ -361,8 +390,8 @@ export const createShowPurchase = (purchase) => {
       })
       .then(() => {
         firestore.collection('shows').doc(purchase.id).update({
-          ticketBuyers: [purchase.buyer],
-          ticketCount: purchase.count
+          ticketBuyers: [...purchase.buyers],
+          ticketCount: purchase.buyer.length
         })
       })
       .then(() => {
