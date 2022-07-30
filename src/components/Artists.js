@@ -7,13 +7,16 @@ import { compose } from 'redux';
 import ArtistProfile from './profiles/ArtistProfile'
 
 function Artists(props) {
-    const { auth, users } = props;
+    const { auth, users, bands } = props;
   
     const navigate = useNavigate();
   
     const [artists, setArtists] = useState([]);
     const [searches, setSearches] = useState([]);
     const [searchCount, setSearchCount] = useState(1);
+    const [active, setActive] = useState(true);
+    const [profile, setProfile] = useState(null);
+    const [songs, setSongs] = useState([]);
 
     const handleSignUp = () => {
         navigate('/artistSignup');
@@ -43,6 +46,11 @@ function Artists(props) {
                     artists.push(user);
                 }
             })
+            // bands.map((band) => {
+            //     if (band.ids.includes(auth.uid)) {
+            //         bands.push(band);
+            //     }
+            // })
             setSearchCount(0)
             
         } else {
@@ -77,20 +85,82 @@ function Artists(props) {
 
     }
 
+    const toggleStatus = (e) => {
+        e.preventDefault();
+        const artistbtn = document.querySelector(".artists");
+        const bandbtn = document.querySelector(".bands");
+        const songbtn = document.querySelector(".songs");
+        const tableSearch = document.querySelector(".table-search");
+        const bandsSearch = document.querySelector(".bands-search");
+        const songSearch = document.querySelector(".songs-search");
+        if (e.target.id === "artists") {
+            bandbtn.classList.add("btn-warning");
+            bandbtn.classList.remove("btn-primary");
+            songbtn.classList.add("btn-warning");
+            songbtn.classList.remove("btn-primary");
+            artistbtn.classList.add("btn-primary");
+            artistbtn.classList.remove("btn-warning");
+            tableSearch.classList.remove("d-none");
+            bandsSearch.classList.add("d-none");
+            songSearch.classList.add("d-none");
+            setActive(true);
+        } else if (e.target.id === "bands") {
+            bandbtn.classList.add("btn-primary");
+            bandbtn.classList.remove("btn-warning");
+            songbtn.classList.add("btn-warning");
+            songbtn.classList.remove("btn-primary");
+            artistbtn.classList.add("btn-warning");
+            artistbtn.classList.remove("btn-primary");
+            tableSearch.classList.add("d-none");
+            bandsSearch.classList.remove("d-none");
+            songSearch.classList.add("d-none");
+            setActive(false);
+        } else if (e.target.id === "songs") {
+            songbtn.classList.add("btn-primary");
+            songbtn.classList.remove("btn-warning");
+            bandbtn.classList.add("btn-warning");
+            bandbtn.classList.remove("btn-primary");
+            artistbtn.classList.add("btn-warning");
+            artistbtn.classList.remove("btn-primary");
+            tableSearch.classList.add("d-none");
+            bandsSearch.classList.add("d-none");
+            songSearch.classList.remove("d-none");
+            setActive(false);
+        }
+    }
+
     const pushProfile = () => {
         navigate('/artistProfile');
+    }
+
+    const pushVenue = () => {
+        navigate('/venueProfile');
     }
 
     const pushBands = () => {
         navigate('/bands');
     }
+    
+    const pushBand = (e) => {
+        e.preventDefault();
+        navigate('/band/' + e.target.id);
+    }
   
     useEffect(() => {
-
       if (!auth.uid) {
           navigate("/spotterLogin");
       }
-
+      if (users) {
+          users.map((user) => {
+              if (user.songs) {
+                  user.songs.map((song) => {
+                      if (!songs.includes(song)) {
+                          songs.push(song);
+                      }
+                  })
+              }
+          })
+      }
     });
 
     
@@ -105,36 +175,24 @@ function Artists(props) {
         <br/>
 
             <div className="profile-border">
-                    <br/>
-                        {users && users.map((user) => {
-                            
-                            if (user.id === auth.uid && user.isArtist === true) {
-                                
-                                return (
-                                    <div>
-                                        <button className="btn btn-primary" onClick={pushProfile}>
-                                            My Profile
-                                        </button>
-                                        <button className="btn btn-warning float-end" onClick={pushBands}>
-                                            Bands
-                                        </button>
-                                    </div>
-                                )
-                            } else if (user.id === auth.uid) {
-                                return (
-                                    <div>
-                                        <button className="btn btn-primary" onClick={handleSignUp}>
-                                            Become an Artist
-                                        </button>
-                                        <button className="btn btn-warning float-end" onClick={pushBands}>
-                                            Bands
-                                        </button>
-                                    </div>
-
-                                )
-                            }
-                        })}
                         <br/>
+                        <br/>   
+                        <div className="text-center">
+                            {(() => {
+                            if (active) {
+                                return <h4>SHOWSPOT ARTISTS</h4>
+                            } else {
+                                return <h4>SHOWSPOT BANDS</h4>
+                            }
+                            })()}       
+                            <br/>
+                            <div>
+                            <button className="artist-profile btn btn-warning" onClick={pushProfile}>artist profile</button>
+                            <button className="artists btn btn-primary" onClick={toggleStatus} id="artists">all artists</button>
+                            <button className="bands btn btn-warning" onClick={toggleStatus} id="bands">all bands</button>
+                            <button className="songs btn btn-warning" onClick={toggleStatus} id="songs">all songs</button>
+                            </div>
+                        </div>
                         <br/>
                         <Form className="artist-search-form" onSubmit={handleSubmit}>
                             <Form.Group className="artist-search-field mb-3" controlId="second" onChange={handleChange}>
@@ -148,10 +206,7 @@ function Artists(props) {
                             <Button type="submit">search</Button>
                         </Form>
                         <br/>
-                        <p className="text-center border bg-warning text-white">active artists:</p>
-                        
-                    <br/>
-                    <Table hover>
+                    <Table className="table-search" hover>
                         <thead>
                         <tr>
                             <th>First Name</th>
@@ -168,45 +223,117 @@ function Artists(props) {
                         })
                        
                     })()}
-                    {artists.sort((a, b) => {
-                        if (a.firstName < b.firstName) return -1;
-                        return 1;
-                    }
-                    ).map((artist) => {
-                        if (searches.length === 0) {
+                    
+                        {artists.sort((a, b) => {
+                            if (a.firstName < b.firstName) return -1;
+                            return 1;
+                        }
+                        ).map((artist) => {
+                            if (searches.length === 0) {
+                                return (
+                                    <tbody className="table-search" >
+                                        <tr onClick={() => {
+                                            navigate("/artist/" + artist.id);
+                                        }}>
+                                            <td  >                      
+                                            {artist.firstName}
+                                            </td>
+        
+                                            <td onClick={pushProfile}>{artist.lastName}</td>
+                                            <td>{artist.mainInstrument}</td>
+                                        </tr>
+                                    </tbody>
+                                )
+                            }
+                        })}
+                        {searches.map((artist) => {
+                            
                             return (
-                                <tbody >
+                                <tbody  >
                                     <tr onClick={() => {
-                                        navigate("/artist/" + artist.id);
+                                        navigate('/artist/' + artist.id)
                                     }}>
-                                        <td  >                      
-                                        {artist.firstName}
+                                        <td >                      
+                                        {artist.firstNAme}
                                         </td>
-    
                                         <td onClick={pushProfile}>{artist.lastName}</td>
                                         <td>{artist.mainInstrument}</td>
                                     </tr>
                                 </tbody>
                             )
-                        }
-                    })}
-                    {searches.map((artist) => {
-                        
-                        return (
-                            <tbody >
-                                <tr onClick={() => {
-                                    navigate('/artist/' + artist.id)
-                                }}>
-                                    <td >                      
-                                    {artist.firstNAme}
-                                    </td>
-                                    <td onClick={pushProfile}>{artist.lastName}</td>
-                                    <td>{artist.mainInstrument}</td>
-                                </tr>
-                            </tbody>
-                        )
-                    })}
+                        })}
                     </Table>
+                    <Table className="bands-search d-none" hover>
+                        <thead>
+                        <tr>
+                            <th>Band Name</th>
+                            <th>Members</th>
+                            <th>Creator</th>
+                        </tr>
+                        </thead>
+                        {bands && bands.map((band) => {                         
+                            return ( 
+                                <tbody  >
+                                    
+                                <tr>
+                                    <td id={band.id} onClick={pushBand}>{band.bandName}</td>
+                                    
+                                    <td>                      
+                                    <Dropdown >
+                                        <Dropdown.Toggle className="dropdown-basic" variant="warning" id="dropdown-basic"
+                                        >
+                                        {band.members[0].firstName} {band.members[0].lastName}
+                                        </Dropdown.Toggle> 
+
+                                                <Dropdown.Menu>
+                                                    {band.members.map((member) => {
+                                                    return (
+                                                        <Dropdown.Item href="#/action-1">  
+                                                    
+                                                            <Link to={"/artist/" + member.id}>
+                                                                {member.firstName} {member.lastName}
+                                                            </Link>
+                                                        
+                                                        </Dropdown.Item>
+                                                        )
+                                                    })}                                       
+                                                </Dropdown.Menu>  
+
+                                    </Dropdown>
+                                    </td>
+                                    {(() => {
+                                        if (band.activated === true) {
+                                            return <td>active</td>
+                                        } else if (!band.actived || band.activated === false) {
+                                            return <td>pending</td>
+                                        }
+                                    })()}
+                                    
+                                </tr>
+                                    
+                                </tbody>
+                            
+                            ) 
+                            
+                        })}
+                    </Table>
+                    <Table className="songs-search d-none" hover>
+                        <thead>
+                        <tr>
+                            <th>Song Title</th>
+                            <th>Artist</th>
+                            <th>Status</th>
+                        </tr>
+                        </thead>
+                                <tbody  >
+                                    <tr>
+                                        <td>hi</td>
+                                        <td>hi</td>
+                                        <td>hi</td>
+                                    </tr>
+                                </tbody>
+                    </Table>
+
             </div>
             <br/>
             <br/>
@@ -235,13 +362,15 @@ function Artists(props) {
 const mapStateToProps = (state) => {
   return {
     auth: state.firebase.auth,
-    users: state.firestore.ordered.users
+    users: state.firestore.ordered.users,
+    bands: state.firestore.ordered.bands
   }
 }
 
 export default compose(
   connect(mapStateToProps),
-  firestoreConnect([{
-    collection: 'users'
-  }])
+  firestoreConnect([
+    {   collection: 'users'  },
+    {   collection: 'bands'  }
+])
 )(Artists);

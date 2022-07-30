@@ -11,6 +11,7 @@ function Spotters(props) {
 
   const [buttonStyle, setButtonStyle] = useState("")
   const [active, setActive] = useState(true);
+  const [artist, setArtist] = useState(null);
 
   const [checkedBacklines, setCheckedBacklines] = useState([])
   const newArray = [];
@@ -50,6 +51,11 @@ function Spotters(props) {
     navigate('/artistProfile');
   }
 
+  const pushSpotterProfile = (e) => {
+    e.preventDefault();
+      navigate("/spotterProfile");
+  }
+
   const pushArtistSignup = (e) => {
     e.preventDefault();
     navigate('/artistSignup');
@@ -64,20 +70,23 @@ function Spotters(props) {
     e.preventDefault();
     const activeButton = document.querySelector(".active");
     const pendingButton = document.querySelector(".pending");
-    if (active === true) {
-      pendingButton.classList.add("btn-primary");
-      pendingButton.classList.remove("btn-warning");
-      activeButton.classList.add("btn-warning");
-      activeButton.classList.remove("btn-primary");
-      setActive(false);
-    } else {
+    if (e.target.id === "active") {
       pendingButton.classList.add("btn-warning");
       pendingButton.classList.remove("btn-primary");
       activeButton.classList.add("btn-primary");
       activeButton.classList.remove("btn-warning");
+      setActive(false);
+    } else if (e.target.id === "pending") {
+      pendingButton.classList.add("btn-primary");
+      pendingButton.classList.remove("btn-warning");
+      activeButton.classList.add("btn-warning");
+      activeButton.classList.remove("btn-primary");
       setActive(true);
     }
   }
+
+
+
 
   useEffect(() => {
     if (!auth.uid) {
@@ -101,7 +110,6 @@ function Spotters(props) {
         }
       })
     }
-    console.log(checkedBacklines);
   });
 
   if (shows) {
@@ -113,28 +121,8 @@ function Spotters(props) {
         <br/>
         <br/>
         <br/>
-
-
-        {/* <button onClick={handleClick} id={show.id}> hi </button> */}
         <div className="profile-border">
         <br/>
-        <div>
-            <button className="btn btn-primary" id={auth.uid} onClick={pushProfile}>
-                Spotter Profile
-            </button>
-            {users && users.map((user) => {
-                            
-              if (user.id === auth.uid && user.isArtist) {
-                  return <button className="btn btn-warning float-end" onClick={pushArtistProfile}>
-                              Artist Profile
-                          </button>
-              } else if (user.id === auth.uid) {
-                  return <button className="btn btn-warning float-end" onClick={pushArtistSignup}>
-                          Become an Artist
-                      </button>
-              }
-            })}
-        </div>
         <br/>   
         <div className="text-center">
           {(() => {
@@ -145,9 +133,12 @@ function Spotters(props) {
             }
           })()}       
           <br/>
-          <button className="active btn btn-primary" onClick={toggleStatus}>active</button>
-          <button className="pending btn btn-warning" onClick={toggleStatus}>pending</button>
-          
+          <div>
+            <button className="spotter btn btn-warning" onClick={pushSpotterProfile}>spotter profile</button>
+            <button className="pending btn btn-primary" onClick={toggleStatus} id="pending">pending shows</button>
+            <button className="active btn btn-warning" onClick={toggleStatus} id="active">active shows</button>
+            <button className="artist btn btn-warning" onClick={pushArtistProfile}>artist profile</button>
+          </div>
         </div>
                 <br/>
                 <br/>
@@ -166,7 +157,6 @@ function Spotters(props) {
                     return (
                       <tbody>
                         <tr>
-                          
                           <td>
                             <Dropdown >
                               <Dropdown.Toggle className="dropdown-basic" variant="warning" id="dropdown-basic"

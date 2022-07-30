@@ -17,6 +17,8 @@ function SpotterProfile(props) {
     
    const [open, setOpen] = useState(0);
    const [artist, setArtist] = useState("");
+   const [active, setActive] = useState(true);
+   const [spotters, setSpotters] = useState(null);
 
     const handleClick = (e) => {
         e.preventDefault();
@@ -24,8 +26,27 @@ function SpotterProfile(props) {
         console.log(open);
     }
 
-    const pushShows = () => {
+    const pushProfile = () => {
       navigate('/spotters');
+    }
+
+    const toggleStatus = (e) => {
+      e.preventDefault();
+      const songBtn = document.querySelector(".my-purchased-songs");
+      const ticketBtn = document.querySelector(".my-purchased-tickets");
+      if (active === true) {
+        ticketBtn.classList.add("btn-primary");
+        ticketBtn.classList.remove("btn-warning");
+        songBtn.classList.add("btn-warning");
+        songBtn.classList.remove("btn-primary");
+        setActive(false);
+      } else {
+        ticketBtn.classList.add("btn-warning");
+        ticketBtn.classList.remove("btn-primary");
+        songBtn.classList.add("btn-primary");
+        songBtn.classList.remove("btn-warning");
+        setActive(true);
+      }
     }
   
     const pushShow = (e) => {
@@ -34,6 +55,10 @@ function SpotterProfile(props) {
 
     const pushInvites = () => {
       navigate('/invites');
+    }
+
+    const pushSpotters = () => {
+      navigate('/spotters');
     }
     
     const pushArtistSignup = (e) => {
@@ -46,19 +71,14 @@ function SpotterProfile(props) {
       navigate('/artistProfile');
     }
 
-    // useEffect(() => {
-    //     if (users) {
-    //         users.map((user) => {
-    //             if (user.songs) {
-    //                 user.songs.map((newSong) => {
-    //                     if (newSong.song === song.song) {
-    //                         setArtist(user.firstName + user.lastName);
-    //                     }
-    //                 })
-    //             }
-    //         })
-    //     }
-    // })
+    useEffect(() => {
+      if (spotters === true) {
+        navigate('/artists');
+      }
+      if (spotters === false) {
+        navigate('/spotters');
+      }
+    })
 
     if (!auth.uid) return navigate('/artistSignup');
 
@@ -75,171 +95,116 @@ function SpotterProfile(props) {
               if (user.id === auth.uid) {
                 return (
                   <div>
-                  <div className="profile-border">
-                    <br/>
-                        {users && users.map((user) => {
-                            
-                            if (user.id === auth.uid && user.isArtist === true) {
-                                
-                                return (
-                                    <div>
-                                        <button className="btn btn-primary" id={user.id} onClick={pushArtistProfile}>
-                                            My Artist Profile
-                                        </button>
-                                        <button className="btn btn-warning float-end" onClick={pushShows}>
-                                            Shows
-                                        </button>
-                                    </div>
-                                )
-                            } else if (user.id === auth.uid) {
-                                return (
-                                    <div>
-                                        <button className="btn btn-primary" onClick={pushArtistSignup}>
-                                            Become an Artist
-                                        </button>
-                                        <button className="btn btn-warning float-end" onClick={pushShows}>
-                                            Shows
-                                        </button>
-                                    </div>
-
-                                )
-                            }
-                        })}
-                    
-                    <br/>
-                    <Table  hover>
-                      <thead >
-                        <tr>
-                          <th>User Name</th>
-                          <th>View Shows</th>
-                          <th>View Songs</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr>
-                          <td>{user.userName}</td>
-                          <td><button className="btn btn-primary" onClick={handleClick}>view</button></td>
-                          <td><button className="btn btn-primary" onClick={handleClick}>view</button></td>
-                        </tr>
-                      </tbody>
-                    </Table>
-                  </div>
-                  </div>
-              ) 
-              }
-            })}
-
-            {users && users.map((user) => {
-              if (user.id === auth.uid && user.purchasedSongs) {
-
-                return (
-                <div>
                     <div className="profile-border">
+                      <br/>
+                      <br/>   
+                      <div className="text-center">
+                        {(() => {
+                          if (active) {
+                            return <h4>PURHCASED SONGS</h4>
+                          } else {
+                            return <h4>PURCHASED SHOWS</h4>
+                          }
+                        })()}       
                         <br/>
-                        <div className="container border text-center bg-warning text-white">
-                            <p>purchased songs</p>
+                        <div>
+                          <button className="spotter btn btn-warning" onClick={pushSpotters}>spotters</button>
+                          <button className="my-purchased-songs btn btn-primary" onClick={toggleStatus} id="my-purchased-songs">purchased songs</button>
+                          <button className="my-purchased-tickets btn btn-warning" onClick={toggleStatus} id="my-purchased-tickets">purhcased tickets</button>
+                          <button className="artist btn btn-warning" onClick={pushArtistProfile}>artist Profile</button>
                         </div>
-                        <br/>
-                        <br/>
-                        <Table  hover>
-                        <thead >
-                            <tr>
-                            <th>Artist Name</th>
-                            <th>Price</th>
-                            <th>title</th>
-                            </tr>
-                        </thead>
-                        {user.purchasedSongs.map((song) => {
-                            users.map((user) => {
-                                if (user.songs) {
-                                    user.songs.map((newSong) => {
-                                        if (newSong.song === song.song && artist !== (user.firstName + " " + user.lastName)) {
-                                            setArtist(user.firstName + " " + user.lastName);
-                                        }
-                                    })
-                                }
-                            })
-                            return (
-                            <tbody>
+                      </div>
+                      <br/>
+                      <br/>
+                      {(() => {
+                      if (user.id === auth.uid && user.purchasedSongs && active === true) {
+                        return (
+                          <Table  hover>
+                            <thead >
                                 <tr>
-                                <td>{artist}</td>
-                                <td>{song.price}</td>
-                                <td>{song.title}</td>
+                                <th>Artist Name</th>
+                                <th>Price</th>
+                                <th>title</th>
                                 </tr>
-                            </tbody>
-                                                    
-                                )
-                        })}
-                        </Table>
-                        </div>
-
-                    </div>
-                ) 
-                }
-            })}
-            {users && users.map((user) => {
-              if (user.id === auth.uid && user.purchasedTickets) {
-
-                return (
-                <div>
-                    <div className="profile-border">
-                        <br/>
-                        <div className="container border text-center bg-warning text-white">
-                            <p>purchased shows</p>
-                        </div>
-                        <br/>
-                        <br/>
-                        <Table  hover>
-                        <thead >
-                            <tr>
-                            <th>Artists</th>
-                            <th>Venue</th>
-                            <th>Status</th>
-                            </tr>
-                        </thead>
-                        {shows && shows.map((ticket) => {
-                            if (ticket.ticketBuyers && ticket.ticketBuyers.includes(auth.uid)) {
+                            </thead>
+                            {user.purchasedSongs.map((song) => {
+                                users.map((user) => {
+                                    if (user.songs) {
+                                        user.songs.map((newSong) => {
+                                            if (newSong.song === song.song && artist !== (user.firstName + " " + user.lastName)) {
+                                                setArtist(user.firstName + " " + user.lastName);
+                                            }
+                                        })
+                                    }
+                                })
                                 return (
-                                    <tbody>
-                                        <tr>
-                                        <td>    
-                                            <Dropdown >
-                                                <Dropdown.Toggle className="dropdown-basic" variant="warning" id="dropdown-basic"
-                                                >
-                                                {ticket.artists[0].firstName} {ticket.artists[0].lastName}
-                                                </Dropdown.Toggle>
-                    
-                                                <Dropdown.Menu>
-                                                    {ticket.artists.map((artist) => {
-                                                        return (
-                                                        <div>
-                                                        <Dropdown.Item href="#/action-1">                             
-                                                            <Link to={"/artist/" + artist.id}>
-                                                                {artist.firstName} {artist.lastName}
-                                                            </Link>
-                                                        </Dropdown.Item>
-                                                        </div>
-                                            
-                                                            )
-        
-                                                        })}
-                                                </Dropdown.Menu>
-                                            </Dropdown>
-                                        </td>
-                                        <td>{ticket.venueName}</td>
-                                        <td><button class="btn btn-primary" id={ticket.id} onClick={pushShow}>purchased</button></td>
-                                        </tr>
-                                    </tbody>
-                                                            
-                                )
-                            }
-                        })}
-                        </Table>
-                        </div>
-
+                                <tbody>
+                                    <tr>
+                                    <td>{artist}</td>
+                                    <td>{song.price}</td>
+                                    <td>{song.title}</td>
+                                    </tr>
+                                </tbody>
+                                                        
+                              )
+                            })}
+                          </Table>
+                        ) 
+                      } else if (user.id === auth.uid && user.purchasedTickets && active === false) {
+                        return (
+                          <Table  hover>
+                            <thead >
+                                <tr>
+                                <th>Artists</th>
+                                <th>Venue</th>
+                                <th>Status</th>
+                                </tr>
+                            </thead>
+                            {shows && shows.map((ticket) => {
+                                if (ticket.ticketBuyers && ticket.ticketBuyers.includes(auth.uid)) {
+                                    return (
+                                        <tbody>
+                                            <tr>
+                                            <td>    
+                                                <Dropdown >
+                                                    <Dropdown.Toggle className="dropdown-basic" variant="warning" id="dropdown-basic"
+                                                    >
+                                                    {ticket.artists[0].firstName} {ticket.artists[0].lastName}
+                                                    </Dropdown.Toggle>
+                        
+                                                    <Dropdown.Menu>
+                                                        {ticket.artists.map((artist) => {
+                                                            return (
+                                                            <div>
+                                                            <Dropdown.Item href="#/action-1">                             
+                                                                <Link to={"/artist/" + artist.id}>
+                                                                    {artist.firstName} {artist.lastName}
+                                                                </Link>
+                                                            </Dropdown.Item>
+                                                            </div>
+                                                
+                                                                )
+            
+                                                            })}
+                                                    </Dropdown.Menu>
+                                                </Dropdown>
+                                            </td>
+                                            <td>{ticket.venueName}</td>
+                                            <td><button class="btn btn-primary" id={ticket.id} onClick={pushShow}>purchased</button></td>
+                                            </tr>
+                                        </tbody>
+                                                                
+                                    )
+                                }
+                            })}
+                          </Table>
+                        )  
+                      }
+                    })()}
                     </div>
+                  </div>
                 ) 
-                }
+              }
             })}
           <br/>
           <br/>

@@ -29,6 +29,51 @@ function ArtistProfile(props) {
     const [myEvents, setMyEvents] = useState([]);
     const [bandSong, setBandSong] = useState([]);
     const [type, setType] = useState("artist");
+    const [active, setActive] = useState(true);
+
+    const toggleStatus = (e) => {
+      e.preventDefault();
+      const showBtn = document.querySelector(".my-shows");
+      const songBtn = document.querySelector(".my-songs");
+      const bandBtn = document.querySelector(".my-bands");
+      const shows = document.querySelector(".shows");
+      const songs = document.querySelector(".songs");
+      const bands = document.querySelector(".bands");
+      if (e.target.id === "my-songs") {
+        songBtn.classList.add("btn-primary");
+        songBtn.classList.remove("btn-warning");
+        showBtn.classList.add("btn-warning");
+        showBtn.classList.remove("btn-primary");
+        bandBtn.classList.add("btn-warning");
+        bandBtn.classList.remove("btn-primary");
+        bands.classList.add("d-none");
+        shows.classList.add("d-none");
+        songs.classList.remove("d-none");
+        setActive(false);
+      } else if (e.target.id === "my-shows") {
+        songBtn.classList.add("btn-warning");
+        songBtn.classList.remove("btn-primary");
+        showBtn.classList.add("btn-primary");
+        showBtn.classList.remove("btn-warning");
+        bandBtn.classList.add("btn-warning");
+        bandBtn.classList.remove("btn-primary");
+        bands.classList.add("d-none");
+        songs.classList.add("d-none");
+        shows.classList.remove("d-none");
+        setActive(true);
+      } else if (e.target.id === "my-bands") {
+        songBtn.classList.add("btn-warning");
+        songBtn.classList.remove("btn-primary");
+        showBtn.classList.add("btn-warning");
+        showBtn.classList.remove("btn-primary");
+        bandBtn.classList.add("btn-primary");
+        bandBtn.classList.remove("btn-warning");
+        songs.classList.add("d-none");
+        shows.classList.add("d-none");
+        bands.classList.remove("d-none");
+        setActive("bands");
+      }
+    }
 
     const onSubmit = (data) => {
         const file = data.song[0]
@@ -114,8 +159,8 @@ function ArtistProfile(props) {
 
     }
 
-    const pushBands = () => {
-      navigate('/bands');
+    const pushBand = () => {
+      navigate('/bandProfile');
     }
 
     const pushShow = (e) => {
@@ -170,65 +215,27 @@ function ArtistProfile(props) {
                   <div>
                   <div className="profile-border">
                     <br/>
-                    <div>
-                        <button className="btn btn-primary" onClick={pushBands}>
-                            Bands
-                        </button>
-                        <button className="btn btn-warning float-end" onClick={pushInvites}>
-                            Invites
-                        </button>
+                    <br/>   
+                    <div className="text-center">
+                      {(() => {
+                        if (active === true) {
+                          return <h4>MY SHOWS</h4>
+                        } else if (active === false) {
+                          return <h4>MY SONGS</h4>
+                        } else if (active === "bands") {
+                          return <h4>MY BANDS</h4>
+                        }
+                      })()}       
+                      <br/>
+                      <div>
+                        <button className="my-bands btn btn-warning" onClick={toggleStatus} id="my-bands">bands</button>
+                        <button className="my-shows btn btn-primary" onClick={toggleStatus} id="my-shows">my shows</button>
+                        <button className="my-songs btn btn-warning" onClick={toggleStatus} id="my-songs">my songs</button>
+                        <button className="artist btn btn-warning" onClick={pushInvites}>Invites</button>
+                      </div>
                     </div>
                     <br/>
-                        <br/>
-                        <p className="text-center border bg-warning text-white">{user.userName}</p>
-                    <br/>
-                    <Table className="text-center" hover>
-                      <thead >
-                        <tr>
-                          <th>First Name</th>
-                          <th>Last Name</th>
-                          <th>Main Instrument</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr>
-                          <td>{user.firstName}</td>
-                          <td>{user.lastName}</td>
-                          <td>{user.mainInstrument}</td>
-                        </tr>
-                      </tbody>
-                    </Table>
-                    <br/>
-                    <br/>
-
-                        <p className="text-center border bg-warning text-white">songs:</p>
-                    <br/>
-                    <Table   hover>
-                      <thead >
-                        <tr>
-                          <th>Title</th>
-                          <th>Revenue</th>
-                          <th>Sales</th>
-                        </tr>
-                      </thead>
-                      {user.songs && user.songs.map((song) => {
-                        return (
-                          <tbody >
-                            <tr>
-                              <td>{song.title}</td>
-                              <td>{song.revenue}</td>
-                              <td>{song.buyers.length}</td>
-                            </tr>
-                          </tbody>
-                        )
-                      })}
-
-                    </Table>
-                    <br/>
-                        <br/>
-                        <p className="text-center border bg-warning text-white">shows:</p>
-                    <br/>
-                    <Table   hover>
+                    <Table className="shows" hover>
                       <thead >
                         <tr>
                           <th>Artists</th>
@@ -289,6 +296,69 @@ function ArtistProfile(props) {
                       })}
 
                     </Table>
+                    <Table className="songs d-none"  hover>
+                      <thead >
+                        <tr>
+                          <th>Title</th>
+                          <th>Revenue</th>
+                          <th>Sales</th>
+                        </tr>
+                      </thead>
+                        {user.songs && user.songs.map((song) => {
+                        return (
+                          <tbody >
+                            <tr>
+                              <td>{song.title}</td>
+                              <td>{song.revenue}</td>
+                              <td>{song.buyers.length}</td>
+                            </tr>
+                          </tbody>
+                        )
+                        })}
+
+                    </Table>
+                    <Table className="bands d-none" hover>
+                      <thead >
+                        <tr>
+                            <th >Band</th>
+                            <th>Members</th>
+                            <th>Creator</th>
+                        </tr>
+                      </thead>
+                        {bands && bands.map((band) => {
+                          if (band.ids.includes(auth.uid)) {
+                            
+                            return (
+                                <tbody>
+                                <tr>
+                                    <td onClick={handleClick} id={band.id}>{band.bandName}</td>
+                                    <td>                      
+                                    <Dropdown >
+                                        <Dropdown.Toggle className="dropdown-basic" variant="warning" id="dropdown-basic"
+                                        >
+                                        {band.members[0].firstName} {band.members[0].lastName}
+                                        </Dropdown.Toggle>
+
+                                        <Dropdown.Menu>
+                                        {band.members.map((artist) => {
+                                            return (
+                                                <Dropdown.Item href="#/action-1">                           
+                                                    <Link to={"/artist/" + artist.id}>
+                                                        {artist.firstName} {artist.lastName}
+                                                    </Link>
+                                                </Dropdown.Item>
+                                            )
+                                        })}
+                                        </Dropdown.Menu>
+                                    </Dropdown>
+                                    </td>
+                                    <td>{band.creatorUserName}</td>
+                                </tr>
+                                </tbody>
+                            )
+                          } 
+                        })}
+                        </Table>
                     <br/>
                   </div>
                   <div className="profile-border">

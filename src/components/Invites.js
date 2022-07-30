@@ -13,11 +13,53 @@ function Invites(props) {
     let navigate = useNavigate();
 
     const [acceptedCount, setAcceptedCount] = useState([])
-  
+    const [active, setActive] = useState(true);
     const [count, setCount] = useState(0);
     const [showCount, setShowCount] = useState(0);
 
-
+    const toggleStatus = (e) => {
+        e.preventDefault();
+        const artistBtn = document.querySelector(".my-artist-invites");
+        const bandBtn = document.querySelector(".my-band-invites");
+        const venueBtn = document.querySelector(".my-venue-invites");
+        const artistInvites = document.querySelector(".artist-invites");
+        const bandInvites = document.querySelector(".band-invites");
+        const venueInvites = document.querySelector(".venue-invites");
+        if (e.target.id === 'my-band-invites') {
+          bandBtn.classList.add("btn-primary");
+          bandBtn.classList.remove("btn-warning");
+          artistBtn.classList.remove("btn-primary");
+          artistBtn.classList.add("btn-warning");
+          venueBtn.classList.remove("btn-primary");
+          venueBtn.classList.add("btn-warning");
+          artistInvites.classList.add("d-none");
+          bandInvites.classList.remove("d-none");
+          venueInvites.classList.add("d-none");
+          setActive(false);
+        } else if (e.target.id === 'my-artist-invites') {
+          artistBtn.classList.add("btn-primary");
+          artistBtn.classList.remove("btn-warning");
+          bandBtn.classList.remove("btn-primary");
+          bandBtn.classList.add("btn-warning");
+          venueBtn.classList.remove("btn-primary");
+          venueBtn.classList.add("btn-warning");
+          bandInvites.classList.add("d-none");
+          artistInvites.classList.remove("d-none");
+          venueInvites.classList.add("d-none");
+          setActive(true);
+        } else if (e.target.id === "my-venue-invites") {
+            venueBtn.classList.add("btn-primary");
+            venueBtn.classList.remove("btn-warning");
+            artistBtn.classList.remove("btn-primary");
+            artistBtn.classList.add("btn-warning");
+            bandBtn.classList.remove("btn-primary");
+            bandBtn.classList.add("btn-warning");
+            artistInvites.classList.add("d-none");
+            bandInvites.classList.add("d-none");
+            venueInvites.classList.remove("d-none");
+            setActive("venue");
+        }
+      }
 
     const handleView = (e) => {
         e.preventDefault();
@@ -26,6 +68,11 @@ function Invites(props) {
 
     const pushArtistProfile = () => {
         navigate('/artistProfile');
+    }
+
+    const pushBand = (e) => {
+        e.preventDefault();
+        navigate('/band/' + e.target.id);
     }
 
     const pushVenueProfile = () => {
@@ -39,6 +86,13 @@ function Invites(props) {
     const pushPrice = (e) => {
         navigate('/ticketPrice/' + e.target.id);
       }
+    const pushBands = (e) => {
+        navigate('/bands');
+    }
+
+    const pushInvites = (e) => {
+        navigate('/invites');
+    }
 
     if (!auth.uid) return navigate('/artistSignup');
 
@@ -54,41 +108,33 @@ function Invites(props) {
  
         <div className="profile-border">
             <br/>
-            <div>
-            <button className="btn btn-primary float-start" onClick={pushArtistProfile}>
-                Artist Profile
-            </button>
-            {users && users.map((user) => {
-                if (user.id === auth.uid && user.isVenue) {
-                    return (
-                        <button className="btn btn-warning float-end" onClick={pushVenueProfile}>
-                            Venue Profile
-                        </button>
-                    )
-                } else if (user.id === auth.uid) {
-                    return (
-                        <button className="btn btn-primary float-end" onClick={pushVenueSignup}>
-                            Become a Venue
-                        </button>
-                    )
+            <br/>   
+            <div className="text-center">
+                {(() => {
+                if (active === true) {
+                    return <h4>ARTIST INVITES</h4>
+                } else if (active === false) {
+                    return <h4>BAND INVITES</h4>
+                } else if (active === "venue") {
+                    return <h4>VENUE INVITES</h4>
                 }
-            })}
-            <br/>
-            <br/>
-            <br/>
-                <div className="text-center border text-white bg-warning">
-                    Artist Invites
+                })()}       
+                <br/>
+                <div>
+                <button className="spotter btn btn-warning" onClick={pushArtistProfile}>artist profile</button>
+                <button className="my-artist-invites btn btn-primary" onClick={toggleStatus} id="my-artist-invites">artist Invites</button>
+                <button className="my-band-invites btn btn-warning" onClick={toggleStatus} id="my-band-invites">band Invites</button>
+                <button className="my-venue-invites btn btn-warning" onClick={toggleStatus} id="my-venue-invites">venue Invites</button>
                 </div>
-            </div>            
+            </div>
             <br/>
-            <br/>
-            <Table className="text-center" hover>
+            <Table className="artist-invites text-center" hover>
                 <thead >
                 <tr>
+                    <th>Spot</th>
                     <th>Show Details</th>
                     <th>Accept</th>
                     <th>Reject</th>
-                    <th>Spot</th>
                 </tr>
                 </thead>
                 {shows && shows.map((show) => {
@@ -100,6 +146,7 @@ function Invites(props) {
 
                                     return (
                                         <tr>
+                                            <td className="text-center">{artist.number}</td>
                                             <td className="text-center" id={show.id}><button className="btn btn-primary" id={show.id} >view</button></td>
                                             <td id={show.id}>show Accepted</td>
                                             <td ><button className="btn btn-warning" id={show.id} onClick={() => {
@@ -110,18 +157,20 @@ function Invites(props) {
                                                                 setShowCount(showCount + 1); 
                                                             } 
                                                         })
+                                            
                                                         props.activateShow(show, false)
                                                         setShowCount(0);
                                                     })
 
                                                 }}>Reject</button></td>
-                                            <td className="text-center">{artist.number}</td>
+                                            
                                             
                                         </tr>
                                     )
                                 } else if (artist.id === auth.uid && artist.accepted === false) {
                                     return (
                                         <tr>
+                                            <td className="text-center">{artist.number}</td>
                                             <td className="text-center" id={show.id}><button className="btn btn-primary" id={show.id} >view</button></td>
                                             <td id={show.id}><button className="btn btn-warning" id={show.id} onClick={() => {
                                                     const newArray = [];
@@ -147,12 +196,13 @@ function Invites(props) {
                                                 }}>Accept</button></td>
                                             <td id={show.id}>show Rejecetd</td>
                                             
-                                            <td className="text-center">{artist.number}</td>
+                                            
                                         </tr>
                                     )
                                 } else if (artist.id === auth.uid) {
                                     return (
                                         <tr>
+                                            <td className="text-center">{artist.number}</td>
                                             <td className="text-center" id={show.id}><button className="btn btn-primary" id={show.id} >view</button></td>
                                             <td id={artist}><button className="btn btn-warning" id={artist} onClick={() => {
                                                     const newArray = [];
@@ -189,7 +239,7 @@ function Invites(props) {
                                                     })
 
                                                 }}>Reject</button></td>
-                                            <td className="text-center">{artist.number}</td>
+                                            
                                         </tr>
                                     ) 
                                 } 
@@ -199,23 +249,13 @@ function Invites(props) {
                     )
                 })}
             </Table>
-        </div>
-        <div className="profile-border">
-            <br/>
-            <div>
-                <div className="text-center border text-white bg-warning">
-                    Venue Invites
-                </div>
-            </div>            
-            <br/>
-            <br/>
-            <Table className="text-center" hover>
+            <Table className="venue-invites d-none text-center" hover>
                 <thead >
                 <tr>
                     <th>Show Details</th>
                     <th>Accept</th>
                     <th>Reject</th>
-                    
+                    <th>Role</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -229,7 +269,7 @@ function Invites(props) {
                                     props.updateVenue(show, false);
                                     props.activateShow(show, false);
                                 }}>Reject</button></td>
-                                
+                                <td>Venue</td>
                                 
                             </tr>
                         )
@@ -239,7 +279,7 @@ function Invites(props) {
                                 <td className="text-center" id={show.id}><button className="btn btn-primary" id={show.id} >view</button></td>
                                 <td id={show.id}><button className="btn btn-warning" id={show.id} onClick={pushPrice}>Accept</button></td>
                                 <td id={show.id}>show Rejecetd</td>
-                                
+                                <td>Venue</td>
                                 
                             </tr>
                         )
@@ -252,23 +292,17 @@ function Invites(props) {
                                     props.updateVenue(show, false);
                                     props.activateShow(show, false);
                                 }}>Reject</button></td>
-                                
+                                <td>Venue</td>
                             </tr>
                         ) 
                     } 
                 })}
                 </tbody>
             </Table>
-        </div>
-        <div className="profile-border">
-            <br/>
-            <div className="text-center border text-white bg-warning">
-                Band Invites
-            </div>
-            <br/>
-            <Table className="text-center" hover>
+            <Table className="band-invites d-none text-center" hover>
                 <thead >
                     <tr>
+                        <th>Band Name</th>
                         <th>Band Details</th>
                         <th>Accept</th>
                         <th>Reject</th>
@@ -283,6 +317,7 @@ function Invites(props) {
                                     if (member.id === auth.uid && member.accepted === true) {
                                         return (
                                             <tr>
+                                                <td onClick={pushBand} id={band.id}>{band.bandName}</td>
                                                 <td className ="text-center" id={band.id}><button className="btn btn-primary" id={band.id} onClick={handleView}>view</button></td>
                                                 <td id={band.id}>band Accepted</td>
                                                 <td ><button className="btn btn-warning" id={band.id} onClick={() => {
@@ -304,7 +339,8 @@ function Invites(props) {
                                     } else if (member.id === auth.uid && member.accepted === false) {
                                         return (
                                             <tr>
-                                                <td id={band.id}><button className="btn btn-primary" id={band.id} >{band.id}</button></td>
+                                                <td onClick={pushBand} id={band.id}>{band.bandName}</td>
+                                                <td id={band.id}><button className="btn btn-primary" id={band.id} onClick={handleView}>view</button></td>
                                                 <td id={band.id}><button className="btn btn-warning" id={band.id} onClick={() => {
                                                     const newArray = [];
                                                     props.updateMember(band, member, true)
@@ -334,7 +370,8 @@ function Invites(props) {
                                     } else if (member.id === auth.uid) {
                                         return (
                                             <tr>
-                                                <td id={band.id}><button className="btn btn-primary" id={band.id} >{band.id}</button></td>
+                                                <td onClick={pushBand} id={band.id}>{band.bandName}</td>
+                                                <td id={band.id}><button className="btn btn-primary" id={band.id} onClick={handleView}>view</button></td>
                                                 <td id={member}><button className="btn btn-warning" id={member} onClick={() => {
                                                     const newArray = [];
                                                     props.updateMember(band, member, true)

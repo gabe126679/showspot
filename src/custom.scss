@@ -135,7 +135,7 @@ button:hover {
 }
 .artist-search-form Button {
     position: absolute;
-    top: 328px;
+    top: 388px;
     right: 90px;
     -ms-transform: translateY(-50%);
     transform: translateY(-50%);
@@ -158,7 +158,7 @@ button:hover {
 .map-search {
     position: relative;
     width: 100%;
-    z-index: 0;
+    z-index: 2;
 }
 
 .home-search input {
