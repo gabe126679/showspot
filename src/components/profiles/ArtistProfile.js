@@ -149,14 +149,8 @@ function ArtistProfile(props) {
       console.log(type);
     }
 
-    const handleClick = (event) => {
-      shows.map((show) => {
-        if (show.id === event.id) {
-          navigate("/tickets/" + show.id);
-        }
-      })
-
-
+    const handleClick = (e) => {
+      navigate("/band/" + e.target.id);
     }
 
     const pushBand = () => {
@@ -177,16 +171,14 @@ function ArtistProfile(props) {
           if (show.artists) {
             show.artists.map((artist) => {
               try {
-                if (artist.id === auth.uid && show.activated === true) {
-                  const showObject = {
-                    id: show.id,
-                    title: show.artists[0].firstName + " " + show.artists[0].lastName,
-                    start: new Date(show.startTime.toDate()),
-                    end: new Date(show.endTime.toDate())
-                  }
-                  if (!myEvents.includes(showObject)) {
+                const showObject = {
+                  id: show.id,
+                  title: show.artists[0].firstName + " " + show.artists[0].lastName,
+                  start: new Date(show.startTime.toDate()),
+                  end: new Date(show.endTime.toDate())
+                }
+                if (artist.id === auth.uid && show.activated === true && !myEvents.includes(showObject)) {
                     myEvents.push(showObject);
-                  }
                 }
               } catch (err) {
                 console.log(err);
@@ -196,7 +188,7 @@ function ArtistProfile(props) {
         })
       }
 
-    })
+    }, [])
 
     if (!auth.uid) return navigate('/artistSignup');
 
@@ -227,8 +219,8 @@ function ArtistProfile(props) {
                         }
                       })()}       
                       <br/>
-                      <div>
-                        <button className="my-bands btn btn-warning" onClick={toggleStatus} id="my-bands">bands</button>
+                      <div  className="tab-border">
+                        <button className="my-bands btn btn-warning" onClick={toggleStatus} id="my-bands">my bands</button>
                         <button className="my-shows btn btn-primary" onClick={toggleStatus} id="my-shows">my shows</button>
                         <button className="my-songs btn btn-warning" onClick={toggleStatus} id="my-songs">my songs</button>
                         <button className="artist btn btn-warning" onClick={pushInvites}>Invites</button>
@@ -238,9 +230,9 @@ function ArtistProfile(props) {
                     <Table className="shows" hover>
                       <thead >
                         <tr>
+                          
+                          <th>Show Details</th>
                           <th>Artists</th>
-                          <th>Details</th>
-                          <th>Venue</th>
                           <th>Status</th>
                         </tr>
                       </thead>
@@ -252,7 +244,8 @@ function ArtistProfile(props) {
                                 if (item.id === auth.uid) {
                                   return (
                                     <tr>
-                                    <td>
+                                      <td><button className="btn btn-primary" id={show.id} onClick={pushShow}>view</button></td>
+                                      <td>
                                       <Dropdown >
                                         <Dropdown.Toggle className="dropdown-basic" variant="warning" id="dropdown-basic"
                                         >
@@ -274,8 +267,6 @@ function ArtistProfile(props) {
                                         </Dropdown.Menu>
                                       </Dropdown>
                                     </td>
-                                      <td><button className="btn btn-primary" id={show.id} onClick={pushShow}>view</button></td>
-                                      <td>{show.venueName}</td>
                                       {(() => {
                                         if (show.activated) {
                                           return <td>active</td>
@@ -296,7 +287,7 @@ function ArtistProfile(props) {
                       })}
 
                     </Table>
-                    <Table className="songs d-none"  hover>
+                    <Table className="songs d-none" hover>
                       <thead >
                         <tr>
                           <th>Title</th>
@@ -309,7 +300,7 @@ function ArtistProfile(props) {
                           <tbody >
                             <tr>
                               <td>{song.title}</td>
-                              <td>{song.revenue}</td>
+                              <td>${song.revenue}</td>
                               <td>{song.buyers.length}</td>
                             </tr>
                           </tbody>
@@ -331,7 +322,7 @@ function ArtistProfile(props) {
                             return (
                                 <tbody>
                                 <tr>
-                                    <td onClick={handleClick} id={band.id}>{band.bandName}</td>
+                                    <td><button className="btn btn-primary" onClick={handleClick} id={band.id}>{band.bandName}</button></td>
                                     <td>                      
                                     <Dropdown >
                                         <Dropdown.Toggle className="dropdown-basic" variant="warning" id="dropdown-basic"

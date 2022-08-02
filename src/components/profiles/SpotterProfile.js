@@ -34,13 +34,13 @@ function SpotterProfile(props) {
       e.preventDefault();
       const songBtn = document.querySelector(".my-purchased-songs");
       const ticketBtn = document.querySelector(".my-purchased-tickets");
-      if (active === true) {
+      if (e.target.id === "my-purchased-tickets") {
         ticketBtn.classList.add("btn-primary");
         ticketBtn.classList.remove("btn-warning");
         songBtn.classList.add("btn-warning");
         songBtn.classList.remove("btn-primary");
         setActive(false);
-      } else {
+      } else if (e.target.id === "my-purchased-songs") {
         ticketBtn.classList.add("btn-warning");
         ticketBtn.classList.remove("btn-primary");
         songBtn.classList.add("btn-primary");
@@ -107,7 +107,7 @@ function SpotterProfile(props) {
                           }
                         })()}       
                         <br/>
-                        <div>
+                        <div className="tab-border">
                           <button className="spotter btn btn-warning" onClick={pushSpotters}>spotters</button>
                           <button className="my-purchased-songs btn btn-primary" onClick={toggleStatus} id="my-purchased-songs">purchased songs</button>
                           <button className="my-purchased-tickets btn btn-warning" onClick={toggleStatus} id="my-purchased-tickets">purhcased tickets</button>

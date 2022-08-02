@@ -9,6 +9,7 @@ import { reduxFirestore, getFirestore } from 'redux-firestore';
 import { reactReduxFirebase, getFirebase } from 'react-redux-firebase';
 import fbConfig from './config/fbConfig';
 import { createRoot } from 'react-dom/client';
+import { HashRouter } from 'react-router-dom';
 
 const store = createStore(rootReducer,
   compose(
@@ -21,9 +22,11 @@ const store = createStore(rootReducer,
 
 store.firebaseAuthIsReady.then(() => {
   ReactDOM.render(
-    <Provider store={store}>
-      <App />
-    </Provider>,
+    <HashRouter>
+      <Provider store={store}>
+        <App />
+      </Provider>
+    </HashRouter>,
     document.getElementById('root')
   );
 });

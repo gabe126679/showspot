@@ -120,18 +120,18 @@ function Invites(props) {
                 }
                 })()}       
                 <br/>
-                <div>
-                <button className="spotter btn btn-warning" onClick={pushArtistProfile}>artist profile</button>
-                <button className="my-artist-invites btn btn-primary" onClick={toggleStatus} id="my-artist-invites">artist Invites</button>
-                <button className="my-band-invites btn btn-warning" onClick={toggleStatus} id="my-band-invites">band Invites</button>
-                <button className="my-venue-invites btn btn-warning" onClick={toggleStatus} id="my-venue-invites">venue Invites</button>
+                <div className="tab-border">
+                    <button className="spotter btn btn-warning" onClick={pushArtistProfile}>artist profile</button>
+                    <button className="my-artist-invites btn btn-primary" onClick={toggleStatus} id="my-artist-invites">artist Invites</button>
+                    <button className="my-band-invites btn btn-warning" onClick={toggleStatus} id="my-band-invites">band Invites</button>
+                    <button className="my-venue-invites btn btn-warning" onClick={toggleStatus} id="my-venue-invites">venue Invites</button>
                 </div>
             </div>
             <br/>
             <Table className="artist-invites text-center" hover>
                 <thead >
                 <tr>
-                    <th>Spot</th>
+                    
                     <th>Show Details</th>
                     <th>Accept</th>
                     <th>Reject</th>
@@ -146,7 +146,7 @@ function Invites(props) {
 
                                     return (
                                         <tr>
-                                            <td className="text-center">{artist.number}</td>
+                                            
                                             <td className="text-center" id={show.id}><button className="btn btn-primary" id={show.id} >view</button></td>
                                             <td id={show.id}>show Accepted</td>
                                             <td ><button className="btn btn-warning" id={show.id} onClick={() => {
@@ -170,7 +170,7 @@ function Invites(props) {
                                 } else if (artist.id === auth.uid && artist.accepted === false) {
                                     return (
                                         <tr>
-                                            <td className="text-center">{artist.number}</td>
+                                            
                                             <td className="text-center" id={show.id}><button className="btn btn-primary" id={show.id} >view</button></td>
                                             <td id={show.id}><button className="btn btn-warning" id={show.id} onClick={() => {
                                                     const newArray = [];
@@ -202,7 +202,7 @@ function Invites(props) {
                                 } else if (artist.id === auth.uid) {
                                     return (
                                         <tr>
-                                            <td className="text-center">{artist.number}</td>
+                                            
                                             <td className="text-center" id={show.id}><button className="btn btn-primary" id={show.id} >view</button></td>
                                             <td id={artist}><button className="btn btn-warning" id={artist} onClick={() => {
                                                     const newArray = [];
@@ -255,7 +255,7 @@ function Invites(props) {
                     <th>Show Details</th>
                     <th>Accept</th>
                     <th>Reject</th>
-                    <th>Role</th>
+                    
                 </tr>
                 </thead>
                 <tbody>
@@ -269,7 +269,7 @@ function Invites(props) {
                                     props.updateVenue(show, false);
                                     props.activateShow(show, false);
                                 }}>Reject</button></td>
-                                <td>Venue</td>
+                                
                                 
                             </tr>
                         )
@@ -279,7 +279,7 @@ function Invites(props) {
                                 <td className="text-center" id={show.id}><button className="btn btn-primary" id={show.id} >view</button></td>
                                 <td id={show.id}><button className="btn btn-warning" id={show.id} onClick={pushPrice}>Accept</button></td>
                                 <td id={show.id}>show Rejecetd</td>
-                                <td>Venue</td>
+                                
                                 
                             </tr>
                         )
@@ -292,7 +292,7 @@ function Invites(props) {
                                     props.updateVenue(show, false);
                                     props.activateShow(show, false);
                                 }}>Reject</button></td>
-                                <td>Venue</td>
+                                
                             </tr>
                         ) 
                     } 
@@ -302,7 +302,7 @@ function Invites(props) {
             <Table className="band-invites d-none text-center" hover>
                 <thead >
                     <tr>
-                        <th>Band Name</th>
+                        
                         <th>Band Details</th>
                         <th>Accept</th>
                         <th>Reject</th>
@@ -317,8 +317,8 @@ function Invites(props) {
                                     if (member.id === auth.uid && member.accepted === true) {
                                         return (
                                             <tr>
-                                                <td onClick={pushBand} id={band.id}>{band.bandName}</td>
-                                                <td className ="text-center" id={band.id}><button className="btn btn-primary" id={band.id} onClick={handleView}>view</button></td>
+                                                
+                                                <td className ="text-center" id={band.id}><button className="btn btn-primary" id={band.id} onClick={handleView}>{band.bandName}</button></td>
                                                 <td id={band.id}>band Accepted</td>
                                                 <td ><button className="btn btn-warning" id={band.id} onClick={() => {
                                                     props.updateMember(band, member, false).then(() => {
@@ -339,8 +339,8 @@ function Invites(props) {
                                     } else if (member.id === auth.uid && member.accepted === false) {
                                         return (
                                             <tr>
-                                                <td onClick={pushBand} id={band.id}>{band.bandName}</td>
-                                                <td id={band.id}><button className="btn btn-primary" id={band.id} onClick={handleView}>view</button></td>
+                                                
+                                                <td id={band.id}><button className="btn btn-primary" id={band.id} onClick={handleView}>{band.bandName}</button></td>
                                                 <td id={band.id}><button className="btn btn-warning" id={band.id} onClick={() => {
                                                     const newArray = [];
                                                     props.updateMember(band, member, true)
@@ -370,8 +370,8 @@ function Invites(props) {
                                     } else if (member.id === auth.uid) {
                                         return (
                                             <tr>
-                                                <td onClick={pushBand} id={band.id}>{band.bandName}</td>
-                                                <td id={band.id}><button className="btn btn-primary" id={band.id} onClick={handleView}>view</button></td>
+                                                
+                                                <td id={band.id}><button className="btn btn-primary" id={band.id} onClick={handleView}>{band.bandName}</button></td>
                                                 <td id={member}><button className="btn btn-warning" id={member} onClick={() => {
                                                     const newArray = [];
                                                     props.updateMember(band, member, true)

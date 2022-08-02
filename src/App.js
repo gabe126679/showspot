@@ -33,37 +33,35 @@ import "./custom.scss"
 function App() {
   return (
     <>
-      <BrowserRouter >
-        <NavMain />
-          <Routes >
-            <Route exact path='/' element={<Home  />}  />
-            <Route exact path='/spotters' element={<Spotters />} />
-            <Route exact path='/spotterLogin' element={<SpotterLogin />} />
-            <Route exact path='/spotterSignup' element={<SpotterSignup />} />
-            <Route exact path='/spotterProfile' element={<SpotterProfile />} />
-            <Route exact path='/promote' element={<Promote />} />
-            <Route exact path='/formBand'element={<FormBand />} />
-            <Route exact path='/profile' element={<Profile />} />
-            <Route exact path='/artists' element={<Artists />} />
-            <Route exact path='/artistProfile' element={<ArtistProfile />} />
-            <Route exact path='/artistSignup' element={<ArtistSignup />} />
-            <Route exact path='/venues' element={<Venues />} />
-            <Route exact path='/venueProfile' element={<VenueProfile />} />
-            <Route exact path='/venueSignup' element={<VenueSignup />} />
-            <Route exact path='/bands' element={<Bands />} />
-            <Route exact path='/bandProfile' element={<BandProfile />} />
-            <Route exact path='/artist/:id' element={<PublicArtist />} />
-            <Route exact path='/venue/:id' element={<PublicVenue />} />
-            <Route exact path='/invites' element={<Invites />} /> 
-            <Route exact path='/tickets/:id' element={<Tickets />} />
-            <Route exact path='/ticketPrice/:id' element={<TicketPrice />} />
-            <Route exact path='/cart' element={<Cart />} />
-            <Route exact path='/playlists' element={<Playlists />} />
-            <Route exact path='/bandInvites/:id' element={<BandInvites />} />
-            <Route exact path='/band/:id' element={<PublicBand />} />
-          </Routes>
-        <Footer />
-    </BrowserRouter>
+      <NavMain />
+        <Routes >
+          <Route exact path='/' element={<Home  />}  />
+          <Route exact path='/spotters' element={<Spotters />} />
+          <Route exact path='/spotterLogin' element={<SpotterLogin />} />
+          <Route exact path='/spotterSignup' element={<SpotterSignup />} />
+          <Route exact path='/spotterProfile' element={<SpotterProfile />} />
+          <Route exact path='/promote' element={<Promote />} />
+          <Route exact path='/formBand'element={<FormBand />} />
+          <Route exact path='/profile' element={<Profile />} />
+          <Route exact path='/artists' element={<Artists />} />
+          <Route exact path='/artistProfile' element={<ArtistProfile />} />
+          <Route exact path='/artistSignup' element={<ArtistSignup />} />
+          <Route exact path='/venues' element={<Venues />} />
+          <Route exact path='/venueProfile' element={<VenueProfile />} />
+          <Route exact path='/venueSignup' element={<VenueSignup />} />
+          <Route exact path='/bands' element={<Bands />} />
+          <Route exact path='/bandProfile/:id' element={<BandProfile />} />
+          <Route exact path='/artist/:id' element={<PublicArtist />} />
+          <Route exact path='/venue/:id' element={<PublicVenue />} />
+          <Route exact path='/invites' element={<Invites />} /> 
+          <Route exact path='/tickets/:id' element={<Tickets />} />
+          <Route exact path='/ticketPrice/:id' element={<TicketPrice />} />
+          <Route exact path='/cart' element={<Cart />} />
+          <Route exact path='/playlists' element={<Playlists />} />
+          <Route exact path='/bandInvites/:id' element={<BandInvites />} />
+          <Route exact path='/band/:id' element={<PublicBand />} />
+        </Routes>
+      <Footer />
   </>
   );
 }

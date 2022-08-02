@@ -115,6 +115,42 @@ export const addToCart = (item) => {
   }
 }
 
+export const addPlaylist = (playlist) => {
+  return async (dispatch, getState, { getFirestore }) => {
+      const firestore = getFirestore();
+      
+      firestore.collection('playlists').add({
+          name: playlist.name,
+          creator: playlist.creator,
+          followers: firestore.FieldValue.arrayUnion(playlist.creator)
+      })
+      .then(() => {
+          dispatch({ type: 'ADD_PLAYLIST_SUCCESS' });
+      }).catch((err) => {
+          console.log(err);
+          dispatch({ type: 'ADD_PLAYLIST_ERROR', err });
+      });
+
+  }
+}
+
+export const addPlaylistSong = (song) => {
+  return async (dispatch, getState, { getFirestore }) => {
+      const firestore = getFirestore();
+      
+      firestore.collection('playlists').doc(song.playlist).update({
+        songs: firestore.FieldValue.arrayUnion(song.song)
+      })
+      .then(() => {
+          dispatch({ type: 'ADD_PLAYLIST_SONG_SUCCESS' });
+      }).catch((err) => {
+          console.log(err);
+          dispatch({ type: 'ADD_PLAYLIST_SONG_ERROR', err });
+      });
+
+  }
+}
+
 export const addSong = (song) => {
   return async (dispatch, getState, { getFirestore }) => {
       const firestore = getFirestore();

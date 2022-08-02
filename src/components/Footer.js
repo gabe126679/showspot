@@ -5,8 +5,6 @@ import { connect } from 'react-redux';
 import { compose } from 'redux';
 import Player from '../components/player/Player';
 
-
-
 function Footer(props) {
 
   const { auth, users } = props; 

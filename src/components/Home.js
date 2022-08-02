@@ -19,10 +19,6 @@ const options = {
   disableDefaultUI: true,
   zoomControl: false,
 };
-const center = {
-  lat: 43.6532,
-  lng: -79.3832,
-};
 
 const mapKey = process.env.REACT_APP_MAP_KEY;
 
@@ -41,21 +37,21 @@ const Home = (props) => {
   useMemo(() => {
     if (users) {
       users.map((user) => {
-        const address = user.venueAddress
+        const venueAddress = user.venueAddress
 
-        if (address) {
+        if (venueAddress) {
             const addressObject = 
             {
-              lat: address[0],
-              lng: address[1]
+              lat: venueAddress[0],
+              lng: venueAddress[1]
             }
-            if (address && !markers.includes(addressObject)) {
+            if (venueAddress && !markers.includes(addressObject)) {
               markers.push(addressObject);
             }
         }
 
       })
-    }
+    } 
   });
 
   const onMapClick = useCallback((e) => {

@@ -2,13 +2,13 @@ import React, { useState, useEffect } from 'react'
 import { firestoreConnect } from 'react-redux-firebase';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
-import { useNavigate, useParams } from "react-router-dom";
-import { Table } from "react-bootstrap";
+import { useNavigate, useParams, Link } from "react-router-dom";
+import { Table, Dropdown } from "react-bootstrap";
 import { addToCart, updateRating } from '../../store/actions/authActions'
 
 function PublicArtist(props) {
 
-    const { auth, users } = props;
+    const { auth, users, bands } = props;
 
     const { id } = useParams();
 
@@ -18,6 +18,32 @@ function PublicArtist(props) {
     const [artistRating, setArtistRating] = useState(5);
     const [artistRatings, setArtistRatings] = useState([]);
     const [raters, setRaters] = useState([]);
+    const [active, setActive] = useState(true);
+
+    const toggleStatus = (e) => {
+      e.preventDefault();
+      const songBtn = document.querySelector(".artist-songs-btn");
+      const bandBtn = document.querySelector(".artist-bands-btn");
+      const songs = document.querySelector(".artist-songs");
+      const bands = document.querySelector(".artist-bands");
+      if (e.target.id === "artist-songs-btn") {
+        songBtn.classList.add("btn-primary");
+        songBtn.classList.remove("btn-warning");
+        bandBtn.classList.add("btn-warning");
+        bandBtn.classList.remove("btn-primary");
+        bands.classList.add("d-none");
+        songs.classList.remove("d-none");
+        setActive(false);
+      } else if (e.target.id === "artist-bands-btn") {
+        bandBtn.classList.add("btn-primary");
+        bandBtn.classList.remove("btn-warning");
+        songBtn.classList.add("btn-warning");
+        songBtn.classList.remove("btn-primary");
+        bands.classList.remove("d-none");
+        songs.classList.add("d-none");
+        setActive(true);
+      } 
+    }
 
     const handleChange = (e) => {
       raters.push(auth.uid);
@@ -72,6 +98,10 @@ function PublicArtist(props) {
     const pushBands = () => {
         navigate('/bands');
     }
+
+    const pushProfile = () => {
+      navigate('/artistProfile');
+    }
   
     useEffect(() => {
       if (users) {
@@ -111,66 +141,25 @@ function PublicArtist(props) {
                 return (
                   <div className="profile-border">
                     <br/>
-                    <div>
-                        <button className="btn btn-primary " onClick={pushArtists}>
-                            Artists
-                        </button>
-                        <button className="btn btn-warning float-end" onClick={pushBands}>
-                            Bands
-                        </button>
-                        <br/>
-                        <br/>
-                        <p className="text-center border bg-warning text-white">{user.firstName} {user.lastName}</p>
-                    </div>
-                    <br/>
-
-                    <Table className="text-center" hover>
-                      <thead >
-                        <tr>
-                          <th>First Name</th>
-                          <th>Last Name</th>
-                          <th>Main Instrument</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr>
-                          <td>{user.firstName}</td>
-                          <td>{user.lastName}</td>
-                          <td>{user.mainInstrument}</td>
-                        </tr>
-                      </tbody>
-                    </Table>
-                    <br/>
-
-                    <div className="ratings-container bg-primary">
-                      <h2 className="text-warning">Artist Rating</h2>
-                      <h1 className="text-warning">{user.averageRating} Stars</h1>
-                      {(() => {
-                        if (!user.raters || !user.raters.includes(auth.uid)) { 
-                          return (
-                            <div className="skills bg-info">
-                              <h3> Rate {user.firstName}</h3>
-                              <div className="rating text-center">
-                                <input type="radio" />
-                                <input type="radio"value="5" onChange={handleChange} />
-                                <input type="radio"  />
-                                <input type="radio" onChange={handleChange}  value="4" />
-                                <input type="radio"  />
-                                <input type="radio" value="3" onChange={handleChange} />
-                                <input type="radio" />
-                                <input type="radio" onChange={handleChange}  value="2" />
-                                <input type="radio" onChange={handleChange}  value="1" />
-                              </div>
-                            </div>      
-                          )
+                    <br/>   
+                    <div className="text-center">
+                        {(() => {
+                        if (active) {
+                            return <h4>SHOWSPOT ARTISTS</h4>
+                        } else {
+                            return <h4>SHOWSPOT BANDS</h4>
                         }
-                      })()}
+                        })()}       
+                        <br/>
+                        <div  className="tab-border">
+                            <button className="artist-profile btn btn-warning" onClick={pushProfile}>my artist profile</button>
+                            <button className="artist-songs-btn btn btn-primary" onClick={toggleStatus} id="artist-songs-btn">artist songs</button>
+                            <button className="artist-bands-btn btn btn-warning" onClick={toggleStatus} id="artist-bands-btn">artist bands</button>
+                            <button className="artists btn btn-warning" onClick={pushArtists} >all artists</button>
+                        </div>
                     </div>
-
                     <br/>
-                    <br/>
-                    <p className="text-center border bg-warning text-white">songs:</p>
-                    <Table className="text-center" hover>
+                    <Table className="artist-songs text-center" hover>
                       <thead >
                         <tr>
                           <th>Title</th>
@@ -250,6 +239,80 @@ function PublicArtist(props) {
                           }               
                       })}
                     </Table>
+                    <Table className="artist-bands d-none text-center" hover>
+                      <thead >
+                        <tr>
+                          <th>Band Name</th>
+                          <th>Artists</th>
+                          <th>Band Details</th>
+                        </tr>
+                      </thead>
+
+                      <tbody>
+                        {bands && bands.map((band) => {
+                          if (band.ids.includes(id)) {
+                            return (
+                              <tr>
+                                <td>{band.bandName}</td>
+                                <td>
+                                  <Dropdown >
+                                    <Dropdown.Toggle className="dropdown-basic" variant="warning" id="dropdown-basic"
+                                    >
+                                    {band.members[0].firstName} {band.members[0].lastName}
+
+                                    </Dropdown.Toggle>
+        
+                                    <Dropdown.Menu>
+                                      {band.members.map((artist) => {
+                                        return (
+                                          <div>
+                                            <Dropdown.Item href="#/action-1">                             
+                                                <Link to={"/artist/" + artist.id}>
+                                                  {artist.firstName} {artist.lastName}
+                                                </Link>
+                                            </Dropdown.Item>
+                                          </div>
+                                        )
+                                      })}
+                                    </Dropdown.Menu>
+                                  </Dropdown>
+                                </td>
+                                <td><button className="btn btn-primary">view</button></td>
+                              </tr> 
+                            )
+                          }
+                        })}
+                      </tbody>
+                    </Table>
+                    <br/>
+
+                    <div className="ratings-container bg-primary">
+                      <h2 className="text-warning">Artist Rating</h2>
+                      <h1 className="text-warning">{user.averageRating} Stars</h1>
+                      {(() => {
+                        if (!user.raters || !user.raters.includes(auth.uid)) { 
+                          return (
+                            <div className="skills bg-info">
+                              <h3> Rate {user.firstName}</h3>
+                              <div className="rating text-center">
+                                <input type="radio" />
+                                <input type="radio"value="5" onChange={handleChange} />
+                                <input type="radio"  />
+                                <input type="radio" onChange={handleChange}  value="4" />
+                                <input type="radio"  />
+                                <input type="radio" value="3" onChange={handleChange} />
+                                <input type="radio" />
+                                <input type="radio" onChange={handleChange}  value="2" />
+                                <input type="radio" onChange={handleChange}  value="1" />
+                              </div>
+                            </div>      
+                          )
+                        }
+                      })()}
+
+                    </div>
+                    <br/>
+                    <br/>
                   </div>
               ) 
               }
@@ -268,7 +331,8 @@ function PublicArtist(props) {
 const mapStateToProps = (state) => {
     return {
       auth: state.firebase.auth,
-      users: state.firestore.ordered.users
+      users: state.firestore.ordered.users,
+      bands: state.firestore.ordered.bands
     }
 }
 
@@ -281,7 +345,8 @@ const mapDispatchToProps = dispatch => {
 
 export default compose(
     connect(mapStateToProps, mapDispatchToProps),
-    firestoreConnect([{
-      collection: 'users'
-    }])
+    firestoreConnect([
+      {  collection: 'users' },
+      {  collection: 'bands' }
+    ])
   )(PublicArtist);

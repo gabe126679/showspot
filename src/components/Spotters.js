@@ -133,7 +133,7 @@ function Spotters(props) {
             }
           })()}       
           <br/>
-          <div>
+          <div  className="tab-border">
             <button className="spotter btn btn-warning" onClick={pushSpotterProfile}>spotter profile</button>
             <button className="pending btn btn-primary" onClick={toggleStatus} id="pending">pending shows</button>
             <button className="active btn btn-warning" onClick={toggleStatus} id="active">active shows</button>
@@ -142,14 +142,14 @@ function Spotters(props) {
         </div>
                 <br/>
                 <br/>
-                <Table bordered hover>
+                <Table hover>
                   <thead>
                     <tr>
                       <th>Artists</th>
                       <th>Details</th>
                       <th>Venue</th>
                       <th>Votes</th>
-                      <th>Backlines</th>
+                      
                     </tr>
                   </thead>
                 {shows && shows.map((show) => {
@@ -192,49 +192,6 @@ function Spotters(props) {
                                 }
                               })()}
                             </div>
-                          </td>
-                          <td className="backlines">
-  
-                                <div>
-  
-                                <Dropdown >
-                                  <Dropdown.Toggle className="dropdown-basic" variant="warning" id="dropdown-basic"
-                                  >
-                                  {/* {show.backlines[0].firstName + " " + show.backlines[0].lastName} */}
-                                  view
-                                  </Dropdown.Toggle>
-                                  <Dropdown.Menu  >
-                                  {show.backlines && show.backlines.map((backline) => {
-
-                                    return (
-                                      <div className="container w-100 p-2 m-2">
-                                        <Dropdown.Item href="#/action-1">  
-                                          <div className="float-start">
-                                            <Link to={"/artist/" + backline.artist}>
-                                              {backline.firstName + " " + backline.lastName}
-                                              
-                                            </Link>
-
-                                          </div>
-
-                                        </Dropdown.Item>
-
-                                        
-                                      </div>
-
-                                        
-                                    )
-                                  })}
-                                    </Dropdown.Menu>
-                                </Dropdown>
-    
-                                </div>
-                                {(() => {
-                                      if (!checkedBacklines.includes(show.id)) {
-                                        return <button className="btn btn-primary" onClick={handleClick} id={show.id}>+</button>
-                                      }
-                                })()}
-                               
                           </td>
                         </tr>
                       </tbody>
@@ -292,49 +249,6 @@ function Spotters(props) {
                                 }
                               })()}
                             </div>
-                          </td>
-                          <td className="backlines">
-  
-                                <div>
-  
-                                <Dropdown >
-                                  <Dropdown.Toggle className="dropdown-basic" variant="warning" id="dropdown-basic"
-                                  >
-                                  {/* {show.backlines[0].firstName + " " + show.backlines[0].lastName} */}
-                                  view
-                                  </Dropdown.Toggle>
-                                  <Dropdown.Menu  >
-                                  {show.backlines && show.backlines.map((backline) => {
-                                    return (
-                                      <div className="container w-100 p-2 m-2">
-                                        <Dropdown.Item href="#/action-1">  
-                                          <div>
-                                            <Link to={"/artist/" + backline.artist}>
-                                              {backline.firstName + " " + backline.lastName}
-                                              
-                                            </Link>
-
-                                          </div>
-
-                                        </Dropdown.Item>
-
-                                        
-                                      </div>
-
-                                      )
-                                    })}
-
-                                    </Dropdown.Menu>
-                                </Dropdown>
-    
-                                </div>
-                                {(() => {
-                                      if (!checkedBacklines.includes(show.id)) {
-                                        return <button className="btn btn-primary" onClick={handleClick} id={show.id}>+</button>
-                                      }
-                                })()}
-                                   
-                               
                           </td>
 
                         </tr>

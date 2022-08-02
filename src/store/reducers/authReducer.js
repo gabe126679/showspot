@@ -138,6 +138,31 @@ const initState = {
           authError: 'cart add failed'
         }
 
+      case 'ADD_PLAYLIST_SUCCESS':
+        console.log('add playlist success');
+        return {
+          ...state,
+          authError: null
+        }
+      case 'ADD_PLAYLIST_ERROR':
+        console.log('add playlist error');
+        return {
+          ...state,
+          authError: 'cart add failed'
+        }
+      case 'ADD_PLAYLIST_SONG_SUCCESS':
+        console.log('add playlist song success');
+        return {
+          ...state,
+          authError: null
+        }
+      case 'ADD_PLAYLIST_SONG_ERROR':
+        console.log('add playlist song error');
+        return {
+          ...state,
+          authError: 'cart add failed'
+        }
+
       case 'ADD_BAND_SONG_SUCCESS':
         console.log('add band song success');
         return {

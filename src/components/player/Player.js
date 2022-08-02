@@ -57,6 +57,9 @@ const Player = (props) => {
         const close = document.querySelector(".playlist-container");
         close.style.display = "none";
         console.log(close);
+        if (e.target.id === "playlistBtn") {
+            navigate('/playlists')
+        }
     }
 
     const handleArtist = (e) => {
@@ -120,7 +123,7 @@ const Player = (props) => {
 
                             <p className="playlist-banner text-center">playlist:</p>
                             <p className="text-center">"Purchased Songs"</p>     
-                            <Link to="/playlists">playlists</Link>                     
+                            <button onClick={handleOpen} id="playlistBtn">playlists</button>                     
                             <br/>  
                             <table>
                                 <tbody>

@@ -15,7 +15,7 @@ body {
         sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    font-size: 18px;
+
 }
 
 code {
@@ -23,15 +23,19 @@ code {
         monospace;
 }
 
-Table, thead, tbody, tbody {
+Table, thead, tbody {
     color: $primary;
-    padding: 12px;
+    padding: 2px;
 }
+thead {
+    font-size: 10px;
+}
+
 tr, td {
     background-color: $warning;
     text-align: center;
+    max-width: 80px;
 }
-
 tr:hover, td:hover {
     background-color: $primary;
 }
@@ -44,10 +48,6 @@ thead:hover {
 button:hover {
     background-color: red;
 }
-
-
-
-
 .ratings-container {
     position: relative;
     display: flex;
@@ -122,25 +122,24 @@ button:hover {
 .ratings-container .skills .rating input:checked::before {
     color: $primary;
 }
-.artist-search-form {
+// .artist-search-form {
+//     text-align: center;
+// }
+// .artist-search-field {
+//     width: 400px;
+//     position: relative;
+// }
+
+.tab-border {
     display: flex;
     flex-direction: row;
-
-
+    justify-content: center;
+    overflow: hidden;
 }
-.artist-search-field {
-    width: 400px;
-    position: relative;
-    left: 25px;
+.tab-border button {
+    font-size: 10px;
+    width: 85%;
 }
-.artist-search-form Button {
-    position: absolute;
-    top: 388px;
-    right: 90px;
-    -ms-transform: translateY(-50%);
-    transform: translateY(-50%);
-}
-
 
 
 .testBtn {

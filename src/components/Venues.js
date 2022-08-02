@@ -11,13 +11,54 @@ function Venues(props) {
   
     const navigate = useNavigate();
   
-    const [address, setAddress] = useState("");
+    const [active, setActive] = useState(true);
     const [addresses, setAddresses] = useState([]);
+    const [newAddress, setNewAddress] = useState("");
 
     Geocode.setApiKey("AIzaSyDRdbg5n9g-_CFYgpI2pCK0hAAaY0MW65Q");
 
+        const toggleStatus = (e) => {
+      e.preventDefault();
+      const activeBtn = document.querySelector(".active-shows");
+      const pendingBtn = document.querySelector(".pending-shows");
+      const shows = document.querySelector(".shows");
+      const songs = document.querySelector(".songs");
+      const bands = document.querySelector(".bands");
+      if (e.target.id === "my-songs") {
+        pendingBtn.classList.add("btn-primary");
+        pendingBtn.classList.remove("btn-warning");
+        activeBtn.classList.add("btn-warning");
+        activeBtn.classList.remove("btn-primary");
+        shows.classList.add("d-none");
+        songs.classList.remove("d-none");
+        setActive(false);
+      } else if (e.target.id === "my-shows") {
+        pendingBtn.classList.add("btn-warning");
+        pendingBtn.classList.remove("btn-primary");
+        activeBtn.classList.add("btn-primary");
+        activeBtn.classList.remove("btn-warning");
+        bands.classList.add("d-none");
+        songs.classList.add("d-none");
+        shows.classList.remove("d-none");
+        setActive(true);
+      } else if (e.target.id === "my-bands") {
+        pendingBtn.classList.add("btn-warning");
+        pendingBtn.classList.remove("btn-primary");
+        activeBtn.classList.add("btn-warning");
+        activeBtn.classList.remove("btn-primary");
+        songs.classList.add("d-none");
+        shows.classList.add("d-none");
+        bands.classList.remove("d-none");
+        setActive("bands");
+      }
+    }
+
     const handleSignUp = () => {
         navigate('/venueSignup');
+    }
+
+    const pushProfile = () => {
+        navigate('/venueProfile');
     }
 
     const handleClick = () => {
@@ -32,10 +73,19 @@ function Venues(props) {
       if (users) {
         users.map((user) => {
           if (user.isVenue === true) {
+              
             Geocode.fromLatLng(user.venueAddress[0], user.venueAddress[1]).then(
               (response) => {
                 const address = response.results[0].formatted_address;
-                addresses.push(address);
+                const venueObject = {
+                    address: address,
+                    user: user.id,
+                    name: user.venueName
+                }
+                if (!addresses.includes(venueObject)) {
+                    addresses.push(venueObject);
+                }
+                
               },
               (error) => {
                 console.error(error);
@@ -44,7 +94,6 @@ function Venues(props) {
           }
         })
       }
-      console.log(addresses);
     });
 
     
@@ -59,28 +108,25 @@ function Venues(props) {
         <br/>
 
             <div className="profile-border">
+                <br/>
+                <br/>   
+                <div className="text-center">
+                    {(() => {
+                    if (active) {
+                        return <h4>SHOWSPOT ARTISTS</h4>
+                    } else {
+                        return <h4>SHOWSPOT BANDS</h4>
+                    }
+                    })()}       
                     <br/>
-                        {users && users.map((user) => {
-                            
-                            if (user.id === auth.uid && user.isVenue === true) {
-                                return (
-                                    <button className="btn btn-primary" onClick={handleClick}>
-                                        My Profile
-                                    </button>
-                                )
-                            } else if (user.id === auth.uid) {
-                                return (
-                                    <button className="btn btn-primary" onClick={handleSignUp}>
-                                        Become a Venue
-                                    </button>
-                                )
-                            }
-                        })}
-                        <br/>
-                        <br/>
-                        <p className="text-center border bg-warning text-white">active venues:</p>
-                        
-                    <br/>
+                    <div  className="tab-border">
+                        <button className="venue-profile btn btn-warning" onClick={pushProfile}>venue profile</button>
+                        <button className="pending-shows btn btn-primary" onClick={toggleStatus} id="pending-shows">pending shows</button>
+                        <button className="active-shows btn btn-warning" onClick={toggleStatus} id="active-shows">active shows</button>
+                        <button className="songs btn btn-warning" onClick={toggleStatus} id="songs">all songs</button>
+                    </div>
+                </div>
+                <br/>
                     <Table hover>
                         <thead>
                         <tr>
@@ -89,23 +135,38 @@ function Venues(props) {
                             <th>Owner</th>
                         </tr>
                         </thead>
-                    {users && users.map((user) => {
-                        if (user.isVenue === true) {
-                            return (
-                                <tbody >
-                                        <tr>
-                                            <td id={user.id} >                      
-                                            <Link to={'/venue/' + user.id}>
-                                                {user.venueName}
-                                            </Link>
-                                            </td>
-                                            <td>{user.venueAddress}</td>
-                                            <td>{user.userName}</td>
-                                        </tr> 
-                                </tbody>
-                            ) 
-                        }
-                    })}
+                        {users && users.map((user) => {
+                            if (user.isVenue === true) {
+                                console.log(addresses);
+                                return (
+                                    <tbody >
+                                            <tr>
+                                                <td id={user.id} >                      
+                                                <Link to={'/venue/' + user.id}>
+                                                    {user.venueName}
+                                                </Link>
+                                                </td>
+                                                {(() => {
+                                                    addresses.map((address) => {
+                                                        if (address.user === user.id && address.name === user.venueName) {
+                                                            return <td>{address.address}</td>
+                                                        } else {
+                                                            return <td>hi</td>
+                                                        }
+                                                    })
+
+                                                })()} 
+                                                <td onClick={() => {
+                                                    addresses.map((address) => {
+                                                        console.log(addresses);
+                                                    })
+                                                    
+                                                }}>{user.userName}</td>
+                                            </tr> 
+                                    </tbody>
+                                ) 
+                            }
+                        })}
                     </Table>
             </div>
             <br/>

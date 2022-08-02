@@ -5,7 +5,6 @@ import { compose } from 'redux';
 import { useNavigate, useParams, Link } from "react-router-dom";
 import { Table, Dropdown } from "react-bootstrap";
 import { addToCart } from '../../store/actions/authActions';
-import usePlacesAutocomplete, { getGeocode, getLatLng } from "use-places-autocomplete";
 import Geocode from "react-geocode";
 
 function PublicVenue(props) {

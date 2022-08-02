@@ -186,31 +186,31 @@ function Artists(props) {
                             }
                             })()}       
                             <br/>
-                            <div>
-                            <button className="artist-profile btn btn-warning" onClick={pushProfile}>artist profile</button>
-                            <button className="artists btn btn-primary" onClick={toggleStatus} id="artists">all artists</button>
-                            <button className="bands btn btn-warning" onClick={toggleStatus} id="bands">all bands</button>
-                            <button className="songs btn btn-warning" onClick={toggleStatus} id="songs">all songs</button>
+                            <div  className="tab-border">
+                                <button className="artist-profile btn btn-warning" onClick={pushProfile}>artist profile</button>
+                                <button className="artists btn btn-primary" onClick={toggleStatus} id="artists">all artists</button>
+                                <button className="bands btn btn-warning" onClick={toggleStatus} id="bands">all bands</button>
+                                <button className="songs btn btn-warning" onClick={toggleStatus} id="songs">all songs</button>
                             </div>
                         </div>
                         <br/>
+                        
                         <Form className="artist-search-form" onSubmit={handleSubmit}>
-                            <Form.Group className="artist-search-field mb-3" controlId="second" onChange={handleChange}>
+                            <Form.Group className="text-center artist-search-field mb-3" controlId="second" onChange={handleChange}>
 
                                 <Form.Control type="text" placeholder="Search artists"
                                 
                                 />
 
                             </Form.Group>
-                            <br/>
-                            <Button type="submit">search</Button>
+                            
                         </Form>
                         <br/>
                     <Table className="table-search" hover>
                         <thead>
                         <tr>
-                            <th>First Name</th>
-                            <th>Last Name</th>
+                            <th>Artist Profile</th>
+                            <th>Artist Name</th>
                             <th>Main Instrument</th>
                         </tr>
                         </thead>
@@ -235,11 +235,8 @@ function Artists(props) {
                                         <tr onClick={() => {
                                             navigate("/artist/" + artist.id);
                                         }}>
-                                            <td  >                      
-                                            {artist.firstName}
-                                            </td>
-        
-                                            <td onClick={pushProfile}>{artist.lastName}</td>
+                                            <td><button className="btn btn-primary" onClick={pushProfile}>view</button></td>
+                                            <td>{artist.firstName} {artist.lastName}</td>
                                             <td>{artist.mainInstrument}</td>
                                         </tr>
                                     </tbody>
@@ -254,7 +251,7 @@ function Artists(props) {
                                         navigate('/artist/' + artist.id)
                                     }}>
                                         <td >                      
-                                        {artist.firstNAme}
+                                        {artist.firstName}
                                         </td>
                                         <td onClick={pushProfile}>{artist.lastName}</td>
                                         <td>{artist.mainInstrument}</td>
@@ -268,7 +265,7 @@ function Artists(props) {
                         <tr>
                             <th>Band Name</th>
                             <th>Members</th>
-                            <th>Creator</th>
+                            <th>Status</th>
                         </tr>
                         </thead>
                         {bands && bands.map((band) => {                         
@@ -276,8 +273,7 @@ function Artists(props) {
                                 <tbody  >
                                     
                                 <tr>
-                                    <td id={band.id} onClick={pushBand}>{band.bandName}</td>
-                                    
+                                    <td><button className="btn btn-primary" id={band.id} onClick={pushBand}>{band.bandName}</button></td>
                                     <td>                      
                                     <Dropdown >
                                         <Dropdown.Toggle className="dropdown-basic" variant="warning" id="dropdown-basic"
