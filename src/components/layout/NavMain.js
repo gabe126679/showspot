@@ -22,8 +22,8 @@ function NavMain(props) {
                 >
                     <Navbar.Offcanvas className="test" >
                       
-                        <Nav.Link href="/profile">Profile</Nav.Link>
-                        <Nav.Link href="/cart">Cart</Nav.Link>
+                        <Nav.Link href="/#/spotterProfile">Profile</Nav.Link>
+                        <Nav.Link href="/#/cart">Cart</Nav.Link>
                         <Nav.Link href="/" onClick={props.signOut}>Logout</Nav.Link>
                     </Navbar.Offcanvas>
                 </Navbar.Collapse>

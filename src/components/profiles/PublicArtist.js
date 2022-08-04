@@ -95,8 +95,9 @@ function PublicArtist(props) {
       navigate('/artists');
     }
 
-    const pushBands = () => {
-        navigate('/bands');
+    const pushBand = (e) => {
+        e.preventDefault();
+        navigate('/band/' + e.target.id);
     }
 
     const pushProfile = () => {
@@ -242,9 +243,9 @@ function PublicArtist(props) {
                     <Table className="artist-bands d-none text-center" hover>
                       <thead >
                         <tr>
-                          <th>Band Name</th>
-                          <th>Artists</th>
                           <th>Band Details</th>
+                          <th>Artists</th>
+                          <th>Status</th>
                         </tr>
                       </thead>
 
@@ -253,7 +254,7 @@ function PublicArtist(props) {
                           if (band.ids.includes(id)) {
                             return (
                               <tr>
-                                <td>{band.bandName}</td>
+                                <td><button className="btn btn-primary" onClick={pushBand} id={band.id}>{band.bandName}</button></td>
                                 <td>
                                   <Dropdown >
                                     <Dropdown.Toggle className="dropdown-basic" variant="warning" id="dropdown-basic"
@@ -277,7 +278,13 @@ function PublicArtist(props) {
                                     </Dropdown.Menu>
                                   </Dropdown>
                                 </td>
-                                <td><button className="btn btn-primary">view</button></td>
+                                {(() => {
+                                  if (band.activated === true) {
+                                    return <td>active</td>
+                                  } else {
+                                    return <td>pending</td>
+                                  }
+                                })()}                                
                               </tr> 
                             )
                           }

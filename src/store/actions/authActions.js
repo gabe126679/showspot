@@ -265,18 +265,17 @@ export const updateBandSongVote = (band, songs) => {
   }
 }
 
-export const activateBandSong = (band, decision) => {
+export const activateBandSong = (band, activatedSongs) => {
   return async (dispatch, getState, { getFirestore }) => {
       const firestore = getFirestore();
 
       firestore.collection('bands').doc(band).update({
-        activated: decision
+        songs: activatedSongs
       }).then(() => {
           dispatch({ type: 'ACTIVATE_BAND_SONG_SUCCESS' });
       }).catch((err) => {
           dispatch({ type: 'ACTIVATE_BAND_SONG_ERROR', err });
       });
-
   }
 }
 

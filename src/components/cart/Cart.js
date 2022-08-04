@@ -1,10 +1,8 @@
 import React from 'react';
 import StripeContainer from "./StripeContainer";
-import Footer from "../layout/Footer";
+import Footer from "../layout/CartFooter";
 
-
-
-function Cart() {
+const Cart = () => {
   return (
     <div>
       <br/>

@@ -7,7 +7,7 @@ const PUBLIC_KEY = "pk_test_51KKltgFxVZy3GzJLkD3qdblg4JHaGYedZsHq7KNCctRB04mWxJV
 
 const stripeTestPromise = loadStripe(PUBLIC_KEY)
 
-function StripeContainer() {
+const StripeContainer = () => {
 	return (
 		<div className="container white">
 			<Elements stripe={stripeTestPromise}>

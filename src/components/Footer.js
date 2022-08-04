@@ -77,6 +77,7 @@ function Footer(props) {
                   setCurrentSongIndex={setCurrentSongIndex} 
                   nextSongIndex={nextSongIndex} 
                   songs={songs}
+                  setSongs={setSongs}
                 />
               </div>
             </div>          

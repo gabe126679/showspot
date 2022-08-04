@@ -20,7 +20,7 @@ const options = {
   zoomControl: false,
 };
 
-const mapKey = process.env.REACT_APP_MAP_KEY;
+const mapKey = "AIzaSyDkl3m7DcI81TwX3mm8RmoWXiVw2EP3WDU";
 
 Geocode.setApiKey("AIzaSyDRdbg5n9g-_CFYgpI2pCK0hAAaY0MW65Q");
 

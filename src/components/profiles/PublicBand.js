@@ -111,9 +111,11 @@ function PublicArtist(props) {
     }
   
     useEffect(() => {
+    let activatedSongs = []
       if (bands) {
         bands.map((band) => {
           if (band.id === id) {
+
             if (band.songs) {
               band.songs.map((song) => {
                 if (band.ids.includes(auth.uid)) {
@@ -129,11 +131,27 @@ function PublicArtist(props) {
                         })
                     }
                 }
+                if (band.ids.length === song.voters.length && song.activated !== true) {
+                    
+                    const activatedSong = {
+                        id: song.id,
+                        price: song.price,
+                        title: song.title,
+                        voters: song.voters,
+                        song: song.song,
+                        activated: true
+                    }
+                    activatedSongs.push(activatedSong);
+                } else {
+                    activatedSongs.push(song);
+                }
               })
             }
+            props.activateBandSong(band.id, activatedSongs);
           }
         })
       }
+      
       if (shows) {
         shows && shows.map((show) => {
             show.artists.map((artist) => {
@@ -259,26 +277,18 @@ function PublicArtist(props) {
                           }) 
                                 
                           
-                          if (track.activated) {
+                          if (track.activated === true) {
                             
                             return (
                                 <tbody>
                                   {users && users.map((user) => {
                                     if (user.id === auth.uid && user.cartItems && !user.cartItems.includes(track.song) && !user.purchasedSongs.includes(track.song)  && band.activated === true) {
-                                        console.log(user.id);
+                                        
                                       return (
                                         <tr>
                                           <td>{track.title}</td>
                                           <td>{track.price}</td>
-                                          {(() => {
-  
-                                            if (newArray.includes(track.song)) {
-                                              return <td className=" text-center">song purchased</td>
-                                            } else {
-                                              return <td className=" text-center"><button className="btn btn-primary" onClick={addToCart} id={track.song}>+</button></td>                           
-                                            }
-                                          })()}
-  
+                                          <td className=" text-center"><button className="btn btn-primary" onClick={addToCart} id={track.song}>+</button></td> 
                                         </tr>
                                       )
                                     } else if (user.id === auth.uid && user.cartItems && user.cartItems.includes(track.song) && band.activated === true) {
@@ -289,7 +299,7 @@ function PublicArtist(props) {
                                           <td className=" text-center">song in cart</td>
                                         </tr>
                                       )
-                                    } else if (user.id === auth.uid && !user.cartItems  && band.activated === true && !user.purchasedSongs.includes(track.song)) {
+                                    } else if (user.id === auth.uid && !user.cartItems && !user.purchasedSongs.includes(track.song) && band.activated === true ) {
                                       return (
                                         <tr>
                                           <td>{track.title}</td>
@@ -311,7 +321,32 @@ function PublicArtist(props) {
                                                 <tr>
                                                     <td>{track.title}</td>
                                                     <td>{track.price}</td>
-                                                    <td>voted</td>
+                                                    <td>
+                                                        <Dropdown >
+                                                            <Dropdown.Toggle className="dropdown-basic" variant="warning" id="dropdown-basic"
+                                                            >
+                                                            voters
+                                                            </Dropdown.Toggle>
+                    
+                                                            <Dropdown.Menu>
+                                                            {track.voters.map((artist) => {
+                                                                return (
+                                                                    <Dropdown.Item href="#/action-1">  
+                                                                        {users && users.map((user) => {
+                                                                            if (user.id === artist) {
+                                                                                return (
+                                                                                    <Link to={"/artist/" + artist}>
+                                                                                        {user.firstName} {user.lastName}
+                                                                                    </Link>
+                                                                                )
+                                                                            }
+                                                                        })}                         
+                                                                    </Dropdown.Item>
+                                                                )
+                                                            })}
+                                                            </Dropdown.Menu>
+                                                        </Dropdown>
+                                                    </td>
                                                 </tr>
                                             )
                                         } else if (user.id === auth.uid && band.ids.includes(auth.uid) && track.voters && !track.voters.includes(auth.uid)) {
@@ -384,7 +419,7 @@ function PublicArtist(props) {
                           return (
                             <div className="skills bg-info">
                               <h3> Rate band </h3>
-                              <div className="rating text-center">
+                              <div className="rating">
                                 <input type="radio" />
                                 <input type="radio"value="5" onChange={handleChange} />
                                 <input type="radio"  />
@@ -432,7 +467,7 @@ const mapDispatchToProps = dispatch => {
     updateRating: (raters, artistRating, artistRatings, artist) => dispatch(updateRating(raters, artistRating, artistRatings, artist)),
     updateBandRating: (raters, bandRating, bandRatings, band) => dispatch(updateBandRating(raters, bandRating, bandRatings, band)),
     updateBandSongVote: (band, songs) => dispatch(updateBandSongVote(band, songs)),
-    activateBandSong: (band) => dispatch(activateBandSong(band))
+    activateBandSong: (band, decision) => dispatch(activateBandSong(band, decision))
   }
 }
 

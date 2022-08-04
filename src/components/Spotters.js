@@ -10,7 +10,7 @@ function Spotters(props) {
   const { auth, shows, users } = props;
 
   const [buttonStyle, setButtonStyle] = useState("")
-  const [active, setActive] = useState(true);
+  const [active, setActive] = useState(false);
   const [artist, setArtist] = useState(null);
 
   const [checkedBacklines, setCheckedBacklines] = useState([])
@@ -75,13 +75,13 @@ function Spotters(props) {
       pendingButton.classList.remove("btn-primary");
       activeButton.classList.add("btn-primary");
       activeButton.classList.remove("btn-warning");
-      setActive(false);
+      setActive(true);
     } else if (e.target.id === "pending") {
       pendingButton.classList.add("btn-primary");
       pendingButton.classList.remove("btn-warning");
       activeButton.classList.add("btn-warning");
       activeButton.classList.remove("btn-primary");
-      setActive(true);
+      setActive(false);
     }
   }
 
@@ -145,11 +145,9 @@ function Spotters(props) {
                 <Table hover>
                   <thead>
                     <tr>
-                      <th>Artists</th>
                       <th>Details</th>
-                      <th>Venue</th>
+                      <th>Artists</th>
                       <th>Votes</th>
-                      
                     </tr>
                   </thead>
                 {shows && shows.map((show) => {
@@ -157,6 +155,7 @@ function Spotters(props) {
                     return (
                       <tbody>
                         <tr>
+                          <td><button className="btn btn-primary" id={show.id} onClick={handleView}>View</button></td>
                           <td>
                             <Dropdown >
                               <Dropdown.Toggle className="dropdown-basic" variant="warning" id="dropdown-basic"
@@ -179,10 +178,8 @@ function Spotters(props) {
                               </Dropdown.Menu>
                             </Dropdown>
                           </td>
-                          <td><button className="btn btn-primary" id={show.id} onClick={handleView}>View</button></td>
-                          <td>{show.venueName}</td>
                           <td>
-                            <div className="backlines">
+                            <div >
                               <div className="col-4">{show.voteCount}</div>
                               {(() => {
                                 if (!show.votedOn.includes(auth.uid)) {
@@ -196,10 +193,11 @@ function Spotters(props) {
                         </tr>
                       </tbody>
                     ) 
-                  } else if (!show.activated && active === false) {
+                  } else if ((!show.activated || show.activated === false) && active === false) {
                     return (
                       <tbody>
                         <tr>
+                          <td><button className="btn btn-primary" id={show.id} onClick={handleView}>View</button></td>
                           
                           <td>
                             <Dropdown >
@@ -236,11 +234,9 @@ function Spotters(props) {
                               </Dropdown.Menu>
                             </Dropdown>
                           </td>
-                          <td><button className="btn btn-primary" id={show.id} onClick={handleView}>View</button></td>
-                          <td>{show.venueName}</td>
                           <td>
-                            <div className="backlines">
-                              <div className="col-4">{show.voteCount}</div>
+                            <div >
+                              <div >{show.voteCount}</div>
                               {(() => {
                                 if (!show.votedOn.includes(auth.uid)) {
                                   <button className="btn btn-primary" onClick={() => {   

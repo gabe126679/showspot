@@ -52,7 +52,6 @@ button:hover {
     position: relative;
     display: flex;
     justify-content: center;
-    align-items: center;
     flex-direction: column;
     padding: 30px;
     border-radius: 10px;
@@ -60,26 +59,32 @@ button:hover {
     inset 2px 2px 5px rgba(255,255,255,0.25),
     8px 30px 30px rgba(0,0,0,0.4),
     inset -2px -2px 5px rgba(0,0,0,0.3);
+    overflow: hidden;
+    text-align: center;
 }
 .ratings-container h2 {
     margin-bottom: 10px;
     font-weight: 500;
+    text-align: center;
 }
 .ratings-container .skills {
     display: flex;
     justify-content: center;
     align-items: center;
+    flex-direction: column;
     margin: 10px 0;
     padding-right: 10px;
     box-shadow: -1px -1px 2px rgba(255,255,255,0.25),
     inset 2px 2px 5px rgba(255,255,255,0.25),
     8px 30px 30px rgba(0,0,0,0.4),
     inset -2px -2px 5px rgba(0,0,0,0.3);
+    overflow: hidden;
 }
 
 .ratings-container .skills h3 {
     min-width: 180px;
-    margin-left: 25px;
+    margin-left: 20px;
+    margin-top: 25px;
     color: #000;
     font-size: 20px;
     font-weight: 400;
@@ -88,19 +93,23 @@ button:hover {
 .ratings-container .skills .rating {
     position: relative;
     display: flex;
-    margin: 10px 0;
-    flex-direction: row-reverse;
+    align-items: center;
+    text-align: center;
+    margin-left: 60px;
+    margin-top: 15px;
+    margin-bottom: 15px;
+    width: 100%;
 }
 .ratings-container .skills .rating input {
     position: relative;
     width: 20px;
     height: 40px;
     display: flex;
-    justify-content: center;
     align-items: center;
     cursor: pointer;
     -webkit-appearance: none;
     appearance: none;
+    text-align: center;
 }
 .ratings-container .skills .rating input::before {
     content: '\f005';
@@ -122,14 +131,6 @@ button:hover {
 .ratings-container .skills .rating input:checked::before {
     color: $primary;
 }
-// .artist-search-form {
-//     text-align: center;
-// }
-// .artist-search-field {
-//     width: 400px;
-//     position: relative;
-// }
-
 .tab-border {
     display: flex;
     flex-direction: row;
@@ -430,10 +431,9 @@ button:hover {
 }
 //playlist
 .playlist-container {
-    
     border: 5px solid $warning;
     position: relative;
-    left: 271px;
+    left: 171px;
     bottom: 469px;
     width: 300px;
     height: 400px;
