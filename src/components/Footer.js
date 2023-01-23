@@ -7,13 +7,15 @@ import Player from '../components/player/Player';
 
 function Footer(props) {
 
-  const { auth, users } = props; 
+  const { auth, users, playlists } = props; 
 
   const navigate = useNavigate();
 
   const [songs, setSongs] = useState([{}]);
   const [currentSongIndex, setCurrentSongIndex] = useState(0);
   const [nextSongIndex, setNextSongIndex] = useState(0);
+  const [standardSongs, setStandardSongs] = useState([]);
+  const [standardSongIds, setStandardSongIds] = useState([]);
 
   const handleClick = () => {
     navigate('/promote')
@@ -22,35 +24,41 @@ function Footer(props) {
   const newArray = [];
 
   useEffect(() => {  
-    if (users) {
-      
-      users.map((user) => {
-       
-        console.log(user.id === auth.uid && user.purchasedSongs);
-        if (user.id === auth.uid && user.purchasedSongs) {
-          
-          user.purchasedSongs.map((item) => {
-            
+    if (playlists) {
+      playlists.map((playlist) => {
+        if (playlist.name === "standard") {
+          playlist.songs.map((song) => {
             const songObject = {
-              title: item.title,
-              artist: item.artist,
-              src: item.song
+              title: song.title,
+              artist: song.artist,
+              src: song.song
             }
-            if (!songs.includes(songObject) && songs.length <= user.purchasedSongs.length) {
+            if (!standardSongs.includes(songObject) && !standardSongIds.includes(song) && standardSongs.length <= playlist.songs.length) {
+              standardSongIds.push(song);
+              standardSongs.push(songObject);
+            }
+          })
+        }
+        if (playlist.listeners && playlist.listeners.includes(auth.uid)) {
+          playlist.songs.map((song) => {
+            const songObject = {
+              title: song.title,
+              artist: song.artist,
+              src: song.song
+            }
+            if (!newArray.includes(songObject) && newArray.length <= playlist.songs.length) {
               newArray.push(songObject);
             }
           })
-          
-          if (songs.length !== newArray.length) {
-            setSongs(newArray);
-
-            console.log(songs);
-          }
-
         }
       })
+      if (newArray.length > 0) {
+        setSongs(newArray);
+      } else if (newArray.length === 0) {
+        setSongs(standardSongs);
+      }
     }
-  });
+  }, [playlists]);
 
   useEffect(() => {
     setNextSongIndex(() => {
@@ -89,13 +97,15 @@ function Footer(props) {
 const mapStateToProps = (state) => {
   return {
     auth: state.firebase.auth,
-    users: state.firestore.ordered.users
+    users: state.firestore.ordered.users,
+    playlists: state.firestore.ordered.playlists
   }
 }
 
 export default compose(
   connect(mapStateToProps),
   firestoreConnect([
-    { collection: 'users'}
+    { collection: 'users' },
+    { collection: 'playlists' }
   ])
 )(Footer);

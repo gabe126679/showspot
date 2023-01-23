@@ -1,7 +1,7 @@
-$primary: #40f4e2;
+$primary: #FEFEFA;
 $secondary: #7F8487;
 $success: #C4DDFF;
-$warning: #0f0520;
+$warning: #202c3e;
 $info: #FEE2C5;
 
 
@@ -15,7 +15,7 @@ body {
         sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-
+    
 }
 
 code {
@@ -150,10 +150,10 @@ button:hover {
     z-index: 0;
 }
 .home-search {
-    position: absolute;
+    position: fixed;
     top: 5.65rem;
     width: 100%;
-    z-index: 2;
+    z-index: 1;
 }
 .map-search {
     position: relative;
@@ -267,7 +267,7 @@ button:hover {
     position: fixed;
     left: 0;
     bottom: -45px;
-    width: 100%;
+    width: 100vw;
     background-color: $warning;
     color: black;
     text-align: center;
@@ -293,20 +293,16 @@ button:hover {
     right: 1.9%;
     color: $warning;
 }
-
-.promote-link {
-    text-decoration: none;
-}
 .c-player {
     display: block;
-    background-color: $success;
+    background-color: $warning;
     position: relative;
     top: 22px;
-    right: 180px;
+    right: 100px;
     margin: 0px auto;
     padding: 15px;
     border-radius: 16px;
-    width: 65%;
+    width: 150px;
     height: 70px;
     box-shadow: inset -6px -6px 12px rgba(0, 0, 0, 0.8), inset 6px 6px 12px rgba(255, 255, 255, 0.4);
 }
@@ -328,32 +324,33 @@ button:hover {
     width: 300px;
     color: white;
 }
-
-.c-test button {
-    width: 130px;
-    margin-left: 25px;
-    color: white;
+.playlist-button-container {
+    display: flex;
+    justify-content: space-between;
+    width: 100vw;
+    margin: 0 auto;
+    padding: 5px 0;
+    position: relative;
+    top: 39px;
 }
-.playerButton {
-    overflow-x: hidden;
-    overflow-y: hidden;
-    white-space:nowrap;
+.playlist-button-container button {
+    width: 100%;
+    border-radius: 0;
+    border: 1px solid black;
 }
 .c-player--controls .play-btn {
     display: flex;
     position: relative;
     top: 13px;
     margin: 0 30px;
-    padding: 20px;
+    padding: 10px;
     border-radius: 50%;
-
     border: none;
     outline: none;
-    background-color: $warning;
-    color: #FFF;
-    font-size: 24px;
+    background-color: $info;
+    color: $warning;
+    font-size: 14px;
     cursor: pointer;
-
 }
 
 .c-player--controls .skip-btn {
@@ -361,9 +358,9 @@ button:hover {
     border: none;
     outline: none;
     cursor: pointer;
-    color: #888;
-    font-size: 18px;
-    height: 5px;
+    color: $primary;
+    font-size: 13px;
+    height: 1px;
 }
 .media-player {
     display: flex;
@@ -399,58 +396,37 @@ button:hover {
     width: 115px;
 
 }
-#map {
-    overflow: hidden;
-    height: 100vh;
-}
-.profile-border {
-    margin-left: auto;
-    margin-right: auto;
-    margin: 50px;
-    border: 1px solid #504848;
-    border-radius: 10px;
-    overflow-x: hidden;
-    padding: 5px;
-    background-color: $secondary;
-    color: $info;
-    box-shadow: -1px -1px 2px rgba(255,255,255,0.25),
-    inset 2px 2px 5px rgba(255,255,255,0.25),
-    8px 30px 30px rgba(0,0,0,0.4),
-    inset -2px -2px 5px rgba(0,0,0,0.3);
-}
-.dropdown-basic {
-    max-width: 100px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-.test {
-    display: flex;
-    align-items: end;
-    flex-direction: row;
-}
 //playlist
 .playlist-container {
     border: 5px solid $warning;
     position: relative;
-    left: 171px;
-    bottom: 469px;
-    width: 300px;
-    height: 400px;
+    bottom: 133px;
+    width: 100vw;
+    height: 100px;
     z-index: -1;
     display: none;
-    flex-direction: row;
-    margin: auto;
-    background: linear-gradient(to left, $info 89%, $primary 11%);
+    background: linear-gradient(to left, $info 91.6%, $primary 8.4%);
 }
 .playlist-section {
     display: flex;
+    justify-content: center;
+    align-items: center;
     flex-direction: column;
     position: relative;
-    left: 44.5%;
-    border: 1px solid black;
+    left: 4.5%;
     width: 250px;
 }
+.player-section {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    position: relative;
+    left: 30.5%;
+    bottom: 20px;
+    width: 150px;
+}
+
 .current-song-section {
     display: flex;
     flex-direction: column;
@@ -470,11 +446,82 @@ button:hover {
 }
 .playlist-button {
     position: relative;
+    bottom: 1px;
     background-color: $info;
     border: none; 
-    width: 50.6px;
+    width: 35.6px;
     height: 27px;
+    border: 1px solid $warning;
 }
+#map {
+    overflow: hidden;
+    height: 100vh;
+    top: 0;
+}
+
+.sticky-background {
+    top: 0;
+    position: sticky;
+}
+.sticky-map {
+    z-index: -1;
+    top: 0;
+    position: sticky;
+}
+
+.profile-border {
+    margin-left: auto;
+    margin-right: auto;
+    margin: 50px;
+    border: 1px solid $primary;
+    border-radius: 10px;
+    overflow-x: hidden;
+    padding: 5px;
+    background-color: $primary;
+    color: $warning;
+    box-shadow: -1px -1px 2px rgba(255,255,255,0.25),
+    inset 2px 2px 5px rgba(255,255,255,0.25),
+    8px 30px 30px rgba(0,0,0,0.4),
+    inset -2px -2px 5px rgba(0,0,0,0.3);
+    position: relative;
+    bottom: 25rem;
+}
+.ticket-border {
+    // margin-left: auto;
+    // margin-right: auto;
+    margin-top: 50px;
+    margin-bottom: 50px;
+    // border: 1px solid #504848;
+    // border-radius: 10px;
+    // overflow-x: hidden;
+
+    position: relative;
+    bottom: 45rem;
+    width: 100%;
+}
+.ticket-card {
+    position: relative;
+    bottom: 20rem;
+    border-left: 5px solid $primary;
+    border-right: 5px solid $primary;
+    width: 100%;
+}
+.promote-a-show {
+    position: relative;
+    bottom: 25rem;
+}
+.dropdown-basic {
+    max-width: 100px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.test {
+    display: flex;
+    align-items: end;
+    flex-direction: row;
+}
+
 
 
 
@@ -487,11 +534,29 @@ button:hover {
         flex-direction: column;
     }
 }
-@media (max-width: 540px) {
+@media (max-width: 490px) {
     // #map {
     //     min-height: 940px;
     //     overflow: hidden;
     // }
+    .profile-border {
+        bottom: 45rem;
+    }
+    .ticket-border {
+        bottom: 50rem;
+    }
+    .promote-a-show {
+        bottom: 45rem;
+    }
+    .ticket-card {
+        position: relative;
+        bottom: 40rem;
+        border-left: 20px solid $primary;
+        border-right: 20px solid $primary;
+        border-top: 0.5px solid $primary;
+        border-bottom: 0.5px solid $primary;
+
+    }
 }
 
 /* import bootstrap to set changes */

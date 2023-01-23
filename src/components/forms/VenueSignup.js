@@ -6,6 +6,7 @@ import { venueSignUp } from '../../store/actions/authActions'
 import { GoogleMap, useLoadScript, Marker, InfoWindow } from "@react-google-maps/api";
 import usePlacesAutocomplete, { getGeocode, getLatLng } from "use-places-autocomplete";
 import { Combobox, ComboboxInput, ComboboxPopover, ComboboxList, ComboboxOption, } from "@reach/combobox";
+import Geocode from "react-geocode";
 
 import "@reach/combobox/styles.css";
 import mapStyles from "../../mapStyles";
@@ -44,12 +45,12 @@ function VenueSignup(props) {
     const mapRef = useRef();
     const onMapLoad = useCallback((map) => {
 
-    mapRef.current = map;
+        mapRef.current = map;
     }, []);
 
-    const panTo = useCallback(({ lat, lng }) => {
-    mapRef.current.panTo({ lat, lng });
-    mapRef.current.setZoom(14);
+        const panTo = useCallback(({ lat, lng }) => {
+        mapRef.current.panTo({ lat, lng });
+        mapRef.current.setZoom(14);
     }, []);
 
 
@@ -60,8 +61,36 @@ function VenueSignup(props) {
         console.log(venueAddress);
     }
 
+
+    
+    const handleClick = (e) => {
+        e.preventDefault();
+        Geocode.fromLatLng(venueAddress[0], venueAddress[1]).then(
+            (response) => {
+              const address = response.results[0].formatted_address;
+              console.log(address);
+            },
+            (error) => {
+              console.error(error);
+            }
+        );
+        
+    }
+
     const handleSubmit = (e) => {
         e.preventDefault();
+
+
+        Geocode.fromLatLng(venueAddress[0], venueAddress[1]).then(
+            (response) => {
+              const address = response.results[0].formatted_address;
+              setVenueAddress(address)
+            },
+            (error) => {
+              console.error(error);
+            }
+        );
+
 
         const stateObject = {
             venueName,
@@ -123,21 +152,19 @@ function VenueSignup(props) {
     
   return (
     <div>
-        <br/> 
-        <br/> 
-        <br/> 
-        <br/> 
-        <br/> 
+
         <div className="container">
             <p className="text-center">Sign Up as a Venue and Start Hosting Shows</p>
         </div>
         <div className="login-container container border">
             <br/>
             <br/>
+
             <Form onSubmit={handleSubmit}>
                 <h1 className="text-center">Venue Sign Up</h1>
                 <br/>
-                <Form.Group className="mb-3" controlId="venueName">
+                
+                <Form.Group className="mb-3 map-search" controlId="venueName">
                     <Form.Label>Venue Name</Form.Label>
                     <Form.Control type="text" placeholder="Venue Name" onChange={handleChange} />
                 </Form.Group>
@@ -161,6 +188,7 @@ function VenueSignup(props) {
                     </Combobox>
                 </Form.Group>
                 <br/>
+                <button className="btn btn-warning" onClick={handleClick}>click me</button>
                 <div>
 
                     <GoogleMap

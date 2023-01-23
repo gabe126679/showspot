@@ -5,7 +5,7 @@ import { connect } from "react-redux";
 import { firestoreConnect } from "react-redux-firebase";
 import { compose } from "redux";
 import { updateCart, updateCartSong } from '../../store/actions/authActions';
-import { createSongPurchase, createShowPurchase } from '../../store/actions/showActions';
+import { createSongPurchase, createBandSongPurchase, createShowPurchase } from '../../store/actions/showActions';
 
 const CARD_OPTIONS = {
 	iconStyle: "solid",
@@ -37,6 +37,9 @@ const Items = (props) => {
     const [total, setTotal ] = useState(0);
     const [songTotal, setSongTotal] = useState(0);
     const [count, setCount ] = useState(0);
+    const [songIds, setSongIds] = useState([]);
+    const [oldSongs, setOldSongs] = useState([]);
+    const [oldBandSongs, setOldBandSongs] = useState([]);
 
     let counter = 0;
     let songCounter = 0;
@@ -142,38 +145,41 @@ const Items = (props) => {
                                                     const newSong = 
                                                     {
                                                         purchaseType: "song",
-                                                        artistId: band.id,
+                                                        bandId: band.id,
                                                         artist: band.bandName,
                                                         title: song.title, 
                                                         url: song.song,
                                                         price: song.price,
-                                                        revenue: song.revenue + newTotal,
                                                         buyer: auth.uid,
-                                                        buyers: [...song.buyers, auth.uid],
-                                                        buyerCreditChange: -newTotal
+                                                        buyers: [...song.buyers, auth.uid]
                                                     }          
-                                                    if (!newSongs.includes(newSong.url) && songs.length <= newSongs.length) {
-                                                        newSongs.push(newSong.url);
+                                                    if (!songs.includes(newSong) && !oldBandSongs.includes(newSong) && !songIds.includes(newSong.url)) {
+                                                    songIds.push(newSong.url);
                                                         songs.push(newSong);
+                                                        oldBandSongs.push(newSong);
                                                     } 
                                                 } else if (!song.buyerCount) {
                                                     const newSong = 
                                                     {
                                                         purchaseType: "song",
-                                                        artistId: band.id,
+                                                        bandId: band.id,
                                                         artist: band.bandName,
                                                         title: song.title, 
                                                         url: song.song,
                                                         price: song.price,
-                                                        revenue: song.revenue + newTotal,
                                                         buyer: auth.uid,
-                                                        buyers: [auth.uid],
-                                                        buyerCreditChange: -newTotal
+                                                        buyers: [auth.uid]
                                                     }          
-                                                    if (!newSongs.includes(newSong.url) && songs.length <= newSongs.length) {
-                                                        newSongs.push(newSong.url);
+                                                    if (!songs.includes(newSong)  && !oldBandSongs.includes(newSong) && !songIds.includes(newSong.url)) {
+                                                    songIds.push(newSong.url);
                                                         songs.push(newSong);
+                                                        oldBandSongs.push(newSong);
                                                     }              
+                                                }
+                                            } else if (song.song !== item) {
+                                                if (!songIds.includes(song.song) && !oldBandSongs.includes(song)) {
+                                                    songIds.push(song.song);
+                                                    oldBandSongs.push(song); 
                                                 }
                                             }
                                         })
@@ -198,14 +204,13 @@ const Items = (props) => {
                                                     title: song.title, 
                                                     url: song.song,
                                                     price: song.price,
-                                                    revenue: song.revenue + newTotal,
                                                     buyer: auth.uid,
-                                                    buyers: [...song.buyers, auth.uid],
-                                                    buyerCreditChange: -newTotal
+                                                    buyers: [...song.buyers, auth.uid]
                                                 }          
-                                                if (!newSongs.includes(newSong.url) && songs.length <= newSongs.length) {
-                                                    newSongs.push(newSong.url);
+                                                if (!songs.includes(newSong) && !oldSongs.includes(newSong) && !songIds.includes(newSong.url)) {
+                                                    songIds.push(newSong.url);
                                                     songs.push(newSong);
+                                                    oldSongs.push(newSong);
                                                 } 
                                             } else if (!song.buyerCount) {
                                                 const newSong = 
@@ -216,15 +221,21 @@ const Items = (props) => {
                                                     title: song.title, 
                                                     url: song.song,
                                                     price: song.price,
-                                                    revenue: song.revenue + newTotal,
                                                     buyer: auth.uid,
-                                                    buyers: [auth.uid],
-                                                    buyerCreditChange: -newTotal
+                                                    buyers: [auth.uid]
                                                 }          
-                                                if (!newSongs.includes(newSong.url) && songs.length <= newSongs.length) {
-                                                    newSongs.push(newSong.url);
+                                                if (!songs.includes(newSong) && !oldSongs.includes(newSong) && !songIds.includes(newSong.url)) {
+                                                    songIds.push(newSong.url);
                                                     songs.push(newSong);
+                                                    oldSongs.push(newSong);
                                                 }              
+                                            }
+                                        } else if (song.song !== item) {
+                                            console.log(song);
+                                            console.log("fred")
+                                            if (!songIds.includes(song.song) && !oldSongs.includes(song)) {
+                                                songIds.push(song.song);
+                                                oldSongs.push(song); 
                                             }
                                         }
                                     })  
@@ -242,9 +253,10 @@ const Items = (props) => {
     const handleClick = (e) => {
         e.preventDefault();
         songs.map((song) => {
-            console.log(song)
-            props.createPurchase(song);
+            console.log(song);
+            
         })
+        console.log(oldSongs);
     } 
     
 
@@ -287,8 +299,11 @@ const Items = (props) => {
         }
 
         songs.map((song) => {
-            props.createSongPurchase(song)
-            
+            if (!song.bandId) {
+                props.createSongPurchase(song, oldSongs);
+            } else {
+                props.createBandSongPurchase(song, oldBandSongs);
+            }
         })
 
         items.map((item) => {
@@ -387,7 +402,7 @@ const Items = (props) => {
 
     const clientString = "$" + total + ".00";
     const clientSong = "$" + songTotal + ".00";
-    
+
 
     if (items && songs) {
     return (
@@ -520,6 +535,11 @@ const Items = (props) => {
             <br/>
             <br/>
             <br/>
+            <button onClick={() => {
+                songs.map((song) => {
+                    console.log(song);
+                })
+            }}>hi</button>
             <br/>
             <br/>
             <br/>
@@ -551,7 +571,8 @@ const mapDispatchToProps = dispatch => {
     return {
         updateCart: (item, price) => dispatch(updateCart(item, price)),
         updateCartSong: (song) => dispatch(updateCartSong(song)),
-        createSongPurchase: (purhcase) => dispatch(createSongPurchase(purhcase)),
+        createSongPurchase: (purhcase, newSongs) => dispatch(createSongPurchase(purhcase, newSongs)),
+        createBandSongPurchase: (purhcase, newSongs) => dispatch(createBandSongPurchase(purhcase, newSongs)),
         createShowPurchase: (purhcase) => dispatch(createShowPurchase(purhcase))
     }
 }

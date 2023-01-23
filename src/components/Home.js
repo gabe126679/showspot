@@ -6,7 +6,8 @@ import { connect } from "react-redux";
 import Geocode from "react-geocode";
 import "@reach/combobox/styles.css";
 import mapStyles from "../mapStyles";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
+
 
 const libraries = ["places"];
 // const mapContainerStyle = {
@@ -34,7 +35,27 @@ const Home = (props) => {
   const [selected, setSelected] = useState(null);
   const [address, setAddress] = useState("");
 
+
+  const location = useLocation();
+  const pathname = location.pathname;
+
+  // const handleClick = () => {
+
+  //   console.log("it works")
+  //   navigate("/");
+  // };
+
+  // useEffect(() => {
+
+  //   document.body.addEventListener('click', handleClick);
+  // }, []);
+
+
   useMemo(() => {
+    
+    console.log(pathname.length);
+
+
     if (users) {
       users.map((user) => {
         const venueAddress = user.venueAddress
@@ -55,6 +76,7 @@ const Home = (props) => {
   });
 
   const onMapClick = useCallback((e) => {
+
     users.map((user) => {
       const address = user.venueAddress
       if (user.venueAddress) {
@@ -72,23 +94,17 @@ const Home = (props) => {
     })
   }, []);
 
-  const handleClick = () => {
-    // if (users) {
-    //   users.map((user) => {
-    //     const address = user.venueAddress
-    //     console.log(address);
-    //   })
-    // }
-    console.log(markers)
-  };
+
 
   const { isLoaded, loadError } = useLoadScript({
     googleMapsApiKey: mapKey,
     libraries,
   });
 
+
   const mapRef = useRef();
   const onMapLoad = useCallback((map) => {
+
     mapRef.current = map;
   }, []);
 
@@ -105,7 +121,7 @@ const Home = (props) => {
 
 
       return (
-        <div >
+        <div  >
     
           <Locate panTo={panTo} />
           {/* <button className = "testBtn" onClick={handleClick}>hello</button> */}
@@ -164,6 +180,8 @@ const Home = (props) => {
                             <button className="btn btn-primary text-center" onClick={() => {
                               navigate('/venue/' + user.id)
                             }}>shows</button>
+                            <br/>
+                            <br/>
                           </div>
 
                   </InfoWindow>
@@ -195,6 +213,8 @@ const Home = (props) => {
       );
 }
 
+
+
 function Locate({ panTo }) {
   return (
     <button
@@ -211,6 +231,7 @@ function Locate({ panTo }) {
       }}
     >
       <img src="/1.png" alt="location" />
+      
     </button>
   );
 }
@@ -222,6 +243,7 @@ function Search(props, { panTo }) {
       radius: 100 * 1000,
     }
   });
+
 
 
 
@@ -244,6 +266,9 @@ function Search(props, { panTo }) {
     }
   };
 
+  
+ 
+
   return (
     <div className="home-search">
       <Combobox onSelect={handleSelect}>
@@ -253,6 +278,7 @@ function Search(props, { panTo }) {
           disabled={!ready}
           placeholder="Search for Venues"
         />
+        {/* <button onClick={handleClick}>hit me</button> */}
         <ComboboxPopover>
           <ComboboxList>
             {status === "OK" &&

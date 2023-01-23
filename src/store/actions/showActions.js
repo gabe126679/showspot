@@ -261,89 +261,51 @@ export const activateBand = (band, decision) => {
 }
 
 
-export const createSongPurchase = (purchase) => {
+export const createSongPurchase = (purchase, newSongs) => {
   return async (dispatch, getState, { getFirestore }) => {
       const firestore = getFirestore();
-      const currentUsers = getState().firestore.ordered.users;
-      const newSongs = [];
-      const purchasedSongs = [];
-      let oldSong = {};
 
-      const newPrice = purchase.price.split('$').join('');
-      const newNumber = parseInt(newPrice);
-      const songObject = {
-        artist: purchase.artist,
-        artistId: purchase.artistId,
-        price: purchase.price,
-        song: purchase.url,
-        title: purchase.title,
-        buyerCount: purchase.buyers.length,
-        buyers: purchase.buyers,
-        revenue: newNumber
-      }
-
-      currentUsers.map((user) => {
-        if (user.id === purchase.artistId) {
-          user.songs.map((track) => {
-            if (track.buyers) {
-              track.buyers.map((buyer) => {
-                if (buyer === purchase.buyer && track.song !== purchase.url) {
-                  purchasedSongs.push(track);
-                }
-              })
-            }
-            if (track.song !== purchase.url && !newSongs.includes(track)) {
-              newSongs.push(track);
-            }
-            if (track.song === purchase.url && !newSongs.includes(track)) {
-              oldSong = track;
-            }
-          })
-        }
-      })
-
-      firestore.collection('reciepts').add({
-        purchaseType: purchase.purchaseType, 
-        artist: purchase.artist,
-        artistId: purchase.artistId,
-        buyer: purchase.buyer,
-        buyerCreditChange: purchase.buyerCreditChange,
-        price: purchase.price,
-        title: purchase.title,
-        url: purchase.url,
-        createdAt: new Date()
-      })
-      .then(() => {
-        firestore.collection('users').doc(purchase.buyer)
-        .update({
-          cartItems: [],
-          purchasedSongs: [...purchasedSongs, songObject]
-        })
+      firestore.collection('users').doc(purchase.buyer)
+      .update({
+        cartItems: [],
+        purchasedSongs: firestore.FieldValue.arrayUnion(purchase)
       })
       .then(() => {
         firestore.collection('users').doc(purchase.artistId) 
         .update({
-          songs: firestore.FieldValue.arrayRemove(oldSong),
-          artistCredit: purchase.revenue,
-          revenue: purchase.revenue
+          songs: newSongs
         })
       })
       .then(() => {
-        firestore.collection('users').doc(purchase.artistId) 
+          dispatch({ type: 'CREATED_BAND_SONG_PURCHASE_SUCCESS' });
+      }).catch((err) => {
+          dispatch({ type: 'CREATED_BAND_SONG_PURCHASE_ERROR', err });
+          console.log(err)
+      });
+  }
+}
+
+export const createBandSongPurchase = (purchase, newSongs) => {
+  return async (dispatch, getState, { getFirestore }) => {
+      const firestore = getFirestore();
+
+      firestore.collection('users').doc(purchase.buyer)
+      .update({
+        cartItems: [],
+        purchasedSongs: firestore.FieldValue.arrayUnion(purchase)
+      })
+      .then(() => {
+        firestore.collection('bands').doc(purchase.bandId) 
         .update({
-          songs: firestore.FieldValue.arrayUnion(songObject)
+          songs: newSongs
         })
       })
       .then(() => {
           dispatch({ type: 'CREATED_SONG_PURCHASE_SUCCESS' });
       }).catch((err) => {
-          
           dispatch({ type: 'CREATED_SONG_PURCHASE_ERROR', err });
           console.log(err)
       });
-
-
-
   }
 }
 

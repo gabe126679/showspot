@@ -279,5 +279,33 @@ export const activateBandSong = (band, activatedSongs) => {
   }
 }
 
+export const addPlaylistListener = (playlist, listener) => {
+  return async (dispatch, getState, { getFirestore }) => {
+      const firestore = getFirestore();
+
+      firestore.collection('playlists').doc(playlist).update({
+        listeners: firestore.FieldValue.arrayUnion(listener)
+      }).then(() => {
+          dispatch({ type: 'ADD_PLAYLIST_LISTENER_SUCCESS' });
+      }).catch((err) => {
+          dispatch({ type: 'ADD_PLAYLIST_LISTENER_ERROR', err });
+      });
+  }
+}
+
+export const removePlaylistListener = (playlist, listener) => {
+  return async (dispatch, getState, { getFirestore }) => {
+      const firestore = getFirestore();
+
+      firestore.collection('playlists').doc(playlist).update({
+        listeners: firestore.FieldValue.arrayRemove(listener)
+      }).then(() => {
+          dispatch({ type: 'REMOVE_PLAYLIST_LISTENER_SUCCESS' });
+      }).catch((err) => {
+          dispatch({ type: 'REMOVE_PLAYLIST_LISTENER_ERROR', err });
+      });
+  }
+}
+
 
 

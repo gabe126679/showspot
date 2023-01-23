@@ -27,8 +27,10 @@ import Tickets from "./components/Tickets";
 import TicketPrice from "./components/forms/TicketPrice";
 import Cart from "./components/cart/Cart";
 import Playlists from "./components/Playlists"
+import InstagramCard from "./components/InstagramCard"
 
 import "./custom.scss"
+import MapBackground from "./components/MapBackground";
 
 function App() {
   return (
@@ -36,7 +38,14 @@ function App() {
       <NavMain />
         <Routes >
           <Route exact path='/' element={<Home  />}  />
-          <Route exact path='/spotters' element={<Spotters />} />
+        </Routes>
+        <Routes >
+          <Route exact path='/cart' element={<Cart />} />
+          <Route exact path='/venueSignup' element={<VenueSignup />} />
+        </Routes>
+        <MapBackground />
+        <Routes >
+          <Route exact path='/spotters' element={<Spotters/>} />
           <Route exact path='/spotterLogin' element={<SpotterLogin />} />
           <Route exact path='/spotterSignup' element={<SpotterSignup />} />
           <Route exact path='/spotterProfile' element={<SpotterProfile />} />
@@ -48,7 +57,7 @@ function App() {
           <Route exact path='/artistSignup' element={<ArtistSignup />} />
           <Route exact path='/venues' element={<Venues />} />
           <Route exact path='/venueProfile' element={<VenueProfile />} />
-          <Route exact path='/venueSignup' element={<VenueSignup />} />
+          
           <Route exact path='/bands' element={<Bands />} />
           <Route exact path='/bandProfile/:id' element={<BandProfile />} />
           <Route exact path='/artist/:id' element={<PublicArtist />} />
@@ -56,11 +65,11 @@ function App() {
           <Route exact path='/invites' element={<Invites />} /> 
           <Route exact path='/tickets/:id' element={<Tickets />} />
           <Route exact path='/ticketPrice/:id' element={<TicketPrice />} />
-          <Route exact path='/cart' element={<Cart />} />
           <Route exact path='/playlists' element={<Playlists />} />
           <Route exact path='/bandInvites/:id' element={<BandInvites />} />
           <Route exact path='/band/:id' element={<PublicBand />} />
         </Routes>
+
       <Footer />
   </>
   );

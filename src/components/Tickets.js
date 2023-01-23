@@ -78,22 +78,18 @@ function Tickets(props) {
       });
 
     return (
-        <div>
-        <br/>
-        <br/>
-        <br/>
-        <br/>
-        <br/>
-        <br/>
-            <div className="login-container container border bg-warning text-primary">
-                <br/>
-                <br/>
+        <div className="ticket-border">
+
+            <div className="ticket-card login-container container bg-warning text-primary">
+
                 {shows && shows.map((show) => {
                     if (show.id === id) {
                         const artistArray = [...show.artists];
                         
                         return (
                             <Container fluid>
+                                <br/>
+                                <br/>
                                 {(() => {
                                     if (show.startTime) {
                                         return <h1 className="text-center ">{show.startTime.toDate().toDateString()}</h1>
@@ -223,10 +219,7 @@ function Tickets(props) {
                 <br/>
             </div> 
             <br/>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
+
  
         </div>
     )

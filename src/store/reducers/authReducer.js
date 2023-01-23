@@ -157,12 +157,32 @@ const initState = {
           authError: null
         }
       case 'ADD_PLAYLIST_SONG_ERROR':
-        console.log('add playlist song error');
         return {
           ...state,
-          authError: 'cart add failed'
+          authError: 'add playlist song error'
         }
-
+      case 'ADD_PLAYLIST_LISTENER_SUCCESS':
+        console.log('add playlist listener success');
+        return {
+          ...state,
+          authError: null
+        }
+      case 'ADD_PLAYLIST_LISTENER_ERROR':
+        return {
+          ...state,
+          authError: 'add playlist listener failed'
+        }
+      case 'REMOVE_PLAYLIST_LISTENER_SUCCESS':
+        console.log('remove playlist listener success');
+        return {
+          ...state,
+          authError: null
+        }
+      case 'REMOVE_PLAYLIST_LISTENER_ERROR':
+        return {
+          ...state,
+          authError: 'remove playlist listener failed'
+        }
       case 'ADD_BAND_SONG_SUCCESS':
         console.log('add band song success');
         return {

@@ -257,7 +257,6 @@ function PublicArtist(props) {
                         </tr>
                       </thead>
                       {band.songs && band.songs.map((track) => {         
-                        
                           bands.map((band) => {
                             if (band.id === id) {
                               band.songs.map((song) => {
@@ -278,7 +277,7 @@ function PublicArtist(props) {
                                 
                           
                           if (track.activated === true) {
-                            
+                         
                             return (
                                 <tbody>
                                   {users && users.map((user) => {
@@ -311,7 +310,7 @@ function PublicArtist(props) {
                                   })}
                                 </tbody>
                               )
-                          } else if (!track.activated || track.activated === false)
+                          } else if (!track.activated || track.activated === false) {
                             
                             return (
                                 <tbody>
@@ -404,6 +403,7 @@ function PublicArtist(props) {
                                     })}
                                 </tbody>
                             )
+                          } 
                                     
                       })}
                     </Table>

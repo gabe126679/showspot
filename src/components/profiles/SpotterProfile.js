@@ -128,19 +128,10 @@ function SpotterProfile(props) {
                                 </tr>
                             </thead>
                             {user.purchasedSongs.map((song) => {
-                                users.map((user) => {
-                                    if (user.songs) {
-                                        user.songs.map((newSong) => {
-                                            if (newSong.song === song.song && artist !== (user.firstName + " " + user.lastName)) {
-                                                setArtist(user.firstName + " " + user.lastName);
-                                            }
-                                        })
-                                    }
-                                })
                                 return (
                                 <tbody>
                                     <tr>
-                                    <td>{artist}</td>
+                                    <td>{song.artist}</td>
                                     <td>{song.price}</td>
                                     <td>{song.title}</td>
                                     </tr>
@@ -236,6 +227,6 @@ export default compose(
     connect(mapStateToProps, mapDispatchToProps),
     firestoreConnect([
     {  collection: 'users' },
-    {  collection: 'shows' },
+    {  collection: 'shows' }
 ])
   )(SpotterProfile);

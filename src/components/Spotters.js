@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react'
-import { Table, Dropdown } from 'react-bootstrap';
+import { Table, Dropdown, Form } from 'react-bootstrap';
 import { firestoreConnect } from 'react-redux-firebase';
 import { useNavigate, Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
 import { createBackline, updateVote } from '../store/actions/showActions';
+import '../instagram.css';
+import symbolOne from "../1.png";
 
 function Spotters(props) {
   const { auth, shows, users } = props;
@@ -13,6 +15,9 @@ function Spotters(props) {
   const [active, setActive] = useState(false);
   const [artist, setArtist] = useState(null);
 
+  const [likes, setLikes] = useState(0);
+  const [showDescription, setShowDescription] = useState(false);
+  const [showDropdown, setShowDropdown] = useState(false);
   const [checkedBacklines, setCheckedBacklines] = useState([])
   const newArray = [];
   const [voted, setVoted] = useState(false);
@@ -112,155 +117,178 @@ function Spotters(props) {
     }
   });
 
+  const handleChange = () => {
+
+  }
+
+  const handleSubmit = () => {
+
+  }
+
+
   if (shows) {
     return (
-      <div>
-        <br/>
-        <br/>
-        <br/>
-        <br/>
-        <br/>
-        <br/>
-        <div className="profile-border">
-        <br/>
-        <br/>   
-        <div className="text-center">
-          {(() => {
-            if (active) {
-              return <h4>ACTIVE SHOWS</h4>
-            } else {
-              return <h4>PENDING SHOWS</h4>
-            }
-          })()}       
+      <div >  
+          <Form className="artist-search-form" onSubmit={handleSubmit}>
+              <Form.Group className="text-center artist-search-field mb-3" controlId="second" onChange={handleChange}>
+
+                  <Form.Control type="text" placeholder="Search shows"
+                  
+                  />
+
+              </Form.Group>
+              
+          </Form>
           <br/>
-          <div  className="tab-border">
-            <button className="spotter btn btn-warning" onClick={pushSpotterProfile}>spotter profile</button>
-            <button className="pending btn btn-primary" onClick={toggleStatus} id="pending">pending shows</button>
-            <button className="active btn btn-warning" onClick={toggleStatus} id="active">active shows</button>
-            <button className="artist btn btn-warning" onClick={pushArtistProfile}>artist profile</button>
-          </div>
-        </div>
-                <br/>
-                <br/>
-                <Table hover>
-                  <thead>
-                    <tr>
-                      <th>Details</th>
-                      <th>Artists</th>
-                      <th>Votes</th>
-                    </tr>
-                  </thead>
-                {shows && shows.map((show) => {
-                  if (show.activated && active === true) {
-                    return (
-                      <tbody>
-                        <tr>
-                          <td><button className="btn btn-primary" id={show.id} onClick={handleView}>View</button></td>
-                          <td>
-                            <Dropdown >
-                              <Dropdown.Toggle className="dropdown-basic" variant="warning" id="dropdown-basic"
-                              >
-                              {show.artists[0].firstName} {show.artists[0].lastName}
-                              </Dropdown.Toggle>
-  
-                              <Dropdown.Menu>
-                                {show.artists.map((artist) => {
+              {shows && shows.map((show) => {
+                if (show.activated && active === true) {
+                  return (
+                    <div className="ticket-border">
+                    <div className=" card-container">
+                      <div className="card">
+                        <div className="card-header">
+                          <h2 className="username">{show.promoterUserName}</h2>
+                        </div>
+                        <img src="../public/1.png" alt="Post" className="card-img" />
+                        
+                        <div className="description-dropdown">
+                            <div className='description-text'>{show.voteCount}</div>
+                            {(() => {
+                              if (!show.votedOn.includes(auth.uid)) {
+                               
+                                return (
+                                  <button className="btn btn-primary description-arrow" onClick={() => {   
+                                    props.updateVote(auth.uid, show.id); }} id={show.id}>^</button>
+                                )
+                              }  else if (show.votedOn.includes(auth.uid)) {
+                               
+                                return <button className="bg-grey description-text">voted</button>
+                              }
+                            })()}
+                        </div>
+                        <div className="card-body">
+                          <Dropdown >
+                            <Dropdown.Toggle className="dropdown-basic " variant="warning" id="dropdown-basic"
+                            >
+                            {show.artists[0].firstName} {show.artists[0].lastName}
+                            </Dropdown.Toggle>
+
+                            <Dropdown.Menu>
+                              {show.artists.map((artist) => {
+                                if (artist.type === "artist") {
                                   return (
                                     <div>
-                                      <Dropdown.Item href="#/action-1">                             
+                                      <Dropdown.Item className="description-text" href="#/action-1">                             
                                           <Link to={"/artist/" + artist.id}>
                                             {artist.firstName} {artist.lastName}
                                           </Link>
                                       </Dropdown.Item>
                                     </div>
                                   )
-                                })}
-                              </Dropdown.Menu>
-                            </Dropdown>
-                          </td>
-                          <td>
-                            <div >
-                              <div className="col-4">{show.voteCount}</div>
-                              {(() => {
-                                if (!show.votedOn.includes(auth.uid)) {
-                                  <button className="btn btn-primary" onClick={() => {   
-                                    props.updateVote(auth.uid, show.id);  
-                                  }} id={show.id}>^</button>
+                                } else if (artist.type === "band") {
+                                  return (
+                                    <div>
+                                      <Dropdown.Item className="description-text" href="#/action-1">                             
+                                          <Link to={"/artist/" + artist.id}>
+                                            {artist.bandName}
+                                          </Link>
+                                      </Dropdown.Item>
+                                    </div>
+                                  )
                                 }
-                              })()}
-                            </div>
-                          </td>
-                        </tr>
-                      </tbody>
-                    ) 
-                  } else if ((!show.activated || show.activated === false) && active === false) {
-                    return (
-                      <tbody>
-                        <tr>
-                          <td><button className="btn btn-primary" id={show.id} onClick={handleView}>View</button></td>
-                          
-                          <td>
-                            <Dropdown >
-                              <Dropdown.Toggle className="dropdown-basic" variant="warning" id="dropdown-basic"
-                              >
-                              {show.artists[0].firstName} {show.artists[0].lastName}
-                              </Dropdown.Toggle>
-  
-                              <Dropdown.Menu>
-                                {show.artists.map((artist) => {
-                                  if (artist.type === "artist") {
+
+                              })}
+                            </Dropdown.Menu>
+                          </Dropdown>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  ) 
+                } else if ((!show.activated || show.activated === false) && active === false) {
+                  return (
+                    <div className="ticket-border">
+                      <div className=" card-container">
+                        <div className="card">
+                          <div className="card-header">
+                            <h2 className="username">{show.promoterUserName}</h2>
+                          </div>
+                          <img src={symbolOne} alt="Post" className="card-img" onClick={() => {
+                            navigate("/tickets/" + show.id)
+                          }} />
+                        
+                            <div className="description-dropdown">
+                              <div className='description-text'>{show.voteCount}</div>
+                                {(() => {
+                                  if (!show.votedOn.includes(auth.uid)) {
+                               
                                     return (
-                                      <div>
-                                        <Dropdown.Item href="#/action-1">                             
-                                            <Link to={"/artist/" + artist.id}>
-                                              {artist.firstName} {artist.lastName}
-                                            </Link>
-                                        </Dropdown.Item>
-                                      </div>
+                                      <button className="btn btn-primary description-arrow" onClick={() => {   
+                                      props.updateVote(auth.uid, show.id); }} id={show.id}>^</button>
                                     )
-                                  } else if (artist.type === "band") {
-                                    return (
-                                      <div>
-                                        <Dropdown.Item href="#/action-1">                             
-                                            <Link to={"/artist/" + artist.id}>
-                                              {artist.bandName}
-                                            </Link>
-                                        </Dropdown.Item>
-                                      </div>
-                                    )
+                                  } else if (show.votedOn.includes(auth.uid)) {
+                                  
+                                    return <p className="color-warning description-text">voted</p>
                                   }
-
-                                })}
-                              </Dropdown.Menu>
-                            </Dropdown>
-                          </td>
-                          <td>
-                            <div >
-                              <div >{show.voteCount}</div>
-                              {(() => {
-                                if (!show.votedOn.includes(auth.uid)) {
-                                  <button className="btn btn-primary" onClick={() => {   
-                                    props.updateVote(auth.uid, show.id);  
-                                  }} id={show.id}>^</button>
-                                }
-                              })()}
+                                })()}
                             </div>
-                          </td>
+                        <div className="dropdown-container">
+                          <button className="dropdown-button" onClick={() => setShowDropdown(!showDropdown)}>
+                            Show Info
+                          </button>
+                          {showDropdown && (
+                            <div className="dropdown-content">
+                              {show.artists.map((artist) => {
+                                if (artist.type === "artist") {
+                                  return (
+                                    <div className="description-dropdown dropdown-link">                       
+                                        <Link className="description-text" to={"/artist/" + artist.id}>
+                                          {artist.firstName} {artist.lastName}
+                                        
+                                        </Link>
+                                        <p className="description-arrow">band</p>
+                                      
+                                    </div>
+                                  )
+                                } else if (artist.type === "band") {
+                                  return (
+                                    <div className="description-dropdown dropdown-link">
+                                                                   
+                                        <Link className="description-text" to={"/artist/" + artist.id}>
+                                          {artist.bandName}
+                                        </Link>
+                                        <p className="description-arrow">artist</p>
+                                    </div>
+                                  )
+                                }
 
-                        </tr>
-                      </tbody>
-                    )
-                  }
+                              })}
 
-                })}
-                </Table>
-        </div>
-        <br/>
-        <br/>
-        <br/>
-        <br/>
-        <br/>
-        <br/>
+                                <div className="description-dropdown dropdown-link">
+                                  
+                                  <Link className="description-text" to={"/venue/" + show.venueId}>
+                                    {show.venueName}
+                                  </Link>
+                                  {users && users.map((user) => {
+                                    if (user.id=== show.venueId) {
+                                      return (
+                                        <p className="description-arrow">{user.venueAddress}</p>
+                                      )
+                                    } 
+                                  })} 
+
+                              </div>
+                            </div>
+                          )}
+
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  )
+                }
+              })}
+          <br/>
       </div>
     )
   }

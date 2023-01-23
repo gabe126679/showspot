@@ -99,16 +99,9 @@ function Invites(props) {
     if (users) {
       return (
       <div>
-        <br/>
-        <br/>
-        <br/>
-        <br/>
-        <br/>
-        <br/>
- 
+
         <div className="profile-border">
-            <br/>
-            <br/>   
+ 
             <div className="text-center">
                 {(() => {
                 if (active === true) {
@@ -420,10 +413,6 @@ function Invites(props) {
                 })}
             </Table>
         </div>
-        <br/>
-        <br/>
-        <br/>
-        <br/>
         <br/>
         <br/>
         </div>

@@ -161,7 +161,14 @@ function Playlists(props) {
                                     <Dropdown >
                                       <Dropdown.Toggle className="dropdown-basic" variant="warning" id="dropdown-basic"
                                       >
-                                      {playlist.songs[0].title}
+                                      {(() => {
+                                        if (playlist.songs) {
+                                          return <div>{playlist.songs[0].title}</div>
+                                        } else {
+                                          return <div>no songs yet</div>
+                                        }
+                                      })()}
+                                      
                                       </Dropdown.Toggle>
           
                                       <Dropdown.Menu>

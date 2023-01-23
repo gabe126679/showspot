@@ -167,16 +167,7 @@ function Artists(props) {
     if (users) {
         return (
             <div>
-        <br/>
-        <br/>
-        <br/>
-        <br/>
-        <br/>
-        <br/>
-
             <div className="profile-border">
-                        <br/>
-                        <br/>   
                         <div className="text-center">
                             {(() => {
                             if (active) {
@@ -331,11 +322,6 @@ function Artists(props) {
                     </Table>
 
             </div>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
             <br/>
             </div>
             

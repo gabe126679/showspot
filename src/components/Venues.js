@@ -104,16 +104,8 @@ function Venues(props) {
     if (users) {
         return (
             <div>
-        <br/>
-        <br/>
-        <br/>
-        <br/>
-        <br/>
-        <br/>
-
             <div className="profile-border">
-                <br/>
-                <br/>   
+
                 <div className="text-center">
                     {(() => {
                     if (active) {
@@ -158,7 +150,7 @@ function Venues(props) {
                                                     console.log(addresses);
                                                 })
                                                 
-                                            }}>{user.userName}</td>
+                                            }}>{user.firstName} {user.lastName}</td>
                                         </tr> 
                                         
                                     ) 
@@ -202,24 +194,14 @@ function Venues(props) {
                     </Table>
             </div>
             <br/>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
+
 
             </div>
         )
     } else {
         return <div> 
             <br/>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
+
             loading ... 
             </div>
     }

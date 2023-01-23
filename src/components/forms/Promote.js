@@ -149,24 +149,19 @@ function Promote(props) {
       });
 
     return (
-        <div>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
+        <div className="promote-a-show">
+
             
             <div className="container text-center">
                 <button className="btn btn-warning">show</button>
                 <button className="btn btn-primary" onClick={handleClick}>band</button>
             </div>
             {/* <button onClick={handleClick}>hi</button> */}
-            <div className="login-container container border">
+            <div className="login-container container bg-warning border">
             <br/>
                     <br/>
                 <Form onSubmit={handleAddArtist}>
-                    <h1 className="text-center">Promote A Show</h1>
+                    <h1 className="text-center text-white">Promote A Show</h1>
 
                     <div className="container text-center">
                         <button className="btn btn-primary artist-button" onClick={handleArtistShift}>artist</button>
@@ -179,8 +174,8 @@ function Promote(props) {
                             
                             if (artist.type === "artist") {
                                 return (
-                                    <div>
-                                        <Form.Label>Artsit # {artist.number}</Form.Label>
+                                    <div className=" text-white">
+                                        <Form.Label className=" text-white">Artsit # {artist.number}</Form.Label>
                                         <div className="mb-3 p-2 border">
                                             {artist.firstName} {artist.lastName}
                                         </div>
@@ -198,7 +193,7 @@ function Promote(props) {
                             }
                         })}
                         <Form.Group className="mb-3" controlId="second" onChange={handleChange}>
-                            <Form.Label>Artsit # {artists.length + 1}</Form.Label>
+                            <Form.Label className=" text-white">Artsit # {artists.length + 1}</Form.Label>
                             <Form.Control type="text" placeholder="Enter Artist Name"
                             
                             />
@@ -251,11 +246,12 @@ function Promote(props) {
                 <br/>
             </div> 
             <br/>
-            <div className="login-container container border">
+            
+            <div className="login-container bg-warning container border">
                 <br/>
                 <br/>
                 <Form onSubmit={handleSubmit}>
-                    <h1 className="text-center">Choose a Venue</h1>
+                    <h1 className="text-center text-white">Choose a Venue</h1>
                     <br/>
                     {artists && artists.map((artist) => {
                         if (artist.type === "artist") {
@@ -277,7 +273,7 @@ function Promote(props) {
 
                     })}
                     <Form.Group className="mb-3" controlId="venue" onChange={handleChange}>
-                        <Form.Label>Venue</Form.Label>
+                        <Form.Label className=" text-white">Venue</Form.Label>
                         <Form.Control type="text" placeholder="Enter Venue"
                          
                         />
@@ -296,11 +292,7 @@ function Promote(props) {
                 <br/>
                 <br/>
             </div> 
-            <br/>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
+
  
         </div>
     )

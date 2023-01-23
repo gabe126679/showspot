@@ -195,12 +195,7 @@ function ArtistProfile(props) {
     if (users) {
       return (
           <div>
-        <br/>
-        <br/>
-        <br/>
-        <br/>
-        <br/>
-        <br/>
+
           {users && users.map((user) => {
               if (user.id === auth.uid) {
                 return (
@@ -246,27 +241,27 @@ function ArtistProfile(props) {
                                     <tr>
                                       <td><button className="btn btn-primary" id={show.id} onClick={pushShow}>view</button></td>
                                       <td>
-                                      <Dropdown >
-                                        <Dropdown.Toggle className="dropdown-basic" variant="warning" id="dropdown-basic"
-                                        >
-                                        {show.artists[0].firstName} {show.artists[0].lastName}
-                                        </Dropdown.Toggle>
-            
-                                        <Dropdown.Menu>
-                                          {show.artists.map((artist) => {
-                                            return (
-                                              <div>
-                                                <Dropdown.Item href="#/action-1">                             
-                                                    <Link to={"/artist/" + artist.id}>
-                                                      {artist.firstName} {artist.lastName}
-                                                    </Link>
-                                                </Dropdown.Item>
-                                              </div>
-                                            )
-                                          })}
-                                        </Dropdown.Menu>
-                                      </Dropdown>
-                                    </td>
+                                        <Dropdown >
+                                          <Dropdown.Toggle className="dropdown-basic" variant="warning" id="dropdown-basic"
+                                          >
+                                          {show.artists[0].firstName} {show.artists[0].lastName}
+                                          </Dropdown.Toggle>
+              
+                                          <Dropdown.Menu>
+                                            {show.artists.map((artist) => {
+                                              return (
+                                                <div>
+                                                  <Dropdown.Item href="#/action-1">                             
+                                                      <Link to={"/artist/" + artist.id}>
+                                                        {artist.firstName} {artist.lastName}
+                                                      </Link>
+                                                  </Dropdown.Item>
+                                                </div>
+                                              )
+                                            })}
+                                          </Dropdown.Menu>
+                                        </Dropdown>
+                                      </td>
                                       {(() => {
                                         if (show.activated) {
                                           return <td>active</td>
@@ -440,11 +435,7 @@ function ArtistProfile(props) {
             })}
 
         <br/>
-        <br/>
-        <br/>
-        <br/>
-        <br/>
-        <br/>
+
 
           </div>
       )

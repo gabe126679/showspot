@@ -46,31 +46,32 @@ function PublicArtist(props) {
     }
 
     const handleChange = (e) => {
-      raters.push(auth.uid);
-      users.map((user) => {
-        if (user.id === id && user.raters) {
-          user.raters.map((rater) => {
-            raters.push(rater);
-          })
-        }
-        if (user.id === id && user.ratings) {
-          user.ratings.map((rate) => {
-            artistRatings.push(rate);
-          })
-        }
-      })
-      let average = 0;
-      artistRatings.push(parseInt(e.target.value));
+      // raters.push(auth.uid);
+      // users.map((user) => {
+      //   if (user.id === id && user.raters) {
+      //     user.raters.map((rater) => {
+      //       raters.push(rater);
+      //     })
+      //   }
+      //   if (user.id === id && user.ratings) {
+      //     user.ratings.map((rate) => {
+      //       artistRatings.push(rate);
+      //     })
+      //   }
+      // })
+      // let average = 0;
+      // artistRatings.push(parseInt(e.target.value));
       
-      artistRatings.forEach((rating) => {
-        average = average + rating
-      })
-      const averageRating = average / (artistRatings.length)
-      setArtistRating(averageRating);
-      console.log(average);
-      console.log(artistRating);
-      console.log(average / artistRatings.length);
-      props.updateRating(raters, averageRating.toFixed(2), artistRatings, id);
+      // artistRatings.forEach((rating) => {
+      //   average = average + rating
+      // })
+      // const averageRating = average / (artistRatings.length)
+      // setArtistRating(averageRating);
+      // console.log(average);
+      // console.log(artistRating);
+      // console.log(average / artistRatings.length);
+      // props.updateRating(raters, averageRating.toFixed(2), artistRatings, id);
+      console.log("completed")
     }
 
     const addToCart = (e) => {
@@ -132,17 +133,10 @@ function PublicArtist(props) {
     if (users) {
       return (
           <div>
-            
-          <br/>
-          <br/>
-          <br/>
-          <br/>
           {users && users.map((user) => {
               if (user.id === id) {
                 return (
-                  <div className="profile-border">
-                    <br/>
-                    <br/>   
+                  <div className="profile-border"> 
                     <div className="text-center">
                         {(() => {
                         if (active) {
@@ -325,9 +319,7 @@ function PublicArtist(props) {
               }
               
             })}
-          <br/>
-          <br/>
-          <br/>
+
             {/* <button onClick={handleClick}>hi</button> */}
           </div>
       )

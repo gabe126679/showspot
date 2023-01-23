@@ -211,7 +211,7 @@ function BandProfile(props) {
                             <tr>
                                 <td onClick={handleClick} id={track.id}>{track.title}</td>
                                 <td>                      
-                                {track.voters.length}
+                               
                                 </td>
                                 {(() => {
                                     
