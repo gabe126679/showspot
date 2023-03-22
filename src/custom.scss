@@ -1,11 +1,11 @@
 $primary: #FEFEFA;
-$secondary: #7F8487;
-$success: #C4DDFF;
+$secondary: #dd3615;
+$success: #1eef3d;
 $warning: #202c3e;
 $info: #FEE2C5;
 
 
-@import 'react-big-calendar/lib/sass/styles';
+@import "react-big-calendar/lib/sass/styles";
 
 
 body {
@@ -131,18 +131,32 @@ button:hover {
 .ratings-container .skills .rating input:checked::before {
     color: $primary;
 }
+.search-buttons {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    overflow: hidden;
+    z-index: 4;
+    position: fixed;
+
+    width: 100%;
+
+}
+.search-buttons button {
+    width: 100%;
+}
 .tab-border {
     display: flex;
     flex-direction: row;
     justify-content: center;
     overflow: hidden;
+
+
 }
 .tab-border button {
     font-size: 10px;
     width: 85%;
 }
-
-
 .testBtn {
     position: absolute;
     top: 8em;
@@ -487,6 +501,23 @@ button:hover {
     bottom: 25rem;
 }
 .ticket-border {
+    margin-left: auto;
+    margin-right: auto;
+    margin: 50px;
+    border: 1px solid $primary;
+    border-radius: 10px;
+    overflow-x: hidden;
+    padding: 5px;
+    background-color: $primary;
+    color: $warning;
+    box-shadow: -1px -1px 2px rgba(255,255,255,0.25),
+    inset 2px 2px 5px rgba(255,255,255,0.25),
+    8px 30px 30px rgba(0,0,0,0.4),
+    inset -2px -2px 5px rgba(0,0,0,0.3);
+    position: relative;
+    bottom: 25rem;
+}
+.show-bill-border {
     // margin-left: auto;
     // margin-right: auto;
     margin-top: 50px;
@@ -496,7 +527,7 @@ button:hover {
     // overflow-x: hidden;
 
     position: relative;
-    bottom: 45rem;
+    bottom: 15rem;
     width: 100%;
 }
 .ticket-card {
@@ -510,8 +541,55 @@ button:hover {
     position: relative;
     bottom: 25rem;
 }
+.search-shows {
+    position: fixed;
+    z-index: 9;
+    bottom: 640px;
+    margin: auto;
+    text-align: center;
+}
+.search-results {
+    width: 100%;
+    text-align: center;
+    margin: auto;
+}
+.search-items {
+    width: 10px;
+    text-align: center;
+    margin: auto;
+}
+.search-input {
+    width: 100%;
+    text-align: center;
+    margin: auto;
+    background-color: $warning;
+    color: $warning;
+}
+// .search-click {
+//     z-index: 9;
+// }
+.artist-search-form {
+    z-index: 4;
+    background-color: white;
+    position: fixed;
+    width: 100%;
+    bottom: 621px;
+    text-align: center;
+    height: 34px;
+}
+.artist-search-field {
+    width: 100%;
+    border-radius: 5px;
+    display: inline-block;
+    bottom: 202px;
+}
+.dropdown-hidden {
+    text-align: center;
+    position: relative;
+    top: 15px;
+}
 .dropdown-basic {
-    max-width: 100px;
+    width: 100%;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -521,7 +599,11 @@ button:hover {
     align-items: end;
     flex-direction: row;
 }
-
+.action-button {
+    position: relative;
+    top: 15px;
+    border-radius: 50px;
+}
 
 
 
@@ -535,15 +617,14 @@ button:hover {
     }
 }
 @media (max-width: 490px) {
-    // #map {
-    //     min-height: 940px;
-    //     overflow: hidden;
-    // }
+    .artist-search-form {
+        bottom: 771px;
+    }
     .profile-border {
         bottom: 45rem;
     }
     .ticket-border {
-        bottom: 50rem;
+        bottom: 45rem;
     }
     .promote-a-show {
         bottom: 45rem;
@@ -557,7 +638,37 @@ button:hover {
         border-bottom: 0.5px solid $primary;
 
     }
+
 }
+@media (max-width: 395px) {
+    .artist-search-form {
+        bottom: 720px;
+    }
+    .profile-border {
+        bottom: 40rem;
+    }
+    .ticket-border {
+        bottom: 40rem;
+    }
+    .promote-a-show {
+        bottom: 40rem;
+    }
+}
+@media (max-width: 285px) {
+    .artist-search-form {
+        bottom: 530px;
+    }
+    .profile-border {
+        bottom: 35rem;
+    }
+    .ticket-border {
+        bottom: 35rem;
+    }
+    .promote-a-show {
+        bottom: 35rem;
+    }
+}
+
 
 /* import bootstrap to set changes */
 @import "~bootstrap/scss/bootstrap";

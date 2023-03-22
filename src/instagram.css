@@ -22,15 +22,19 @@
     background-color: #f3f3f3;
     padding: 10px;
     text-align: center;
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
   }
-  
   .username {
     margin: 0;
     color: #333;
     font-size: 18px;
     font-weight: bold;
     position: relative;
-    right: 30%;
+
   }
   
   .card-body {
@@ -71,6 +75,7 @@
     justify-content: space-between;
     align-items: center;
     cursor: pointer;
+    
   }
   
   .description-text {
@@ -78,11 +83,25 @@
     color: #333;
     font-size: 18px;
     font-weight: bold;
+    display: flex;
+    align-items: center;
+
   }
+  .description-arrow {
+    display: flex;
+    align-items: center;
+    position: relative;
+    margin: 0;
+    
+  }
+  .description-container {
+    display: inline-block;
+    text-align: center;
+  }
+
   .dropdown-container {
     width: 100%;
   }
-  
   .dropdown-button {
     width: 100%;
     background-color: #202c3e;

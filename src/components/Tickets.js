@@ -78,7 +78,7 @@ function Tickets(props) {
       });
 
     return (
-        <div className="ticket-border">
+        <div className="show-bill-border">
 
             <div className="ticket-card login-container container bg-warning text-primary">
 

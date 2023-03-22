@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react'
 import { firestoreConnect } from 'react-redux-firebase';
 import { connect } from 'react-redux';
@@ -8,8 +9,9 @@ import { useForm } from "react-hook-form";
 import { storage } from '../../config/fbConfig';
 import { ref, getDownloadURL, uploadBytesResumable } from "firebase/storage";
 import { addSong, addBandSong } from '../../store/actions/authActions';
-import { Calendar, momentLocalizer } from 'react-big-calendar'
-import moment from 'moment'
+import { Calendar, momentLocalizer } from 'react-big-calendar';
+import moment from 'moment';
+import symbolOne from "../../1.png";
 
 function ArtistProfile(props) {
 
@@ -26,6 +28,9 @@ function ArtistProfile(props) {
     const [title, setTitle] = useState(null);
     const [price, setPrice] = useState(null);
     const [song, setSong] = useState(null);
+    const [showDropdown, setShowDropdown] = useState(false);
+    const [songDropdown, setSongDropdown] = useState(false);
+    const [bandDropdown, setBandDropdown] = useState(false);
     const [myEvents, setMyEvents] = useState([]);
     const [bandSong, setBandSong] = useState([]);
     const [type, setType] = useState("artist");
@@ -153,295 +158,380 @@ function ArtistProfile(props) {
       navigate("/band/" + e.target.id);
     }
 
-    const pushBand = () => {
-      navigate('/bandProfile');
-    }
+    // useEffect(() => {
+    //   if (shows) {
+    //     shows.map((show) => {
+    //       if (show.artists) {
+    //         show.artists.map((artist) => {
+    //           try {
+    //             const showObject = {
+    //               id: show.id,
+    //               title: show.artists[0].firstName + " " + show.artists[0].lastName,
+    //               start: new Date(show.startTime.toDate()),
+    //               end: new Date(show.endTime.toDate())
+    //             }
+    //             if (artist.id === auth.uid && show.activated === true && !myEvents.includes(showObject)) {
+    //                 myEvents.push(showObject);
+    //             }
+    //           } catch (err) {
+    //             console.log(err);
+    //           }
+    //         })
+    //       }
+    //     })
+    //   }
 
-    const pushShow = (e) => {
-      navigate('/tickets/' + e.target.id);
-    }
-  
-    const pushInvites = () => {
-      navigate('/invites');
-    }
-
-    useEffect(() => {
-      if (shows) {
-        shows.map((show) => {
-          if (show.artists) {
-            show.artists.map((artist) => {
-              try {
-                const showObject = {
-                  id: show.id,
-                  title: show.artists[0].firstName + " " + show.artists[0].lastName,
-                  start: new Date(show.startTime.toDate()),
-                  end: new Date(show.endTime.toDate())
-                }
-                if (artist.id === auth.uid && show.activated === true && !myEvents.includes(showObject)) {
-                    myEvents.push(showObject);
-                }
-              } catch (err) {
-                console.log(err);
-              }
-            })
-          }
-        })
-      }
-
-    }, [])
+    // }, [])
 
     if (!auth.uid) return navigate('/artistSignup');
 
     if (users) {
       return (
           <div>
+           <Form className="artist-search-form">
+               <Form.Group className="text-center artist-search-field mb-3" controlId="second" onChange={handleChange}>
 
+
+                   <Form.Control className="text-center artist-search-input" type="text" placeholder="Search Shows, Bands or Songs"
+                  
+                  />
+                <div  className="search-buttons">
+                  <button className="my-bands btn btn-warning" onClick={toggleStatus} id="my-bands">my bands</button>
+                  <button className="my-shows btn btn-primary" onClick={toggleStatus} id="my-shows">my shows</button>
+                  <button className="my-songs btn btn-warning" onClick={toggleStatus} id="my-songs">my songs</button>
+                  
+                </div>
+
+              </Form.Group>
+
+              
+          </Form>
+          <div className="profile-border songs d-none">
+            <br/>
+
+            <Form onSubmit={handleSubmit(onSubmit)}>
+              <h1 className="text-center">Upload Songs</h1>
+              <br/>
+              <Form.Group className="mb-3 text-center" onChange={handleChange} controlId="title" >
+                  <Form.Label>Enter Artist Or Band</Form.Label>
+                  <select className="form-select" aria-label="Default select example">
+
+                    {users && users.map((user) => {
+                      if (user.id === auth.uid) {
+                        return <option selected value={user.id}>{user.firstName} {user.lastName} (you)</option>
+                        
+                      }
+                    })}
+                    {bands && bands.map((band) => {
+                      if (band.ids.includes(auth.uid)){
+                        return <option value={band.id}>{band.bandName}</option>
+                      }
+                    })}
+                    
+                  </select>
+                  
+
+              </Form.Group>
+              <Form.Group className="mb-3 text-center" onChange={handleChange} controlId="title" >
+                  <Form.Label>Enter Song Title</Form.Label>
+                  <Form.Control type="text" placeholder="Enter the title of your song" 
+                  
+                  />
+
+              </Form.Group>
+              <Form.Group className="mb-3 text-center" onChange={handleChange} controlId="price" >
+                  <Form.Label>Enter Price</Form.Label>
+                  <Form.Control type="text" placeholder="$10" 
+                  
+                  />
+
+              </Form.Group>
+              <Form.Group className="mb-3 text-center" onChange={handleChange} controlId="song" 
+              {...register('song', { required: true })} type="file" name="song"
+              >
+                  <Form.Label>Upload Song</Form.Label>
+                  <Form.Control type="file" 
+                  name="song"
+                  />
+
+              </Form.Group>
+              <br/>
+              <br/>
+              <h3 className="text-center">price per download</h3>                    
+              <br/>
+              <br/>
+              <div className="d-flex justify-content-center">
+                  <Button className="align-center" variant="primary" type="submit">
+                      + song
+                  </Button>
+              </div>
+              <br/>
+          </Form>
+            <br/>
+
+          </div>
+          <br/>
+          <div className="profile-border shows">
+            <br/>
+            <h1 className="text-center">Artist Calendar</h1>
+            <br/>
+              <div className="myCustomHeight  p-3">
+                <Calendar
+                  onSelectEvent={handleClick}
+                  selectable
+                  localizer={localizer}
+                  events={myEvents}
+                  startAccessor="start"
+                  endAccessor="end"
+                  view='week'
+                  views={['week']}
+                />
+              </div>
+          </div>
+          {/* {users && users.map((user) => {})} */}
           {users && users.map((user) => {
               if (user.id === auth.uid) {
                 return (
-                  <div>
-                  <div className="profile-border">
-                    <br/>
-                    <br/>   
-                    <div className="text-center">
-                      {(() => {
-                        if (active === true) {
-                          return <h4>MY SHOWS</h4>
-                        } else if (active === false) {
-                          return <h4>MY SONGS</h4>
-                        } else if (active === "bands") {
-                          return <h4>MY BANDS</h4>
-                        }
-                      })()}       
-                      <br/>
-                      <div  className="tab-border">
-                        <button className="my-bands btn btn-warning" onClick={toggleStatus} id="my-bands">my bands</button>
-                        <button className="my-shows btn btn-primary" onClick={toggleStatus} id="my-shows">my shows</button>
-                        <button className="my-songs btn btn-warning" onClick={toggleStatus} id="my-songs">my songs</button>
-                        <button className="artist btn btn-warning" onClick={pushInvites}>Invites</button>
-                      </div>
-                    </div>
-                    <br/>
-                    <Table className="shows" hover>
-                      <thead >
-                        <tr>
-                          
-                          <th>Show Details</th>
-                          <th>Artists</th>
-                          <th>Status</th>
-                        </tr>
-                      </thead>
+                  <div className="main-container-artist-profile">
+                    <div className='shows'>
                       {shows && shows.map((show) => {
-                        
                           return (
-                            <tbody >
+                            <div >
                               {show.artists.map((item) => {
                                 if (item.id === auth.uid) {
                                   return (
-                                    <tr>
-                                      <td><button className="btn btn-primary" id={show.id} onClick={pushShow}>view</button></td>
-                                      <td>
-                                        <Dropdown >
-                                          <Dropdown.Toggle className="dropdown-basic" variant="warning" id="dropdown-basic"
-                                          >
-                                          {show.artists[0].firstName} {show.artists[0].lastName}
-                                          </Dropdown.Toggle>
-              
-                                          <Dropdown.Menu>
-                                            {show.artists.map((artist) => {
-                                              return (
-                                                <div>
-                                                  <Dropdown.Item href="#/action-1">                             
-                                                      <Link to={"/artist/" + artist.id}>
-                                                        {artist.firstName} {artist.lastName}
-                                                      </Link>
-                                                  </Dropdown.Item>
-                                                </div>
-                                              )
-                                            })}
-                                          </Dropdown.Menu>
-                                        </Dropdown>
-                                      </td>
-                                      {(() => {
-                                        if (show.activated) {
-                                          return <td>active</td>
-                                        } else {
-                                          return <td>pending</td>
-                                        }
-                                      })()}
-                                      
-                                    </tr>
+                                    <div className="ticket-border">
+                                      <div className=" card-container">
+                                        <div className="card">
+                                          <div className="card-header">
+                                            <h2 className="username description-text">{show.promoterUserName}
+                                            </h2>
+                                            {(() => {
+                                              if (show.activated === true) {
+                                                  return <p className="description-arrow text-success">(active)</p>
+                                              } else  { 
+                                                  return <p className="description-arrow text-secondary">(pending)</p>
+                                              }
+                                            })()}
+                                          </div>
+                                          <img src={symbolOne} alt="Post" className="card-img" onClick={() => {
+                                            navigate("/tickets/" + show.id)
+                                          }} />
+                                        
+                                            <div className="description-dropdown">
+                                              <div className='description-text'>{show.voteCount} votes</div>
+                                                {(() => {
+                                                  if (item.id === auth.uid && (!item.accepted || item.accepted === false)) {
+                                                    return (
+                                                      <button className="btn btn-primary description-arrow" onClick={() => {   
+                                                      props.updateVote(auth.uid, show.id); }} id={show.id}>accept</button>
+                                                    )
+                                                  } else if (item.id === auth.uid && item.accepted === true) {
+                                                    return (
+                                                      <div className="description-container">
+                                                        <p className="color-warning description-text">accepted</p>
+                                                        <button className="btn btn-primary description-text" onClick={() => {   
+                                                        props.updateVote(auth.uid, show.id); }} id={show.id}>reject</button>
+                                                      </div>
+                                                    )
+                                                  } else if (item.id !== auth.uid && !show.votedOn.includes(auth.uid)) {
+                                                    return  <button className="btn btn-primary description-arrow" onClick={() => {   
+                                                      props.updateVote(auth.uid, show.id); }} id={show.id}>accept</button>
+                                                  } else if (item.id !== auth.uid && show.votedOn.includes(auth.uid)) {
+                                                    return <p className="color-warning description-text">voted</p>
+                                                  }
+                                                })()}
+                                            </div>
+                                        <div className="dropdown-container">
+                                          <button className="dropdown-button" onClick={() => setShowDropdown(!showDropdown)}>
+                                            Show Info
+                                          </button>
+                                          {showDropdown && (
+                                            <div className="dropdown-content">
+                                              {show.artists.map((artist) => {
+                                                if (artist.type === "artist") {
+                                                  return (
+                                                    <div className="description-dropdown dropdown-link">                       
+                                                        <Link className="description-text" to={"/artist/" + artist.id}>
+                                                          {artist.firstName} {artist.lastName}
+                                                        
+                                                        </Link>
+                                                        <p className="description-arrow">artist</p>
+                                                      
+                                                    </div>
+                                                  )
+                                                } else if (artist.type === "band") {
+                                                  return (
+                                                    <div className="description-dropdown dropdown-link">
+                                                                                  
+                                                        <Link className="description-text" to={"/artist/" + artist.id}>
+                                                          {artist.bandName}
+                                                        </Link>
+                                                        <p className="description-arrow">band</p>
+                                                    </div>
+                                                  )
+                                                }
+                
+                                              })}
+                
+                                                <div className="description-dropdown dropdown-link">
+                                                  
+                                                  <Link className="description-text" to={"/venue/" + show.venueId}>
+                                                    {show.venueName}
+                                                  </Link>
+                                                  {users && users.map((user) => {
+                                                    if (user.id=== show.venueId) {
+                                                      return (
+                                                        <p className="description-arrow">{user.venueAddress}</p>
+                                                      )
+                                                    } 
+                                                  })} 
+                
+                                              </div>
+                                            </div>
+                                          )}
+                
+                                        </div>
+                                    </div>
+                                  </div>
+                                    </div>
                                   )
                                 }
                               })}
 
-                            </tbody>
+                            </div>
                           )
                         
 
                       })}
+                    </div>
+                    <div className="songs d-none">
+                      {user.songs && user.songs.map((song) => {
 
-                    </Table>
-                    <Table className="songs d-none" hover>
-                      <thead >
-                        <tr>
-                          <th>Title</th>
-                          <th>Revenue</th>
-                          <th>Sales</th>
-                        </tr>
-                      </thead>
-                        {user.songs && user.songs.map((song) => {
                         return (
-                          <tbody >
-                            <tr>
-                              <td>{song.title}</td>
-                              <td>${song.revenue}</td>
-                              <td>{song.buyers.length}</td>
-                            </tr>
-                          </tbody>
-                        )
-                        })}
+                          <div className=" ticket-border">
+                            <div className=" card-container">
+                              <div className="card">
+                                <div className="card-header">
+                                  <h2 className="username">{song.artist}
 
-                    </Table>
-                    <Table className="bands d-none" hover>
-                      <thead >
-                        <tr>
-                            <th >Band</th>
-                            <th>Members</th>
-                            <th>Creator</th>
-                        </tr>
-                      </thead>
-                        {bands && bands.map((band) => {
-                          if (band.ids.includes(auth.uid)) {
-                            
-                            return (
-                                <tbody>
-                                <tr>
-                                    <td><button className="btn btn-primary" onClick={handleClick} id={band.id}>{band.bandName}</button></td>
-                                    <td>                      
-                                    <Dropdown >
-                                        <Dropdown.Toggle className="dropdown-basic" variant="warning" id="dropdown-basic"
-                                        >
-                                        {band.members[0].firstName} {band.members[0].lastName}
-                                        </Dropdown.Toggle>
-
-                                        <Dropdown.Menu>
-                                        {band.members.map((artist) => {
-                                            return (
-                                                <Dropdown.Item href="#/action-1">                           
-                                                    <Link to={"/artist/" + artist.id}>
-                                                        {artist.firstName} {artist.lastName}
-                                                    </Link>
-                                                </Dropdown.Item>
-                                            )
-                                        })}
-                                        </Dropdown.Menu>
-                                    </Dropdown>
-                                    </td>
-                                    <td>{band.creatorUserName}</td>
-                                </tr>
-                                </tbody>
-                            )
-                          } 
-                        })}
-                        </Table>
-                    <br/>
-                  </div>
-                  <div className="profile-border">
-                    <br/>
-
-                    <Form onSubmit={handleSubmit(onSubmit)}>
-                      <h1 className="text-center">Upload Songs</h1>
-                      <br/>
-                      <Form.Group className="mb-3 text-center" onChange={handleChange} controlId="title" >
-                          <Form.Label>Enter Artist Or Band</Form.Label>
-                          <select className="form-select" aria-label="Default select example">
-
-                            {users && users.map((user) => {
-                              if (user.id === auth.uid) {
-                                return <option selected value={user.id}>{user.firstName} {user.lastName} (you)</option>
+                                  </h2>
+                                  <p className="description-arrow">{song.title}</p>
                                 
-                              }
-                            })}
-                            {bands && bands.map((band) => {
-                              if (band.ids.includes(auth.uid)){
-                                return <option value={band.id}>{band.bandName}</option>
-                              }
-                            })}
+                                </div>
+                              <img src={symbolOne} alt="Post" className="card-img" onClick={() => {
+                                navigate("/song/" + song.url)
+                              }} />
                             
-                          </select>
-                          
+                                <div className="description-dropdown">
+                                  <div className='text-warning description-text'>{song.price}</div>
+                                    {(() => {
+                                      if (!song.buyers.includes(auth.uid)) {
+                                        return <button className="btn btn-primary description-arrow" onClick={() => {   
+                                          props.updateVote(auth.uid, song.url); }} id={song.url}>add to cart
+                                        </button>
+                                      } else if (song.buyers.includes(auth.uid)) {
+                                        return <p className="text-warning description-text">purchased</p>
+                                      }
+                                    })()}
+                                </div>
+                                <div className="dropdown-container">
+                                  <button className="dropdown-button" onClick={() => setSongDropdown(!songDropdown)}>
+                                    Song Info
+                                  </button>
+                                    {songDropdown && (
+                                      <div className="dropdown-content">
+                                        <div className="description-dropdown dropdown-link">                       
+                                            <Link className="description-text" to={"/song/" + song.url}>
+                                              {song.artist}
+                                            
+                                            </Link>
+                                            <p className="description-arrow">{song.title}</p>
+                                          
+                                        </div>
+                                      </div>
+                                    )}
 
-                      </Form.Group>
-                      <Form.Group className="mb-3 text-center" onChange={handleChange} controlId="title" >
-                          <Form.Label>Enter Song Title</Form.Label>
-                          <Form.Control type="text" placeholder="Enter the title of your song" 
-                          
-                          />
+                                </div>
+                            
+                              </div>
+                            </div>
 
-                      </Form.Group>
-                      <Form.Group className="mb-3 text-center" onChange={handleChange} controlId="price" >
-                          <Form.Label>Enter Price</Form.Label>
-                          <Form.Control type="text" placeholder="$10" 
-                          
-                          />
+                          </div>
+                        )
+                      })}
 
-                      </Form.Group>
-                      <Form.Group className="mb-3 text-center" onChange={handleChange} controlId="song" 
-                      {...register('song', { required: true })} type="file" name="song"
-                      >
-                          <Form.Label>Upload Song</Form.Label>
-                          <Form.Control type="file" 
-                          name="song"
-                          />
+                    </div>
+                    <div className="bands d-none">
+                      {bands && bands.map((band) => {             
+                        return (
+                          <div className="ticket-border">
+                            <div className=" card-container">
+                              <div className="card">
+                                <div className="card-header">
+                                  <h2 className="username">{band.bandName}
 
-                      </Form.Group>
-                      <br/>
-                      <br/>
-                      <h3 className="text-center">price per download</h3>                    
-                      <br/>
-                      <br/>
-                      <div className="d-flex justify-content-center">
-                          <Button className="align-center" variant="primary" type="submit">
-                              + song
-                          </Button>
-                      </div>
-                      <br/>
-                  </Form>
-                    <br/>
+                                  </h2>
+                                  {(() => {
+                                    if (band.activated === true) {
+                                        return <p className="description-arrow text-success">(active)</p>
+                                    } else  { 
+                                        return <p className="description-arrow text-secondary">(pending)</p>
+                                    }
+                                  })()}
+                                
+                                </div>
+                              <img src={symbolOne} alt="Post" className="card-img" onClick={() => {
+                                navigate("/artist/" + band.id)
+                              }} />
+                            
+                                <div className="description-dropdown">
+                                  <div className='text-warning description-text'>{band.bandName}</div>
+                                    {band.members && band.members.map((member) => {
+                                      if (band.members.includes(auth.uid) && member.id === auth.uid && member.activated === false) {
+                                        return <button className="btn btn-primary description-arrow" onClick={() => {   
+                                          props.updateVote(auth.uid, band.id); }} id={band.id}>accept invite
+                                        </button>
+                                      } else if (band.members.includes(auth.uid) && member.id === auth.uid && member.activated === true) {
+                                        return <p className="text-warning description-text">invite accepted</p>
+                                      } 
+                                    })}
+                                </div>
+                                <div className="dropdown-container">
+                                  <button className="dropdown-button" onClick={() => setBandDropdown(!bandDropdown)}>
+                                    Band Info
+                                  </button>
+                                    {bandDropdown && band.members && band.members.map((member) => {
+                                      return (
+                                        <div className="dropdown-content">
+                                          <div className="description-dropdown dropdown-link">                       
+                                              <Link className="description-text" to={"/artist/" + band.id}>
+                                                {member.firstName} {member.lastName}
+                                              
+                                              </Link>
+                                              <p className="description-arrow">{band.BandName}</p>
+                                            
+                                          </div>
+                                        </div>
+                                      )
+
+                                    })}
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        )
+                      })}
+                    </div>
 
                   </div>
-                  <br/>
-                  <div className="profile-border">
-                    <br/>
-                    <h1 className="text-center">Artist Calendar</h1>
-                    <br/>
-                      <div className="myCustomHeight  p-3">
-                        <Calendar
-                          onSelectEvent={handleClick}
-                          selectable
-                          localizer={localizer}
-                          events={myEvents}
-                          startAccessor="start"
-                          endAccessor="end"
-                          view='week'
-                          views={['week']}
-                        />
-                      </div>
-                  </div>
-                  </div>
-              ) 
+                )
               }
             })}
-
-        <br/>
-
-
           </div>
-      )
+        )
+      }
     }
-
-}
 
 const mapStateToProps = (state) => {
     return {

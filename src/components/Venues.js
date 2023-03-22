@@ -1,73 +1,105 @@
 import React, { useEffect, useState } from 'react'
-import { Table, Dropdown } from 'react-bootstrap';
+import { Table, Form, Button, Dropdown } from 'react-bootstrap';
 import { firestoreConnect } from 'react-redux-firebase';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useParams } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
-import Geocode from "react-geocode";
+import ArtistProfile from './profiles/ArtistProfile'
+import symbolOne from "../1.png";
+
 
 function Venues(props) {
-    const { auth, users, shows } = props;
+    const { auth, users, bands } = props;
   
     const navigate = useNavigate();
   
+    const [venues, setVenues] = useState([]);
+    const [searches, setSearches] = useState([]);
+    const [searchCount, setSearchCount] = useState(1);
     const [active, setActive] = useState(true);
-    const [addresses, setAddresses] = useState([]);
-    const [newAddress, setNewAddress] = useState("");
+    const [profile, setProfile] = useState(null);
+    const [songs, setSongs] = useState([]);
+    const [venueDropdown, setVenueDropdown] = useState(false);
 
-    Geocode.setApiKey("AIzaSyDRdbg5n9g-_CFYgpI2pCK0hAAaY0MW65Q");
 
-    const toggleStatus = (e) => {
-      e.preventDefault();
-      const venueBtn = document.querySelector(".my-venues");
-      const showBtn = document.querySelector(".my-shows");
-      const venues = document.querySelector(".venues");
-      const shows = document.querySelector(".shows");
-      if (e.target.id === "my-shows") {
-        showBtn.classList.add("btn-primary");
-        showBtn.classList.remove("btn-warning");
-        venueBtn.classList.add("btn-warning");
-        venueBtn.classList.remove("btn-primary");
-        venues.classList.add("d-none");
-        shows.classList.remove("d-none");
-        setActive(false);
-      } else if (e.target.id === "my-venues") {
-        showBtn.classList.add("btn-warning");
-        showBtn.classList.remove("btn-primary");
-        venueBtn.classList.add("btn-primary");
-        venueBtn.classList.remove("btn-warning");
-        shows.classList.add("d-none");
-        venues.classList.remove("d-none");
-        setActive(true);
-      } 
-    }
 
     const handleSignUp = () => {
         navigate('/venueSignup');
     }
 
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        console.log(venues);
+        console.log(searches);
+        console.log(searches.length);
+        console.log(searchCount);
+    }
+
+    const handleChange = (e) => {
+        e.preventDefault();
+        let count = 0;
+        const tempVenues = [];
+        let searchedVenues = [];
+        const searchQuery = e.target.value.split("");
+        setSearchCount(searchQuery.length);
+        let newVenues = [];
+        
+        if (e.target.value === "") {
+            newVenues = [];
+            users.map((user) => {
+                if (user.venueName && !venues.includes(user)) {
+                    venues.push(user);
+                }
+            })
+            setSearchCount(0)
+            
+        } else {
+            users.map((user) => {
+                if (user.isVenue) {
+                    tempVenues.push(user);
+                    
+                    const venueQuery = user.venueName.split("");
+                    count = searchQuery.length;
+                    const userFullName = venueQuery.join("").slice(0, count);
+                    const uppercaseSearchQuery = searchQuery.join("").toUpperCase();
+                    console.log(userFullName.toUpperCase() === uppercaseSearchQuery);
+
+                    if (userFullName.toUpperCase() === uppercaseSearchQuery) {                       
+                        newVenues.push(user);
+                        searchedVenues.push(user);
+                    } 
+                }
+            })
+            
+            tempVenues.map((venue) => {
+                if (!searchedVenues.includes(venue)) {
+                    newVenues.push(venue);
+                }
+            })
+            setVenues([]);
+            const newArrivals = newVenues.sort((a, b) => {
+                return a.venueName - b.venueName; 
+              })
+            setSearches(newArrivals);
+        }
+
+    }
+
     const pushProfile = () => {
+        navigate('/artistProfile');
+    }
+
+    const pushVenue = () => {
         navigate('/venueProfile');
     }
 
-    const pushVenue = (e) => {
-        e.preventDefault();
-        navigate('/venue/' + e.target.id);
+    const pushBands = () => {
+        navigate('/bands');
     }
-
-    const pushShow = (e) => {
+    
+    const pushBand = (e) => {
         e.preventDefault();
-        navigate('/tickets/' + e.target.id);
-    }
-
-    const pushArtists = (e) => {
-        e.preventDefault();
-        navigate('/artists');
-    }
-
-    const handleClick = () => {
-        console.log(props);
-        navigate('/venueProfile');
+        navigate('/band/' + e.target.id);
     }
   
     useEffect(() => {
@@ -75,133 +107,127 @@ function Venues(props) {
           navigate("/spotterLogin");
       }
       if (users) {
-        users.map((user) => {
-          if (user.isVenue === true) {
-              
-            Geocode.fromLatLng(user.venueAddress[0], user.venueAddress[1]).then(
-              (response) => {
-                const address = response.results[0].formatted_address;
-                const venueObject = {
-                    address: address,
-                    user: user.id,
-                    name: user.venueName
-                }
-                if (!addresses.includes(venueObject)) {
-                    addresses.push(venueObject);
-                }
-                
-              },
-              (error) => {
-                console.error(error);
-              }
-            );
-          }
-        })
+          users.map((user) => {
+            if (user.isVenue === true && !venues.includes(user)) {
+                venues.push(user);                
+            }
+          })
       }
+      
     }, []);
 
     
     if (users) {
+
         return (
             <div>
-            <div className="profile-border">
+                <div >  
+                    <Form className="artist-search-form" onSubmit={handleSubmit}>
+                        <Form.Group className="text-center artist-search-field mb-3" controlId="second" onChange={handleChange}>
 
-                <div className="text-center">
-                    {(() => {
-                    if (active) {
-                        return <h4>SHOWSPOT VENUES</h4>
-                    } else {
-                        return <h4>SHOWSPOT SHOWS</h4>
-                    }
-                    })()}       
+
+                            <Form.Control className="text-center artist-search-input" type="text" placeholder="Search Venues"
+                            
+                            />
+
+                        </Form.Group>
+                        
+                    </Form>
+                    
+
                     <br/>
-                    <div  className="tab-border">
-                        <button className="venue-profile btn btn-warning" onClick={pushProfile}>venue profile</button>
-                        <button className="my-venues btn btn-primary" onClick={toggleStatus} id="my-venues">venues</button>
-                        <button className="my-shows btn btn-warning" onClick={toggleStatus} id="my-shows">shows</button>
-                        <button className="artists btn btn-warning" onClick={pushArtists}>artists</button>
-                    </div>
-                </div>
-                <br/>
-                    <Table className="venues" hover>
-                        <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Address</th>
-                            <th>Owner</th>
-                        </tr>
-                        </thead>
-                        <tbody >
-                            {users && users.map((user) => {
-                                if (user.isVenue === true) {
-                                    return (
-                                        
-                                        <tr>
-                                            <td>                      
-                                            <button className="btn btn-primary" onClick={pushVenue} id={user.id}>{user.venueName}</button>
-                                            </td>
-                                            {addresses && addresses.map((address) =>{
-                                                if (address.user === user.id && address.name === user.venueName) {
-                                                    return <td>{address.address}</td>
-                                                } 
-                                            })} 
-                                            <td onClick={() => {
-                                                addresses.map((address) => {
-                                                    console.log(addresses);
-                                                })
-                                                
-                                            }}>{user.firstName} {user.lastName}</td>
-                                        </tr> 
-                                        
-                                    ) 
+
+                        {(() => {
+                            users.map((user) => {
+                                if (user.isVenue === true && !venues.includes(user)) {
+                                    venues.push(user);
+                                    
                                 }
-                            })}
-                        </tbody>
-                    </Table>
-                    <Table className="shows d-none" hover>
-                        <thead>
-                        <tr>
-                            <th>Show Details</th>
-                            <th>Venue Details</th>
-                            <th>Status</th>
-                        </tr>
-                        </thead>
-                        {shows && shows.map((show) => {
-                            if (show.venueName) {
-                                return (
-                                    <tbody >
-                                        <tr>
-                                            <td>                      
-                                            <button className="btn btn-primary" onClick={pushShow} id={show.id}>view</button>
-                                            </td>
-                                            <td>
-                                            <button className="btn btn-primary" onClick={pushVenue} id={show.venueId}>{show.venueName}</button>
-                                            </td>
-                                            <td>
-                                            {(() => {
-                                                if (show.activated === true) {
-                                                    return <div>active</div>
-                                                } else {
-                                                    return <div>pending</div>
-                                                }
-                                            })()}
-                                            </td>
-                                        </tr> 
-                                    </tbody>
-                                ) 
-                            }
+                            })
+                        })()}
+
+                        
+                        {venues && venues.map((venue) =>  {
+                            
+                            return (
+                                <div className="ticket-border">
+                                    <div className=" card-container">
+                                        <div className="card">
+                                        <div className="card-header">
+                                            <h2 className="username">{venue.venueName}</h2>
+                                        </div>
+                                        <img src={symbolOne} alt="Post" className="card-img" onClick={() => {
+                                            navigate("/venue/" + venue.id)
+                                        }} />
+                                        
+                                            <div className="description-dropdown">
+                                                    {(() => {
+                                                        if (venue.averageRating) {
+                                                                
+                                                                return <div className="description-text">{venue.averageRating} *</div>
+
+                                                        } else if (!venue.averageRating) {
+                                                                
+                                                                return <div className="description-text">5.0 *</div>
+                                                        }
+                                                    })()}
+                                                    {(() => {
+                                                        if (venue.averageRating && venue.raters && !venue.raters.includes(auth.uid)) {
+                                                                
+                                                                return <button className="btn btn-primary description-arrow" onClick={() => {   
+                                                                        props.updateVote(auth.uid, venue.id); }} id={venue.id}>vote</button>
+
+                                                        } else if (venue.averageRating && venue.raters && venue.raters.includes(auth.uid)) {
+                                                                
+                                                                return <p className="description-arrow">voted</p>
+                                                                
+                                                        } else {
+                                                                
+                                                                return <button className="description-arrow" onClick={() => {   
+                                                                    props.updateVote(auth.uid, venue.id); }} id={venue.id}>vote
+                                                                    </button>
+                                                        } 
+                                                    })()}
+                                            </div>
+                                        <div className="dropdown-container">
+                                        <button className="dropdown-button" onClick={() => setVenueDropdown(!venueDropdown)}>
+                                            Venue Info
+                                        </button>
+                                        {venueDropdown && (
+                                            <div className="dropdown-content">
+                                                    <div className="description-dropdown dropdown-link">                       
+                                                        <Link className="description-text" to={"/venue/" + venue.id}>
+                                                        {venue.venueName}
+                                                        
+                                                        </Link>
+                                                        <p className="description-arrow">{venue.firstName} {venue.lastName}</p>
+                                                    
+                                                    </div>
+
+                                            </div>
+                                            
+                                        )}
+
+                                        </div>
+                                    </div>
+                                    </div>
+                                </div>
+                            )  
                         })}
-                    </Table>
-            </div>
-            <br/>
-
-
-            </div>
+                    <br/>
+                </div>
+        </div>       
         )
     } else {
         return <div> 
             <br/>
-
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
             loading ... 
             </div>
     }
@@ -211,14 +237,14 @@ const mapStateToProps = (state) => {
   return {
     auth: state.firebase.auth,
     users: state.firestore.ordered.users,
-    shows: state.firestore.ordered.shows
+    bands: state.firestore.ordered.bands
   }
 }
 
 export default compose(
   connect(mapStateToProps),
   firestoreConnect([
-    {   collection: 'users' },
-    {   collection: 'shows' }
+    {   collection: 'users'  },
+    {   collection: 'bands'  }
 ])
 )(Venues);

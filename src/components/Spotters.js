@@ -7,6 +7,7 @@ import { compose } from 'redux';
 import { createBackline, updateVote } from '../store/actions/showActions';
 import '../instagram.css';
 import symbolOne from "../1.png";
+import { Search } from "./Search"
 
 function Spotters(props) {
   const { auth, shows, users } = props;
@@ -132,86 +133,31 @@ function Spotters(props) {
           <Form className="artist-search-form" onSubmit={handleSubmit}>
               <Form.Group className="text-center artist-search-field mb-3" controlId="second" onChange={handleChange}>
 
-                  <Form.Control type="text" placeholder="Search shows"
+
+                  <Form.Control className="text-center artist-search-input" type="text" placeholder="Search Shows"
                   
                   />
 
               </Form.Group>
               
           </Form>
+          {/* <Search /> */}
           <br/>
               {shows && shows.map((show) => {
-                if (show.activated && active === true) {
-                  return (
-                    <div className="ticket-border">
-                    <div className=" card-container">
-                      <div className="card">
-                        <div className="card-header">
-                          <h2 className="username">{show.promoterUserName}</h2>
-                        </div>
-                        <img src="../public/1.png" alt="Post" className="card-img" />
-                        
-                        <div className="description-dropdown">
-                            <div className='description-text'>{show.voteCount}</div>
-                            {(() => {
-                              if (!show.votedOn.includes(auth.uid)) {
-                               
-                                return (
-                                  <button className="btn btn-primary description-arrow" onClick={() => {   
-                                    props.updateVote(auth.uid, show.id); }} id={show.id}>^</button>
-                                )
-                              }  else if (show.votedOn.includes(auth.uid)) {
-                               
-                                return <button className="bg-grey description-text">voted</button>
-                              }
-                            })()}
-                        </div>
-                        <div className="card-body">
-                          <Dropdown >
-                            <Dropdown.Toggle className="dropdown-basic " variant="warning" id="dropdown-basic"
-                            >
-                            {show.artists[0].firstName} {show.artists[0].lastName}
-                            </Dropdown.Toggle>
 
-                            <Dropdown.Menu>
-                              {show.artists.map((artist) => {
-                                if (artist.type === "artist") {
-                                  return (
-                                    <div>
-                                      <Dropdown.Item className="description-text" href="#/action-1">                             
-                                          <Link to={"/artist/" + artist.id}>
-                                            {artist.firstName} {artist.lastName}
-                                          </Link>
-                                      </Dropdown.Item>
-                                    </div>
-                                  )
-                                } else if (artist.type === "band") {
-                                  return (
-                                    <div>
-                                      <Dropdown.Item className="description-text" href="#/action-1">                             
-                                          <Link to={"/artist/" + artist.id}>
-                                            {artist.bandName}
-                                          </Link>
-                                      </Dropdown.Item>
-                                    </div>
-                                  )
-                                }
-
-                              })}
-                            </Dropdown.Menu>
-                          </Dropdown>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  ) 
-                } else if ((!show.activated || show.activated === false) && active === false) {
                   return (
                     <div className="ticket-border">
                       <div className=" card-container">
                         <div className="card">
                           <div className="card-header">
                             <h2 className="username">{show.promoterUserName}</h2>
+                            {(() => {
+                              if (show.activated === true) {
+                                  return <p className="description-arrow text-success">(active)</p>
+                              } else  { 
+                                  return <p className="description-arrow text-secondary">(pending)</p>
+                              }
+                            })()}
                           </div>
                           <img src={symbolOne} alt="Post" className="card-img" onClick={() => {
                             navigate("/tickets/" + show.id)
@@ -286,7 +232,7 @@ function Spotters(props) {
                     </div>
                   </div>
                   )
-                }
+                
               })}
           <br/>
       </div>

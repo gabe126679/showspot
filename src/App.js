@@ -22,7 +22,6 @@ import BandProfile from "./components/profiles/BandProfile";
 import PublicBand from "./components/profiles/PublicBand";
 import BandInvites from "./components/BandInvites";
 import Bands from "./components/Bands";
-import Invites from "./components/Invites";
 import Tickets from "./components/Tickets";
 import TicketPrice from "./components/forms/TicketPrice";
 import Cart from "./components/cart/Cart";
@@ -61,8 +60,7 @@ function App() {
           <Route exact path='/bands' element={<Bands />} />
           <Route exact path='/bandProfile/:id' element={<BandProfile />} />
           <Route exact path='/artist/:id' element={<PublicArtist />} />
-          <Route exact path='/venue/:id' element={<PublicVenue />} />
-          <Route exact path='/invites' element={<Invites />} /> 
+          <Route exact path='/venue/:id' element={<PublicVenue />} /> 
           <Route exact path='/tickets/:id' element={<Tickets />} />
           <Route exact path='/ticketPrice/:id' element={<TicketPrice />} />
           <Route exact path='/playlists' element={<Playlists />} />

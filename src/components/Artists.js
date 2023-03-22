@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react'
 import { Table, Form, Button, Dropdown } from 'react-bootstrap';
 import { firestoreConnect } from 'react-redux-firebase';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useParams } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
 import ArtistProfile from './profiles/ArtistProfile'
+import symbolOne from "../1.png";
+
 
 function Artists(props) {
     const { auth, users, bands } = props;
@@ -17,6 +19,9 @@ function Artists(props) {
     const [active, setActive] = useState(true);
     const [profile, setProfile] = useState(null);
     const [songs, setSongs] = useState([]);
+    const [showDropdown, setShowDropdown] = useState(false);
+
+
 
     const handleSignUp = () => {
         navigate('/artistSignup');
@@ -160,171 +165,120 @@ function Artists(props) {
                   })
               }
           })
+          users.map((user) => {
+            if (user.firstName && !artists.includes(user)) {
+                artists.push(user);
+                console.log(user);
+            }
+          })
       }
+
     });
 
     
     if (users) {
+
         return (
             <div>
-            <div className="profile-border">
-                        <div className="text-center">
-                            {(() => {
-                            if (active) {
-                                return <h4>SHOWSPOT ARTISTS</h4>
-                            } else {
-                                return <h4>SHOWSPOT BANDS</h4>
-                            }
-                            })()}       
-                            <br/>
-                            <div  className="tab-border">
-                                <button className="artist-profile btn btn-warning" onClick={pushProfile}>artist profile</button>
-                                <button className="artists btn btn-primary" onClick={toggleStatus} id="artists">all artists</button>
-                                <button className="bands btn btn-warning" onClick={toggleStatus} id="bands">all bands</button>
-                                <button className="songs btn btn-warning" onClick={toggleStatus} id="songs">all songs</button>
-                            </div>
-                        </div>
-                        <br/>
-                        
-                        <Form className="artist-search-form" onSubmit={handleSubmit}>
-                            <Form.Group className="text-center artist-search-field mb-3" controlId="second" onChange={handleChange}>
+                <div >  
+                    <Form className="artist-search-form" onSubmit={handleSubmit}>
+                        <Form.Group className="text-center artist-search-field mb-3" controlId="second" onChange={handleChange}>
 
-                                <Form.Control type="text" placeholder="Search artists"
-                                
-                                />
 
-                            </Form.Group>
+                            <Form.Control className="text-center artist-search-input" type="text" placeholder="Search Artists"
                             
-                        </Form>
-                        <br/>
-                    <Table className="table-search" hover>
-                        <thead>
-                        <tr>
-                            <th>Artist Profile</th>
-                            <th>Artist Name</th>
-                            <th>Main Instrument</th>
-                        </tr>
-                        </thead>
-                    {(() => {
+                            />
 
-                        users.map((user) => {
-                            if (user.firstName && !artists.includes(user) && searches.length === 0) {
-                                artists.push(user);
-                            }
-                        })
-                       
-                    })()}
+                        </Form.Group>
+                        
+                    </Form>
                     
+
+                    <br/>
+
+                        {(() => {
+                            users.map((user) => {
+                                if (user.firstName && !artists.includes(user)) {
+                                    artists.push(user);
+                                }
+                            })
+                        })()}
+
                         {artists.sort((a, b) => {
                             if (a.firstName < b.firstName) return -1;
                             return 1;
                         }
-                        ).map((artist) => {
-                            if (searches.length === 0) {
-                                return (
-                                    <tbody className="table-search" >
-                                        <tr onClick={() => {
-                                            navigate("/artist/" + artist.id);
-                                        }}>
-                                            <td><button className="btn btn-primary" onClick={pushProfile}>view</button></td>
-                                            <td>{artist.firstName} {artist.lastName}</td>
-                                            <td>{artist.mainInstrument}</td>
-                                        </tr>
-                                    </tbody>
-                                )
-                            }
-                        })}
-                        {searches.map((artist) => {
+                        ).map((artist) =>  {
                             
                             return (
-                                <tbody  >
-                                    <tr onClick={() => {
-                                        navigate('/artist/' + artist.id)
-                                    }}>
-                                        <td >                      
-                                        {artist.firstName}
-                                        </td>
-                                        <td onClick={pushProfile}>{artist.lastName}</td>
-                                        <td>{artist.mainInstrument}</td>
-                                    </tr>
-                                </tbody>
-                            )
-                        })}
-                    </Table>
-                    <Table className="bands-search d-none" hover>
-                        <thead>
-                        <tr>
-                            <th>Band Name</th>
-                            <th>Members</th>
-                            <th>Status</th>
-                        </tr>
-                        </thead>
-                        {bands && bands.map((band) => {                         
-                            return ( 
-                                <tbody  >
-                                    
-                                <tr>
-                                    <td><button className="btn btn-primary" id={band.id} onClick={pushBand}>{band.bandName}</button></td>
-                                    <td>                      
-                                    <Dropdown >
-                                        <Dropdown.Toggle className="dropdown-basic" variant="warning" id="dropdown-basic"
-                                        >
-                                        {band.members[0].firstName} {band.members[0].lastName}
-                                        </Dropdown.Toggle> 
+                                <div className="ticket-border">
+                                    <div className=" card-container">
+                                        <div className="card">
+                                        <div className="card-header">
+                                            <h2 className="username">{artist.firstName} {artist.lastName}</h2>
+                                        </div>
+                                        <img src={symbolOne} alt="Post" className="card-img" onClick={() => {
+                                            navigate("/artist/" + artist.id)
+                                        }} />
+                                        
+                                            <div className="description-dropdown">
+                                                    {(() => {
+                                                        if (artist.averageRating) {
+                                                                
+                                                                return <div className="description-text">{artist.averageRating}</div>
 
-                                                <Dropdown.Menu>
-                                                    {band.members.map((member) => {
-                                                    return (
-                                                        <Dropdown.Item href="#/action-1">  
-                                                    
-                                                            <Link to={"/artist/" + member.id}>
-                                                                {member.firstName} {member.lastName}
-                                                            </Link>
+                                                        } else if (!artist.averageRating) {
+                                                                
+                                                                return <div className="description-text">5.0</div>
+                                                        }
+                                                    })()}
+                                                    {(() => {
+                                                        if (artist.averageRating && artist.raters && !artist.raters.includes(auth.uid)) {
+                                                                
+                                                                return <button className="btn btn-primary description-arrow" onClick={() => {   
+                                                                        props.updateVote(auth.uid, artist.id); }} id={artist.id}>vote</button>
+
+                                                        } else if (artist.averageRating && artist.raters && artist.raters.includes(auth.uid)) {
+                                                                
+                                                                return <p className="description-arrow">voted</p>
+                                                                
+                                                        } else {
+                                                                
+                                                                return <button className="description-arrow" onClick={() => {   
+                                                                    props.updateVote(auth.uid, artist.id); }} id={artist.id}>vote
+                                                                    </button>
+                                                        } 
+                                                    })()}
+                                            </div>
+                                        <div className="dropdown-container">
+                                        <button className="dropdown-button" onClick={() => setShowDropdown(!showDropdown)}>
+                                            Artist Info
+                                        </button>
+                                        {showDropdown && (
+                                            <div className="dropdown-content">
+                                                    <div className="description-dropdown dropdown-link">                       
+                                                        <Link className="description-text" to={"/artist/" + artist.id}>
+                                                        {artist.firstName} {artist.lastName}
                                                         
-                                                        </Dropdown.Item>
-                                                        )
-                                                    })}                                       
-                                                </Dropdown.Menu>  
+                                                        </Link>
+                                                        <p className="description-arrow">{artist.mainInstrument}</p>
+                                                    
+                                                    </div>
 
-                                    </Dropdown>
-                                    </td>
-                                    {(() => {
-                                        if (band.activated === true) {
-                                            return <td>active</td>
-                                        } else if (!band.actived || band.activated === false) {
-                                            return <td>pending</td>
-                                        }
-                                    })()}
-                                    
-                                </tr>
-                                    
-                                </tbody>
-                            
+                                            </div>
+                                            
+                                        )}
+
+                                        </div>
+                                    </div>
+                                    </div>
+                                </div>
                             ) 
-                            
+                             
                         })}
-                    </Table>
-                    <Table className="songs-search d-none" hover>
-                        <thead>
-                        <tr>
-                            <th>Song Title</th>
-                            <th>Artist</th>
-                            <th>Status</th>
-                        </tr>
-                        </thead>
-                                <tbody  >
-                                    <tr>
-                                        <td>hi</td>
-                                        <td>hi</td>
-                                        <td>hi</td>
-                                    </tr>
-                                </tbody>
-                    </Table>
-
-            </div>
-            <br/>
-            </div>
-            
+                    <br/>
+                </div>
+        </div>       
         )
     } else {
         return <div> 

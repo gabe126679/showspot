@@ -1,317 +1,347 @@
+
 import React, { useState, useEffect } from 'react'
 import { firestoreConnect } from 'react-redux-firebase';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
-import { useNavigate, useParams, Link } from "react-router-dom";
-import { Table, Dropdown } from "react-bootstrap";
-import { addToCart } from '../../store/actions/authActions';
-import Geocode from "react-geocode";
+import { useNavigate, Link, useParams } from "react-router-dom";
+import { Table, Form, Button, Dropdown } from "react-bootstrap";
+import { useForm } from "react-hook-form";
+import { storage } from '../../config/fbConfig';
+import { ref, getDownloadURL, uploadBytesResumable } from "firebase/storage";
+import { addSong, addBandSong } from '../../store/actions/authActions';
+import { Calendar, momentLocalizer } from 'react-big-calendar';
+import moment from 'moment';
+import symbolOne from "../../1.png";
 
 function PublicVenue(props) {
 
-    const { auth, users, shows } = props;
+    const { auth, users, shows, bands } = props;
 
-    const { id } = useParams();
+    const { register, handleSubmit } = useForm();
 
-    const [address, setAddress] = useState("");
-    const [active, setActive] = useState(true);
-    const [artistShows, setArtistShows] = useState([]);
+    const localizer = momentLocalizer(moment) 
 
     let navigate = useNavigate();
 
-    Geocode.setApiKey("AIzaSyDRdbg5n9g-_CFYgpI2pCK0hAAaY0MW65Q");
+    const { id } = useParams();
+
+    const [mp3Url, setMp3Url] = useState(null);
+    const [progresspercent, setProgresspercent] = useState(0);
+    const [title, setTitle] = useState(null);
+    const [price, setPrice] = useState(null);
+    const [song, setSong] = useState(null);
+    const [showDropdown, setShowDropdown] = useState(false);
+    const [songDropdown, setSongDropdown] = useState(false);
+    const [bandDropdown, setBandDropdown] = useState(false);
+    const [myEvents, setMyEvents] = useState([]);
+    const [bandSong, setBandSong] = useState([]);
+    const [type, setType] = useState("artist");
+    const [active, setActive] = useState(true);
 
     const toggleStatus = (e) => {
       e.preventDefault();
-      const activeBtn = document.querySelector(".my-active-shows");
-      const songBtn = document.querySelector(".my-pending-shows");
-      const active = document.querySelector(".active");
-      const pending = document.querySelector(".pending");
-      if (e.target.id === "my-pending-shows") {
+      const showBtn = document.querySelector(".my-shows");
+      const songBtn = document.querySelector(".my-songs");
+      const bandBtn = document.querySelector(".my-bands");
+      const shows = document.querySelector(".shows");
+      const songs = document.querySelector(".songs");
+      const bands = document.querySelector(".bands");
+      if (e.target.id === "my-songs") {
         songBtn.classList.add("btn-primary");
         songBtn.classList.remove("btn-warning");
-        activeBtn.classList.add("btn-warning");
-        activeBtn.classList.remove("btn-primary");
-        active.classList.add("d-none");
-        pending.classList.remove("d-none");
+        showBtn.classList.add("btn-warning");
+        showBtn.classList.remove("btn-primary");
+        bandBtn.classList.add("btn-warning");
+        bandBtn.classList.remove("btn-primary");
+        bands.classList.add("d-none");
+        shows.classList.add("d-none");
+        songs.classList.remove("d-none");
         setActive(false);
-      } else if (e.target.id === "my-active-shows") {
+      } else if (e.target.id === "my-shows") {
         songBtn.classList.add("btn-warning");
         songBtn.classList.remove("btn-primary");
-        activeBtn.classList.add("btn-primary");
-        activeBtn.classList.remove("btn-warning");
-        pending.classList.add("d-none");
-        active.classList.remove("d-none");
+        showBtn.classList.add("btn-primary");
+        showBtn.classList.remove("btn-warning");
+        bandBtn.classList.add("btn-warning");
+        bandBtn.classList.remove("btn-primary");
+        bands.classList.add("d-none");
+        songs.classList.add("d-none");
+        shows.classList.remove("d-none");
         setActive(true);
+      } else if (e.target.id === "my-bands") {
+        songBtn.classList.add("btn-warning");
+        songBtn.classList.remove("btn-primary");
+        showBtn.classList.add("btn-warning");
+        showBtn.classList.remove("btn-primary");
+        bandBtn.classList.add("btn-primary");
+        bandBtn.classList.remove("btn-warning");
+        songs.classList.add("d-none");
+        shows.classList.add("d-none");
+        bands.classList.remove("d-none");
+        setActive("bands");
       }
     }
 
-    const handleChange = () => {
-        console.log(id);
-    }
+    const onSubmit = (data) => {
+        const file = data.song[0]
+      
+        setSong(file);
 
-    const addToCart = (e) => {
-      e.preventDefault();
-      props.addToCart(e.target.id);
-      navigate('/cart');
-    }
-  
-    const pushVenueProfile = (e) => {
-      e.preventDefault();
-      navigate('/venueProfile');
-    }
+        if (!file) return;
 
-    const pushVenues = (e) => {
-      e.preventDefault();
-      navigate('/venues');
-    }
+        const storageRef = ref(storage, `songs/${file.name}`);
+        const uploadTask = uploadBytesResumable(storageRef, file);
+    
+        uploadTask.on("state_changed",
+          (snapshot) => {
+            const progress =
+              Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
+            setProgresspercent(progress);
+          },
+          (error) => {
+            alert(error);
+          },
+          () => {
+            getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+              setMp3Url(downloadURL)
+                if (type === "band") {
+                  console.log(bandSong);
+                  const songObject = {
+                    id: bandSong.toString(),
+                    title: title,
+                    price: price,
+                    song: downloadURL,
+                    voters: [auth.uid]
+                  }
+                  props.addBandSong(songObject);
+                } else if (type === "artist") {
+                  const songObject = {
+                    title: title,
+                    price: price,
+                    song: downloadURL
+                  }
+                  props.addSong(songObject);
+                }
 
-    const pushShow = (e) => {
-      e.preventDefault();
-      navigate('/tickets/' + e.target.id);
-    }
-
-    useEffect(() => {
-      if (users) {
-        users.map((user) => {
-          if (user.id === id) {
-            Geocode.fromLatLng(user.venueAddress[0], user.venueAddress[1]).then(
-              (response) => {
-                const address = response.results[0].formatted_address;
-                setAddress(address);
-              },
-              (error) => {
-                console.error(error);
-              }
-            );
+                
+              }).then(() => {
+                console.log("success");
+                navigate('/artists');
+              });
           }
-        })
+        );
       }
-      if (shows) {
-        shows.map((show) => {
-          show.artists.map((artist) => {
-            if (artist.id === auth.uid && !artistShows.includes(show)) {
-              
-              artistShows.push(show);
-            }
-          })
-        })
-      }
-    }, []);
 
-    if (!auth.uid) return navigate('/venueSignup');
+    const handleChange = (e) => {
+      if (e.target.id === "title") {
+        setTitle(e.target.value);
+      }
+      if (e.target.id === "price") {
+        setPrice(e.target.value);
+      }
+      if (e.target.id === "song") {
+        onSubmit();
+      }
+      bands.map((band) => {
+        if (e.target.value === band.id) {
+          setType("band");
+          bandSong.push(band.id);
+        }
+      })
+      users.map((user) => {
+        if (e.target.value === user.id) {
+          setType("artist");
+        }
+      })
+      console.log(type);
+    }
+
+    const handleClick = (e) => {
+      navigate("/band/" + e.target.id);
+    }
+
+    // useEffect(() => {
+    //   if (shows) {
+    //     shows.map((show) => {
+    //       if (show.artists) {
+    //         show.artists.map((artist) => {
+    //           try {
+    //             const showObject = {
+    //               id: show.id,
+    //               title: show.artists[0].firstName + " " + show.artists[0].lastName,
+    //               start: new Date(show.startTime.toDate()),
+    //               end: new Date(show.endTime.toDate())
+    //             }
+    //             if (artist.id === auth.uid && show.activated === true && !myEvents.includes(showObject)) {
+    //                 myEvents.push(showObject);
+    //             }
+    //           } catch (err) {
+    //             console.log(err);
+    //           }
+    //         })
+    //       }
+    //     })
+    //   }
+
+    // }, [])
+
+    if (!auth.uid) return navigate('/artistSignup');
 
     if (users) {
       return (
           <div>
-          <br/>
-          <br/>
-          <br/>
-          <br/>
-          <br/>
-          <br/>
-          <br/>
-          <br/>
-          <div className="profile-border">
-             
-            <div className="text-center">
-              {(() => {
-                if (active === true) {
-                  return <h4>ACTIVE SHOWS</h4>
-                } else if (active === false) {
-                  return <h4>PENDING SONGS</h4>
-                } 
-              })()}       
-              <br/>
-              <div  className="tab-border">
-                <button className="public-venue btn btn-warning" onClick={pushVenueProfile} id={id}>venue profile</button>  
-                <button className="my-active-shows btn btn-primary" onClick={toggleStatus} id="my-active-shows">active shows</button>
-                <button className="my-pending-shows btn btn-warning" onClick={toggleStatus} id="my-pending-shows">pending shows</button>
-                <button className="artist btn btn-warning" onClick={pushVenues}>venues</button>
-              </div>
-            </div>
-            <br/>
-            <Table className="active" hover>
-              <thead >
-                <tr>
-                  <th>Show Details</th>
-                  <th>Artists</th>
-                  <th>Venue</th>
-                </tr>
-              </thead>
-              <tbody> 
-                {artistShows && artistShows.map((show) => {
-                  if (show.activated === true) {
-                    return (
-                      <tr>
-                        <td><button className="btn btn-primary" onClick={pushShow} id={show.id}>view</button></td>
-                        <td>
-                          <Dropdown >
-                            <Dropdown.Toggle className="dropdown-basic" variant="warning" id="dropdown-basic"
-                            >
-                            {(() => {
-                              if (!show.artists[0].bandName) {
-                                return <div>{show.artists[0].firstName} {show.artists[0].lastName}</div>
-                              } else {
-                                return <div>{show.artists[0].bandName}</div>
-                              }
-                            })()}
-                            
-                            </Dropdown.Toggle>
+           <Form className="artist-search-form">
+               <Form.Group className="text-center artist-search-field mb-3" controlId="second" onChange={handleChange}>
 
-                            <Dropdown.Menu>
-                              {show.artists.map((artist) => {
-                                return (
-                                  
-                                    <Dropdown.Item href="#/action-1">
-                                        {(() => {
-                                          if (!artist.bandName) {
-                                            return (
-                                              <Link to={"/artist/" + artist.id}>
-                                                {artist.firstName} {artist.lastName}
-                                              </Link>
-                                            )
-                                          } else {
-                                            return (
-                                              <Link to={"/band/" + artist.id}>
-                                                {artist.bandName}
-                                              </Link>
-                                            )
-                                          }
-                                        })()}                             
-                                    </Dropdown.Item>
-                                  
-                                )
-                              })}
-                            </Dropdown.Menu>
-                          </Dropdown>
-                        </td>
-                        <td>{show.venueName}</td>
-                      </tr>
-                    )
-                  }
-                })}
-              </tbody>
-            </Table>
-            <Table className="pending d-none" hover>
-              <thead >
-                <tr>
-                  <th>Show Details</th>
-                  <th>Artists</th>
-                  <th>Venue</th>
-                </tr>
-              </thead>
-              <tbody>
-                {artistShows && artistShows.map((show) => {
-                  if (!show.activated || show.activated === false) {
-                    return (
-                      <tr>
-                        <td><button className="btn btn-primary" onClick={pushShow} id={show.id}>view</button></td>
-                        <td>
-                          <Dropdown >
-                            <Dropdown.Toggle className="dropdown-basic" variant="warning" id="dropdown-basic"
-                            >
-                            {(() => {
-                              if (!show.artists[0].bandName) {
-                                return <div className="text-center">{show.artists[0].firstName} {show.artists[0].lastName}</div>
-                              } else {
-                                return <div>{show.artists[0].bandName}</div>
-                              }
-                            })()}
-                            </Dropdown.Toggle>
 
-                            <Dropdown.Menu>
-                              {show.artists.map((artist) => {
-                                return (
-                                  
-                                    <Dropdown.Item href="#/action-1">
-                                        {(() => {
-                                          if (!artist.bandName) {
-                                            return (
-                                              <Link to={"/artist/" + artist.id}>
-                                                {artist.firstName} {artist.lastName}
-                                              </Link>
-                                            )
-                                          } else {
-                                            return (
-                                              <Link to={"/band/" + artist.id}>
-                                                {artist.bandName}
-                                              </Link>
-                                            )
-                                          }
-                                        })()}                             
-                                    </Dropdown.Item>
-                                  
-                                )
-                              })}
-                            </Dropdown.Menu>
-                          </Dropdown>
-                        </td>
-                        <td>{show.venueName}</td>
-                      </tr>
-                    )
-                  }
-                })}
-              </tbody>
-            </Table>
-            <br/>
-            {users && users.map((user) => {
+                   <Form.Control className="text-center artist-search-input" type="text" placeholder="Search Shows, Bands or Songs"
+                  
+                  />
+
+
+              </Form.Group>
+
+              
+          </Form>
+          {/* {users && users.map((user) => {})} */}
+          {users && users.map((user) => {
               if (user.id === id) {
                 return (
-                  <div className="ratings-container">
-                    <h2>Venue Rating</h2>
-                    <h1>{user.venueRating} Stars</h1>
-                    {(() => {
-                      if (!user.venueRaters || !user.venueRaters.includes(auth.uid)) { 
-                        return (
-                          <div className="skills ">
-                            <h3> Rate {user.firstName} 1-5</h3>
-                            <div className="rating">
-                              <input type="radio" />
-                              <input type="radio"value="5" onChange={handleChange} />
-                              <input type="radio"  />
-                              <input type="radio" onChange={handleChange}  value="4" />
-                              <input type="radio"  />
-                              <input type="radio" value="3" onChange={handleChange} />
-                              <input type="radio" />
-                              <input type="radio" onChange={handleChange}  value="2" />
-                              <input type="radio" onChange={handleChange}  value="1" />
+                  <div className="main-container-artist-profile">
+                    <div className='shows'>
+                      {shows && shows.map((show) => {
+                          return (
+                            <div >
+                              {show.artists.map((item) => {
+                                if (item.id === user.id) {
+                                  return (
+                                    <div className="ticket-border">
+                                      <div className=" card-container">
+                                        <div className="card">
+                                          <div className="card-header">
+                                            <h2 className="username description-text">{show.promoterUserName}
+                                            </h2>
+                                            {(() => {
+                                              if (show.activated === true) {
+                                                  return <p className="description-arrow text-success">(active)</p>
+                                              } else  { 
+                                                  return <p className="description-arrow text-secondary">(pending)</p>
+                                              }
+                                            })()}
+                                          </div>
+                                          <img src={symbolOne} alt="Post" className="card-img" onClick={() => {
+                                            navigate("/tickets/" + show.id)
+                                          }} />
+                                        
+                                            <div className="description-dropdown">
+                                              <div className='description-text'>{show.voteCount} votes</div>
+                                                {(() => {
+                                                  if (show.venueId === user.id && (!show.venueDecision || show.venueDecision === false)) {
+                                                    return (
+                                                      <button className="btn btn-primary description-arrow" onClick={() => {   
+                                                      props.updateVote(user.id, show.id); }} id={show.id}>accept</button>
+                                                    )
+                                                  } else if (show.venueId === user.id && show.venueDecision === true) {
+                                                    return (
+                                                      <div className="description-container">
+                                                        <p className="color-warning description-text">accepted</p>
+                                                        <button className="btn btn-primary description-text" onClick={() => {   
+                                                        props.updateVote(user.id, show.id); }} id={show.id}>reject</button>
+                                                      </div>
+                                                    )
+                                                  } else if (show.venueId !== user.id && !show.votedOn.includes(user.id)) {
+                                                    return  <button className="btn btn-primary description-arrow" onClick={() => {   
+                                                      props.updateVote(user.id, show.id); }} id={show.id}>accept</button>
+                                                  } else if (show.venueId !== user.id && show.votedOn.includes(user.id)) {
+                                                    return <p className="color-warning description-text">voted</p>
+                                                  }
+                                                })()}
+                                            </div>
+                                        <div className="dropdown-container">
+                                          <button className="dropdown-button" onClick={() => setShowDropdown(!showDropdown)}>
+                                            Show Info
+                                          </button>
+                                          {showDropdown && (
+                                            <div className="dropdown-content">
+                                              {show.artists.map((artist) => {
+                                                if (artist.type === "artist") {
+                                                  return (
+                                                    <div className="description-dropdown dropdown-link">                       
+                                                        <Link className="description-text" to={"/artist/" + artist.id}>
+                                                          {artist.firstName} {artist.lastName}
+                                                        
+                                                        </Link>
+                                                        <p className="description-arrow">artist</p>
+                                                      
+                                                    </div>
+                                                  )
+                                                } else if (artist.type === "band") {
+                                                  return (
+                                                    <div className="description-dropdown dropdown-link">
+                                                                                  
+                                                        <Link className="description-text" to={"/artist/" + artist.id}>
+                                                          {artist.bandName}
+                                                        </Link>
+                                                        <p className="description-arrow">band</p>
+                                                    </div>
+                                                  )
+                                                }
+                
+                                              })}
+                
+                                                <div className="description-dropdown dropdown-link">
+                                                  
+                                                  <Link className="description-text" to={"/venue/" + show.venueId}>
+                                                    {show.venueName}
+                                                  </Link>
+                                                  {users && users.map((user) => {
+                                                    if (user.id=== show.venueId) {
+                                                      return (
+                                                        <p className="description-arrow">{user.venueAddress}</p>
+                                                      )
+                                                    } 
+                                                  })} 
+                
+                                              </div>
+                                            </div>
+                                          )}
+                
+                                        </div>
+                                    </div>
+                                  </div>
+                                    </div>
+                                  )
+                                }
+                              })}
+
                             </div>
-                          </div>      
-                        )
-                      }
-                    })()}
+                          )
+                        
+
+                      })}
+                    </div>
                   </div>
                 )
               }
             })}
-            <br/>
-            <br/>
-            </div>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
           </div>
-      )
+        )
+      }
     }
 
-}
-
-const mapStateToProps = (state, ownProps) => {
+const mapStateToProps = (state) => {
     return {
       auth: state.firebase.auth,
       users: state.firestore.ordered.users,
-      shows: state.firestore.ordered.shows,
+      bands: state.firestore.ordered.bands,
+      shows: state.firestore.ordered.shows
     }
 }
 
 const mapDispatchToProps = dispatch => {
   return {
-    addToCart: (item) => dispatch(addToCart(item))
+    addSong: (song) => dispatch(addSong(song)),
+    addBandSong: (song) => dispatch(addBandSong(song))
   }
 }
 
@@ -319,6 +349,7 @@ export default compose(
     connect(mapStateToProps, mapDispatchToProps),
     firestoreConnect([
       { collection: 'users' },
-      { collection: 'shows' }
+      { collection: 'shows' },
+      { collection: 'bands' }
     ])
   )(PublicVenue);

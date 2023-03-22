@@ -126,7 +126,7 @@ const MapBackground = (props) => {
     
           
           {/* <button className = "testBtn" onClick={handleClick}>hello</button> */}
-          <Search  panTo={panTo} />
+          {/* <Search  panTo={panTo} /> */}
     
           <GoogleMap
             id="map"
@@ -238,61 +238,61 @@ function Locate({ panTo }) {
   );
 }
 
-function Search(props, { panTo }) {
-  const { ready, value, suggestions: { status, data }, setValue, clearSuggestions } = usePlacesAutocomplete({
-    requestOptions: {
-      location: { lat: () => 43.6532, lng: () => -79.3832 },
-      radius: 100 * 1000,
-    }
-  });
+// function Search(props, { panTo }) {
+//   const { ready, value, suggestions: { status, data }, setValue, clearSuggestions } = usePlacesAutocomplete({
+//     requestOptions: {
+//       location: { lat: () => 43.6532, lng: () => -79.3832 },
+//       radius: 100 * 1000,
+//     }
+//   });
 
 
 
 
-  const handleInput = (e) => {
+//   const handleInput = (e) => {
     
-    setValue(e.target.value);
-  };
+//     setValue(e.target.value);
+//   };
 
-  const handleSelect = async (address) => {
-    setValue(address, false);
-    clearSuggestions();
+//   const handleSelect = async (address) => {
+//     setValue(address, false);
+//     clearSuggestions();
 
-    try {
-      const results = await getGeocode({ address });
-      console.log(results);
-      const { lat, lng } = getLatLng(results[0]);
-      panTo({ lat, lng });
-    } catch (error) {
-      console.log("😱 Error: ", error);
-    }
-  };
+//     try {
+//       const results = await getGeocode({ address });
+//       console.log(results);
+//       const { lat, lng } = getLatLng(results[0]);
+//       panTo({ lat, lng });
+//     } catch (error) {
+//       console.log("😱 Error: ", error);
+//     }
+//   };
 
   
  
 
-  return (
-    <div className="home-search">
-      <Combobox onSelect={handleSelect}>
-        <ComboboxInput
-          value={value}
-          onChange={handleInput}
-          disabled={!ready}
-          placeholder="Search for Venues"
-        />
-        {/* <button onClick={handleClick}>hit me</button> */}
-        <ComboboxPopover>
-          <ComboboxList>
-            {status === "OK" &&
-              data.map(({ place_id, description }) => (
-                <ComboboxOption key={place_id} value={description} />
-              ))}
-          </ComboboxList>
-        </ComboboxPopover>
-      </Combobox>
-    </div>
-  );
-}
+//   return (
+//     <div className="home-search">
+//       <Combobox onSelect={handleSelect}>
+//         <ComboboxInput
+//           value={value}
+//           onChange={handleInput}
+//           disabled={!ready}
+//           placeholder="Search for Venues"
+//         />
+//         {/* <button onClick={handleClick}>hit me</button> */}
+//         <ComboboxPopover>
+//           <ComboboxList>
+//             {status === "OK" &&
+//               data.map(({ place_id, description }) => (
+//                 <ComboboxOption key={place_id} value={description} />
+//               ))}
+//           </ComboboxList>
+//         </ComboboxPopover>
+//       </Combobox>
+//     </div>
+//   );
+// }
 
 
 
